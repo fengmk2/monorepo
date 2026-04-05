@@ -12,6 +12,7 @@
     "policy",
     "rbac",
     "standard-schema",
+    "tanstack-intent",
     "typescript",
     "valibot",
     "zod"

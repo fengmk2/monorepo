@@ -2,6 +2,9 @@
   "name": "@zap-studio/typescript",
   "version": "0.0.0",
   "private": true,
+  "keywords": [
+    "tanstack-intent"
+  ],
   "license": "PROPRIETARY",
   "files": [
     "base.json",
