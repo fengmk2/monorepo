@@ -90,6 +90,19 @@ export type InferAction<
 > = TActions[K][number];
 
 /**
+ * Infers the permission-string union for all resource/action combinations.
+ *
+ * @example
+ * ```ts
+ * type Permission = InferPermission<typeof resources, typeof actions>;
+ * // "post:read" | "post:write" | "comment:read"
+ * ```
+ */
+export type InferPermission<TResources extends Resources, TActions extends Actions<TResources>> = {
+  [K in keyof TResources & keyof TActions]: `${K & string}:${InferAction<TActions, K> & string}`;
+}[keyof TResources & keyof TActions];
+
+/**
  * A function that determines whether a given action on a resource is allowed in a specific context.
  */
 export type PolicyFn<
@@ -170,7 +183,7 @@ export interface PermitConfig<
  *   rules: { ... },
  * });
  *
- * await policy.can(ctx, "read", "post", postData); // true or false
+ * await policy.can(ctx, "post:read", postData); // true or false
  * ```
  */
 export interface Policy<
@@ -183,8 +196,7 @@ export interface Policy<
    */
   can<K extends keyof TResources & keyof TActions>(
     context: TContext,
-    action: InferAction<TActions, K>,
-    resourceType: K,
+    permission: `${K & string}:${InferAction<TActions, K> & string}`,
     resource: InferResource<TResources, K>,
   ): Promise<boolean>;
 }

@@ -170,20 +170,19 @@ const policy = createPolicy<AppContext>({
 
 ## Checking Permissions
 
-The policy object provides a `can()` method to check if an action is allowed. It takes the `context`, `action`, `resourceType`, and `resource` as parameters and returns a `Promise<boolean>` indicating whether the action is allowed.
+The policy object provides a `can()` method to check if an action is allowed. It takes the `context`, a `"resource:action"` permission string, and the `resource`, then returns a `Promise<boolean>` indicating whether the action is allowed.
 
 ```typescript
-policy.can(context, action, resourceType, resource): Promise<boolean>
+policy.can(context, permission, resource): Promise<boolean>
 ```
 
 ### Parameters
 
-| Parameter      | Type       | Description                                    |
-| -------------- | ---------- | ---------------------------------------------- |
-| `context`      | `TContext` | The current context (user, request, etc.)      |
-| `action`       | `string`   | The action to check (e.g., "read", "write")    |
-| `resourceType` | `string`   | The type of resource (e.g., "post", "comment") |
-| `resource`     | `object`   | The actual resource being accessed             |
+| Parameter    | Type       | Description                                                      |
+| ------------ | ---------- | ---------------------------------------------------------------- |
+| `context`    | `TContext` | The current context (user, request, etc.)                        |
+| `permission` | `string`   | The permission to check (e.g., `"post:read"`, `"comment:write"`) |
+| `resource`   | `object`   | The actual resource being accessed                               |
 
 ### Example: Blog Post Authorization
 
@@ -205,7 +204,7 @@ const post = {
 };
 
 // The user is the author, so this returns true according to the policy
-const canEdit = await policy.can(context, "write", "post", post);
+const canEdit = await policy.can(context, "post:write", post);
 console.log(canEdit); // true
 
 // A different user trying to edit
@@ -214,7 +213,7 @@ const otherContext: AppContext = {
   timestamp: new Date(),
 };
 
-const canOtherEdit = await policy.can(otherContext, "write", "post", post);
+const canOtherEdit = await policy.can(otherContext, "post:write", post);
 console.log(canOtherEdit); // false
 ```
 
@@ -329,8 +328,8 @@ const customerContext: StoreContext = {
   user: { id: "customer-456", role: "customer" },
 };
 
-console.log(await storePolicy.can(customerContext, "read", "product", product)); // true
-console.log(await storePolicy.can(customerContext, "update", "product", product)); // false
+console.log(await storePolicy.can(customerContext, "product:read", product)); // true
+console.log(await storePolicy.can(customerContext, "product:update", product)); // false
 ```
 
 ## Best Practices
