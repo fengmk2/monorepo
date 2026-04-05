@@ -318,8 +318,8 @@ export function hasRole<
  *
  * // Check permissions
  * const post = { id: "1", authorId: "user-1", visibility: "public" as const };
- * await policy.can(ctx, "read", "post", post); // true
- * await policy.can(ctx, "write", "post", post); // depends on ctx.user.id
+ * await policy.can(ctx, "post:read", post); // true
+ * await policy.can(ctx, "post:write", post); // depends on ctx.user.id
  * ```
  */
 export function createPolicy<
@@ -365,10 +365,17 @@ export function createPolicy<
   return {
     async can<K extends keyof TResources & keyof TActions>(
       context: TContext,
-      action: InferAction<TActions, K>,
-      resourceType: K,
+      permission: `${K & string}:${InferAction<TActions, K> & string}`,
       resource: InferResource<TResources, K>,
     ): Promise<boolean> {
+      const [resourceTypeValue, actionValue, ...rest] = permission.split(":");
+      if (!resourceTypeValue || !actionValue || rest.length > 0) {
+        return false;
+      }
+
+      const resourceType = resourceTypeValue as K;
+      const action = actionValue as InferAction<TActions, K>;
+
       const allowedActions = actions[resourceType];
       if (!allowedActions) {
         return false;
@@ -426,15 +433,14 @@ export function mergePolicies<
   return {
     async can<K extends keyof TResources & keyof TActions>(
       context: TContext,
-      action: InferAction<TActions, K>,
-      resourceType: K,
+      permission: `${K & string}:${InferAction<TActions, K> & string}`,
       resource: InferResource<TResources, K>,
     ): Promise<boolean> {
       if (!policies.length) {
         return false;
       }
       for (const policy of policies) {
-        if (!(await policy.can(context, action, resourceType, resource))) {
+        if (!(await policy.can(context, permission, resource))) {
           return false;
         }
       }
@@ -464,15 +470,14 @@ export function mergePoliciesAny<
   return {
     async can<K extends keyof TResources & keyof TActions>(
       context: TContext,
-      action: InferAction<TActions, K>,
-      resourceType: K,
+      permission: `${K & string}:${InferAction<TActions, K> & string}`,
       resource: InferResource<TResources, K>,
     ): Promise<boolean> {
       if (!policies.length) {
         return false;
       }
       for (const policy of policies) {
-        if (await policy.can(context, action, resourceType, resource)) {
+        if (await policy.can(context, permission, resource)) {
           return true;
         }
       }

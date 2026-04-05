@@ -220,8 +220,8 @@ const betaPremiumUser: MultiRoleContext = {
 const ticket = { id: "t1", userId: "u1", priority: "normal" as const };
 const feature = { id: "f1", name: "New Dashboard" };
 
-console.log(await multiRolePolicy.can(betaPremiumUser, "access", "betaFeature", feature)); // true (has beta-tester)
-console.log(await multiRolePolicy.can(betaPremiumUser, "escalate", "supportTicket", ticket)); // true (has premium)
+console.log(await multiRolePolicy.can(betaPremiumUser, "betaFeature:access", feature)); // true (has beta-tester)
+console.log(await multiRolePolicy.can(betaPremiumUser, "supportTicket:escalate", ticket)); // true (has premium)
 ```
 
 ## Collecting Inherited Roles

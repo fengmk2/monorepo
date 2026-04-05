@@ -1,5 +1,17 @@
 # @zap-studio/permit
 
+## 0.3.0
+
+### Minor Changes
+
+- fe60f55: Change `policy.can()` to use a single permission string plus the resource object.
+
+  `policy.can(ctx, "read", "post", post)` is replaced by
+  `policy.can(ctx, "post:read", post)`.
+
+  This is a breaking API change in the `0.x` line. Docs and examples now use the
+  new permission-string format consistently.
+
 ## 0.2.2
 
 ### Patch Changes

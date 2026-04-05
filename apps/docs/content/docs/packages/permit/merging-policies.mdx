@@ -116,13 +116,13 @@ const confidentialDoc = {
 const lowClearanceOwner: AppContext = {
   user: { id: "user-123", clearanceLevel: 1 },
 };
-console.log(await policy.can(lowClearanceOwner, "read", "document", confidentialDoc)); // false
+console.log(await policy.can(lowClearanceOwner, "document:read", confidentialDoc)); // false
 
 // Owner with high clearance: both allow → ALLOWED
 const highClearanceOwner: AppContext = {
   user: { id: "user-123", clearanceLevel: 3 },
 };
-console.log(await policy.can(highClearanceOwner, "read", "document", confidentialDoc)); // true
+console.log(await policy.can(highClearanceOwner, "document:read", confidentialDoc)); // true
 ```
 
 ## mergePoliciesAny() — Allow-Overrides Strategy
@@ -244,9 +244,9 @@ const file = {
 const sharedUser: FileContext = {
   user: { id: "user-shared", teamIds: [] },
 };
-console.log(await filePolicy.can(sharedUser, "read", "file", file)); // true (via sharedPolicy)
-console.log(await filePolicy.can(sharedUser, "write", "file", file)); // true (via sharedPolicy)
-console.log(await filePolicy.can(sharedUser, "delete", "file", file)); // false (no policy allows)
+console.log(await filePolicy.can(sharedUser, "file:read", file)); // true (via sharedPolicy)
+console.log(await filePolicy.can(sharedUser, "file:write", file)); // true (via sharedPolicy)
+console.log(await filePolicy.can(sharedUser, "file:delete", file)); // false (no policy allows)
 ```
 
 ## Combining Both Strategies
