@@ -96,7 +96,7 @@ const permissive = mergePoliciesAny(basePolicy, temporaryOverridePolicy); // any
 Wrong:
 
 ```ts
-await policy.can(ctx, "publish", "post", post);
+await policy.can(ctx, "post:publish", post);
 ```
 
 Correct:
@@ -106,7 +106,7 @@ const actions = {
   post: ["read", "write", "publish"],
 } as const;
 
-await policy.can(ctx, "publish", "post", post);
+await policy.can(ctx, "post:publish", post);
 ```
 
 `can()` first checks `actions[resourceType]`; missing actions always resolve to `false`.
@@ -118,13 +118,13 @@ Source: zap-studio/monorepo:packages/permit/src/index.ts
 Wrong:
 
 ```ts
-await policy.can(ctx, "write", "post", { id: 123 } as any);
+await policy.can(ctx, "post:write", { id: 123 } as any);
 ```
 
 Correct:
 
 ```ts
-await policy.can(ctx, "write", "post", {
+await policy.can(ctx, "post:write", {
   id: "123",
   authorId: ctx.user.id,
 });
