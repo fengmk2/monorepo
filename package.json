@@ -17,7 +17,7 @@
     "jsr": "catalog:",
     "publint": "catalog:",
     "vite-plus": "catalog:",
-    "vitest": "npm:@voidzero-dev/vite-plus-test@0.1.14"
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">=20.0.0",
