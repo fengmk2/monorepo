@@ -7,7 +7,7 @@ describe("assertNever", () => {
     it("should throw an error when called", () => {
       expect(() => {
         assertNever("unexpected" as never);
-      }).toThrow();
+      }).toThrow("Unexpected value: unexpected");
     });
 
     it("should include the unexpected value in the error message", () => {
@@ -56,7 +56,7 @@ describe("assertNever", () => {
       const sym = Symbol("test");
       expect(() => {
         assertNever(sym as never);
-      }).toThrow();
+      }).toThrow("Unexpected value: Symbol(test)");
     });
   });
 

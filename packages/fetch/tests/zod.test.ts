@@ -92,10 +92,7 @@ describe("$fetch with Zod schemas", () => {
     });
 
     expect(result).toHaveProperty("issues");
-    if ("issues" in result) {
-      expect(result.issues).toBeDefined();
-      expect(Array.isArray(result.issues)).toBe(true);
-    }
+    expect(Array.isArray((result as { issues?: unknown }).issues)).toBe(true);
   });
 
   it("should return successful validation result when data is valid and throwOnValidationError is false", async () => {
@@ -119,10 +116,8 @@ describe("$fetch with Zod schemas", () => {
     });
 
     expect(result).toHaveProperty("value");
-    if ("value" in result) {
-      expect(result.value).toEqual(validData);
-      expect(result.issues).toBeUndefined();
-    }
+    expect((result as { value?: unknown }).value).toEqual(validData);
+    expect((result as { issues?: unknown }).issues).toBeUndefined();
   });
 
   it("should work with Zod array schemas", async () => {

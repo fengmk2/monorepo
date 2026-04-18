@@ -5,6 +5,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test"
 import { FetchError } from "../src/errors.js";
 import { $fetch, api, createFetch } from "../src/index.js";
 
+async function captureRejectedError(run: () => Promise<unknown>): Promise<unknown> {
+  try {
+    await run();
+  } catch (error) {
+    return error;
+  }
+
+  throw new Error("Expected promise to reject");
+}
+
 describe("$fetch", () => {
   let fetchMock: ReturnType<typeof vi.fn>;
 
@@ -205,14 +215,11 @@ describe("$fetch", () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      try {
-        await $fetch("https://api.example.com/error");
-        expect.fail("Should have thrown FetchError");
-      } catch (error) {
-        expect(error).toBeInstanceOf(FetchError);
-        expect((error as FetchError).status).toBe(500);
-        expect((error as FetchError).response).toBe(mockResponse);
-      }
+      const error = await captureRejectedError(() => $fetch("https://api.example.com/error"));
+
+      expect(error).toBeInstanceOf(FetchError);
+      expect((error as FetchError).status).toBe(500);
+      expect((error as FetchError).response).toBe(mockResponse);
     });
 
     it("should include status text in FetchError message", async () => {
@@ -222,14 +229,11 @@ describe("$fetch", () => {
       });
       fetchMock.mockResolvedValue(mockResponse);
 
-      try {
-        await $fetch("https://api.example.com/forbidden");
-        expect.fail("Should have thrown FetchError");
-      } catch (error) {
-        expect(error).toBeInstanceOf(FetchError);
-        expect((error as FetchError).message).toContain("403");
-        expect((error as FetchError).message).toContain("Forbidden");
-      }
+      const error = await captureRejectedError(() => $fetch("https://api.example.com/forbidden"));
+
+      expect(error).toBeInstanceOf(FetchError);
+      expect((error as FetchError).message).toContain("403");
+      expect((error as FetchError).message).toContain("Forbidden");
     });
   });
 

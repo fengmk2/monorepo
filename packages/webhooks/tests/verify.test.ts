@@ -39,7 +39,7 @@ describe("createHmacVerifier", () => {
     return toHex(new Uint8Array(signature));
   };
 
-  const captureThrownError = async (run: () => void | Promise<void>): Promise<unknown> => {
+  const captureThrownError = async <T>(run: () => T | Promise<T>): Promise<unknown> => {
     try {
       await run();
       expect.fail("Expected function to throw");
@@ -131,21 +131,20 @@ describe("createHmacVerifier", () => {
     ).resolves.toBeUndefined();
   });
 
-  it("rejects unsupported algorithms", () => {
-    try {
+  it("rejects unsupported algorithms", async () => {
+    const error = await captureThrownError(() =>
       createHmacVerifier({
         headerName: "X-Hub-Signature-256",
         secret: "my-secret",
         algo: "md5" as HmacAlgorithm,
-      });
-      expect.fail("Expected createHmacVerifier to throw");
-    } catch (error) {
-      expect(error).toBeInstanceOf(VerificationError);
-      expect(error).toMatchObject({
-        name: "VerificationError",
-        message: "Unsupported HMAC algorithm: md5",
-      });
-    }
+      }),
+    );
+
+    expect(error).toBeInstanceOf(VerificationError);
+    expect(error).toMatchObject({
+      name: "VerificationError",
+      message: "Unsupported HMAC algorithm: md5",
+    });
   });
 
   it("verifies exact raw bytes", async () => {
@@ -182,7 +181,7 @@ describe("createHmacVerifier", () => {
     await expect(verify(createMockRequest(body, signature))).resolves.toBeUndefined();
   });
 
-  it("throws when Web Crypto is unavailable", () => {
+  it("throws when Web Crypto is unavailable", async () => {
     const originalDescriptor = Object.getOwnPropertyDescriptor(globalThis, "crypto");
 
     Object.defineProperty(globalThis, "crypto", {
@@ -190,23 +189,25 @@ describe("createHmacVerifier", () => {
       value: undefined,
     });
 
+    let error: unknown;
     try {
-      createHmacVerifier({
-        headerName: "X-Hub-Signature-256",
-        secret: "my-secret",
-      });
-      expect.fail("Expected createHmacVerifier to throw");
-    } catch (error) {
-      expect(error).toBeInstanceOf(VerificationError);
-      expect(error).toMatchObject({
-        name: "VerificationError",
-        message: "Web Crypto API is unavailable in this runtime",
-      });
+      error = await captureThrownError(() =>
+        createHmacVerifier({
+          headerName: "X-Hub-Signature-256",
+          secret: "my-secret",
+        }),
+      );
     } finally {
       if (originalDescriptor) {
         Object.defineProperty(globalThis, "crypto", originalDescriptor);
       }
     }
+
+    expect(error).toBeInstanceOf(VerificationError);
+    expect(error).toMatchObject({
+      name: "VerificationError",
+      message: "Web Crypto API is unavailable in this runtime",
+    });
   });
 });
 

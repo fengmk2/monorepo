@@ -8,6 +8,12 @@ import { createMethod, fetchInternal, mergeHeaders } from "../src/utils.js";
 const RE_HTTP_500 = /HTTP 500: Server Error/;
 const RE_HTTP_400 = /HTTP 400: Bad Request/;
 
+type FetchMock = (...args: unknown[]) => Promise<unknown>;
+
+function createFetchMock(implementation: FetchMock = async () => undefined): typeof $fetch {
+  return vi.fn<FetchMock>(implementation) as unknown as typeof $fetch;
+}
+
 describe("mergeHeaders", () => {
   describe("when both arguments are undefined", () => {
     it("should return undefined", () => {
@@ -485,7 +491,7 @@ describe("fetchInternal", () => {
           throwOnFetchError: true,
           throwOnValidationError: true,
         }),
-      ).rejects.toThrow();
+      ).rejects.toThrow(RE_HTTP_500);
     });
 
     it("should allow options to override defaults", async () => {
@@ -520,15 +526,15 @@ describe("createMethod", () => {
 
   describe("method creation", () => {
     it("should return a function", () => {
-      const method = createMethod(vi.fn() as unknown as typeof $fetch, "GET");
+      const method = createMethod(createFetchMock(), "GET");
       expect(typeof method).toBe("function");
     });
 
     it("should create a method bound to the provided fetch function", async () => {
-      const $fetchMock = vi.fn(async (...args: Parameters<typeof $fetch>) => {
+      const $fetchMock = createFetchMock(async (...args) => {
         await Promise.resolve();
         return args;
-      }) as unknown as typeof $fetch;
+      });
 
       const get = createMethod($fetchMock, "GET");
       const schema = {
@@ -545,7 +551,7 @@ describe("createMethod", () => {
 
   describe("method invocation", () => {
     it("should call fetch with the specified HTTP method", async () => {
-      const $fetchMock = vi.fn(() => Promise.resolve(undefined)) as unknown as typeof $fetch;
+      const $fetchMock = createFetchMock();
       const post = createMethod($fetchMock, "POST");
       const schema = {
         "~standard": {
@@ -560,7 +566,7 @@ describe("createMethod", () => {
     });
 
     it("should pass resource to fetch", async () => {
-      const $fetchMock = vi.fn(() => Promise.resolve(undefined)) as unknown as typeof $fetch;
+      const $fetchMock = createFetchMock();
       const get = createMethod($fetchMock, "GET");
       const schema = {
         "~standard": {
@@ -575,7 +581,7 @@ describe("createMethod", () => {
     });
 
     it("should pass schema to fetch", async () => {
-      const $fetchMock = vi.fn(() => Promise.resolve(undefined)) as unknown as typeof $fetch;
+      const $fetchMock = createFetchMock();
       const get = createMethod($fetchMock, "GET");
       const schema = {
         "~standard": {
@@ -590,7 +596,7 @@ describe("createMethod", () => {
     });
 
     it("should merge options with method", async () => {
-      const $fetchMock = vi.fn(() => Promise.resolve(undefined)) as unknown as typeof $fetch;
+      const $fetchMock = createFetchMock();
       const patch = createMethod($fetchMock, "PATCH");
       const schema = {
         "~standard": {
@@ -612,7 +618,7 @@ describe("createMethod", () => {
     });
 
     it("should not allow overriding method via options", async () => {
-      const $fetchMock = vi.fn(() => Promise.resolve(undefined)) as unknown as typeof $fetch;
+      const $fetchMock = createFetchMock();
       const del = createMethod($fetchMock, "DELETE");
       const schema = {
         "~standard": {
@@ -638,7 +644,7 @@ describe("createMethod", () => {
     } satisfies StandardSchemaV1;
 
     it("should work with GET method", async () => {
-      const $fetchMock = vi.fn(() => Promise.resolve(undefined)) as unknown as typeof $fetch;
+      const $fetchMock = createFetchMock();
       const get = createMethod($fetchMock, "GET");
       await get("/r", schema);
       const call = (vi.mocked($fetchMock).mock.calls[0] ?? []) as unknown[];
@@ -646,7 +652,7 @@ describe("createMethod", () => {
     });
 
     it("should work with POST method", async () => {
-      const $fetchMock = vi.fn(() => Promise.resolve(undefined)) as unknown as typeof $fetch;
+      const $fetchMock = createFetchMock();
       const post = createMethod($fetchMock, "POST");
       await post("/r", schema, { body: JSON.stringify({ a: 1 }) });
       const call = (vi.mocked($fetchMock).mock.calls[0] ?? []) as unknown[];
@@ -654,9 +660,9 @@ describe("createMethod", () => {
     });
 
     it("should work with PUT method", async () => {
-      const $fetchMock = vi.fn(async () => {
+      const $fetchMock = createFetchMock(async () => {
         // do nothing
-      }) as unknown as typeof $fetch;
+      });
       const put = createMethod($fetchMock, "PUT");
       await put("/r", schema, { body: JSON.stringify({ a: 1 }) });
       const call = (vi.mocked($fetchMock).mock.calls[0] ?? []) as unknown[];
@@ -664,9 +670,9 @@ describe("createMethod", () => {
     });
 
     it("should work with PATCH method", async () => {
-      const $fetchMock = vi.fn(async () => {
+      const $fetchMock = createFetchMock(async () => {
         // do nothing
-      }) as unknown as typeof $fetch;
+      });
       const patch = createMethod($fetchMock, "PATCH");
       await patch("/r", schema, { body: JSON.stringify({ a: 1 }) });
       const call = (vi.mocked($fetchMock).mock.calls[0] ?? []) as unknown[];
@@ -674,9 +680,9 @@ describe("createMethod", () => {
     });
 
     it("should work with DELETE method", async () => {
-      const $fetchMock = vi.fn(async () => {
+      const $fetchMock = createFetchMock(async () => {
         // do nothing
-      }) as unknown as typeof $fetch;
+      });
       const del = createMethod($fetchMock, "DELETE");
       await del("/r", schema);
       const call = (vi.mocked($fetchMock).mock.calls[0] ?? []) as unknown[];
@@ -704,9 +710,7 @@ describe("createMethod", () => {
     } satisfies StandardSchemaV1;
 
     it("should return validated value when throwOnValidationError is true", async () => {
-      const $fetchMock = vi.fn(() =>
-        Promise.resolve({ id: 1, name: "test" }),
-      ) as unknown as typeof $fetch;
+      const $fetchMock = createFetchMock(async () => ({ id: 1, name: "test" }));
       const get = createMethod($fetchMock, "GET");
       await get("/users/1", successSchema, { throwOnValidationError: true });
       const call = (vi.mocked($fetchMock).mock.calls[0] ?? []) as unknown[];
@@ -717,9 +721,7 @@ describe("createMethod", () => {
     });
 
     it("should return validated value when throwOnValidationError is undefined (default)", async () => {
-      const $fetchMock = vi.fn(() =>
-        Promise.resolve({ id: 1, name: "test" }),
-      ) as unknown as typeof $fetch;
+      const $fetchMock = createFetchMock(async () => ({ id: 1, name: "test" }));
       const get = createMethod($fetchMock, "GET");
       await get("/users/1", successSchema);
       const call = (vi.mocked($fetchMock).mock.calls[0] ?? []) as unknown[];
@@ -730,11 +732,9 @@ describe("createMethod", () => {
     });
 
     it("should return result object when throwOnValidationError is false", async () => {
-      const $fetchMock = vi.fn(() =>
-        Promise.resolve({
-          issues: [{ message: "validation error", path: ["field"] }],
-        }),
-      ) as unknown as typeof $fetch;
+      const $fetchMock = createFetchMock(async () => ({
+        issues: [{ message: "validation error", path: ["field"] }],
+      }));
       const get = createMethod($fetchMock, "GET");
       await get("/users/1", failureSchema, { throwOnValidationError: false });
       const call = (vi.mocked($fetchMock).mock.calls[0] ?? []) as unknown[];
@@ -745,9 +745,7 @@ describe("createMethod", () => {
     });
 
     it("should pass throwOnValidationError: false through POST method", async () => {
-      const $fetchMock = vi.fn(() =>
-        Promise.resolve({ value: { id: 1 } }),
-      ) as unknown as typeof $fetch;
+      const $fetchMock = createFetchMock(async () => ({ value: { id: 1 } }));
       const post = createMethod($fetchMock, "POST");
       await post("/users", successSchema, {
         body: { name: "test" },
@@ -762,9 +760,7 @@ describe("createMethod", () => {
     });
 
     it("should pass throwOnValidationError: true through PATCH method", async () => {
-      const $fetchMock = vi.fn(() =>
-        Promise.resolve({ id: 1, name: "updated" }),
-      ) as unknown as typeof $fetch;
+      const $fetchMock = createFetchMock(async () => ({ id: 1, name: "updated" }));
       const patch = createMethod($fetchMock, "PATCH");
       await patch("/users/1", successSchema, {
         body: { name: "updated" },
@@ -779,9 +775,7 @@ describe("createMethod", () => {
     });
 
     it("should pass throwOnValidationError: false through DELETE method", async () => {
-      const $fetchMock = vi.fn(() =>
-        Promise.resolve({ value: { success: true } }),
-      ) as unknown as typeof $fetch;
+      const $fetchMock = createFetchMock(async () => ({ value: { success: true } }));
       const del = createMethod($fetchMock, "DELETE");
       await del("/users/1", successSchema, { throwOnValidationError: false });
       const call = (vi.mocked($fetchMock).mock.calls[0] ?? []) as unknown[];

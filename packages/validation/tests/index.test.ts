@@ -38,6 +38,26 @@ function createMockSchemaFunction<T>(
   return fn as unknown as StandardSchemaV1<unknown, T>;
 }
 
+async function captureRejectedError(run: () => Promise<unknown>): Promise<unknown> {
+  try {
+    await run();
+  } catch (error) {
+    return error;
+  }
+
+  throw new Error("Expected promise to reject");
+}
+
+function captureThrownError(run: () => unknown): unknown {
+  try {
+    run();
+  } catch (error) {
+    return error;
+  }
+
+  throw new Error("Expected function to throw");
+}
+
 describe("ValidationError", () => {
   it("should store issues and stringify them in the message", () => {
     const issues: StandardSchemaV1.Issue[] = [
@@ -355,13 +375,12 @@ describe("standardValidate", () => {
 
       const schema = createMockSchema(() => ({ issues }));
 
-      try {
-        await standardValidate(schema, {}, { throwOnError: true });
-        expect.fail("Should have thrown ValidationError");
-      } catch (error) {
-        expect(error).toBeInstanceOf(ValidationError);
-        expect((error as ValidationError).issues).toEqual(issues);
-      }
+      const error = await captureRejectedError(() =>
+        standardValidate(schema, {}, { throwOnError: true }),
+      );
+
+      expect(error).toBeInstanceOf(ValidationError);
+      expect((error as ValidationError).issues).toEqual(issues);
     });
 
     it("should return result object with issues when throwOnError is false", async () => {
@@ -489,13 +508,12 @@ describe("standardValidateSync", () => {
 
       const schema = createMockSchema(() => ({ issues }));
 
-      try {
-        standardValidateSync(schema, {}, { throwOnError: true });
-        expect.fail("Should have thrown ValidationError");
-      } catch (error) {
-        expect(error).toBeInstanceOf(ValidationError);
-        expect((error as ValidationError).issues).toEqual(issues);
-      }
+      const error = captureThrownError(() =>
+        standardValidateSync(schema, {}, { throwOnError: true }),
+      );
+
+      expect(error).toBeInstanceOf(ValidationError);
+      expect((error as ValidationError).issues).toEqual(issues);
     });
 
     it("should return result object with issues when throwOnError is false", () => {

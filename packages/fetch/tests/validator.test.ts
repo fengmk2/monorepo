@@ -32,6 +32,16 @@ function createMockSchemaFunction<T>(
   return fn as unknown as StandardSchemaV1<unknown, T>;
 }
 
+async function captureRejectedError(run: () => Promise<unknown>): Promise<unknown> {
+  try {
+    await run();
+  } catch (error) {
+    return error;
+  }
+
+  throw new Error("Expected promise to reject");
+}
+
 describe("isStandardSchema", () => {
   it("should return true for valid Standard Schema objects", () => {
     const schema = createMockSchema(() => ({ value: "test" }));
@@ -169,13 +179,12 @@ describe("standardValidate", () => {
       ];
       const schema = createMockSchema(() => ({ issues }));
 
-      try {
-        await standardValidate(schema, {}, { throwOnError: true });
-        expect.fail("Should have thrown ValidationError");
-      } catch (error) {
-        expect(error).toBeInstanceOf(ValidationError);
-        expect((error as ValidationError).issues).toEqual(issues);
-      }
+      const error = await captureRejectedError(() =>
+        standardValidate(schema, {}, { throwOnError: true }),
+      );
+
+      expect(error).toBeInstanceOf(ValidationError);
+      expect((error as ValidationError).issues).toEqual(issues);
     });
 
     it("should return result object with issues when validation fails and throwOnError is false", async () => {
