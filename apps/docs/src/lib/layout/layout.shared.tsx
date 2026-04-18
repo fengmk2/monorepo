@@ -6,11 +6,9 @@ import {
 } from "fumadocs-ui/layouts/home/navbar";
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import {
-  AppWindowIcon,
   BadgeCheckIcon,
   BotIcon,
   GlobeIcon,
-  LayoutTemplateIcon,
   LockIcon,
   PackageIcon,
   WebhookIcon,
@@ -75,13 +73,6 @@ export function homeLinks(): BaseLayoutProps["links"] {
     ...(baseOptions().links ?? []),
     // ── Mobile-only links ───────────────────────────────────────────
     {
-      text: "Templates",
-      url: "/docs/local-ts",
-      icon: <LayoutTemplateIcon className="size-4" />,
-      active: "nested-url",
-      on: "menu",
-    },
-    {
       text: "Packages",
       url: "/docs/packages/fetch",
       icon: <PackageIcon className="size-4" />,
@@ -89,24 +80,6 @@ export function homeLinks(): BaseLayoutProps["links"] {
       on: "menu",
     },
     // ── Desktop-only animated menus ─────────────────────────────────
-    {
-      type: "custom",
-      on: "nav",
-      children: (
-        <NavbarMenu>
-          <NavbarMenuTrigger>Templates</NavbarMenuTrigger>
-          <NavbarMenuContent>
-            <NavbarMenuLink href="/docs/local-ts">
-              <NavbarMenuItemContent
-                description="Desktop app template built on Tauri + Vite."
-                icon={<AppWindowIcon className="size-4" />}
-                text="Local.ts"
-              />
-            </NavbarMenuLink>
-          </NavbarMenuContent>
-        </NavbarMenu>
-      ),
-    },
     {
       type: "custom",
       on: "nav",

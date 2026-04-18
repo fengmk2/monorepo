@@ -1,4 +1,4 @@
 {
   "title": "Docs",
-  "pages": ["getting-started", "local-ts", "---Packages---", "packages"]
+  "pages": ["getting-started", "---Packages---", "packages"]
 }

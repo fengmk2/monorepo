@@ -19,10 +19,6 @@ interface FooterColumn {
 
 const footerColumns: FooterColumn[] = [
   {
-    heading: "Templates",
-    links: [{ label: "Local.ts", href: "/docs/local-ts" }],
-  },
-  {
     heading: "Packages",
     links: [
       { label: "fetch", href: "/docs/packages/fetch" },
@@ -80,7 +76,7 @@ export function FooterSection(): ReactNode {
         <FadeIn delay={0} duration={0.5} y={10}>
           <nav
             aria-label="Footer navigation"
-            className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-4 sm:gap-x-10 sm:gap-y-8"
+            className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 sm:gap-x-10 sm:gap-y-8"
           >
             {footerColumns.map((column) => (
               <FooterColumnGroup

@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as LocalTsRouteImport } from './routes/local-ts'
 import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
 import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
 import { Route as MarketingRouteRouteImport } from './routes/_marketing/route'
@@ -22,11 +21,6 @@ import { Route as ApiSearchRouteImport } from './routes/api/search'
 import { Route as OgDocsSplatRouteImport } from './routes/og/docs/$'
 import { Route as LlmsDotmdxDocsSplatRouteImport } from './routes/llms[.]mdx.docs.$'
 
-const LocalTsRoute = LocalTsRouteImport.update({
-  id: '/local-ts',
-  path: '/local-ts',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LlmsDottxtRoute = LlmsDottxtRouteImport.update({
   id: '/llms.txt',
   path: '/llms.txt',
@@ -86,7 +80,6 @@ export interface FileRoutesByFullPath {
   '/': typeof MarketingIndexRoute
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/llms.txt': typeof LlmsDottxtRoute
-  '/local-ts': typeof LocalTsRoute
   '/api/search': typeof ApiSearchRoute
   '/docs/$': typeof DocsSplatRoute
   '/packages/fetch': typeof PackagesFetchRoute
@@ -98,7 +91,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/llms.txt': typeof LlmsDottxtRoute
-  '/local-ts': typeof LocalTsRoute
   '/api/search': typeof ApiSearchRoute
   '/docs/$': typeof DocsSplatRoute
   '/packages/fetch': typeof PackagesFetchRoute
@@ -113,7 +105,6 @@ export interface FileRoutesById {
   '/_marketing': typeof MarketingRouteRouteWithChildren
   '/llms-full.txt': typeof LlmsFullDottxtRoute
   '/llms.txt': typeof LlmsDottxtRoute
-  '/local-ts': typeof LocalTsRoute
   '/api/search': typeof ApiSearchRoute
   '/docs/$': typeof DocsSplatRoute
   '/packages/fetch': typeof PackagesFetchRoute
@@ -129,7 +120,6 @@ export interface FileRouteTypes {
     | '/'
     | '/llms-full.txt'
     | '/llms.txt'
-    | '/local-ts'
     | '/api/search'
     | '/docs/$'
     | '/packages/fetch'
@@ -141,7 +131,6 @@ export interface FileRouteTypes {
   to:
     | '/llms-full.txt'
     | '/llms.txt'
-    | '/local-ts'
     | '/api/search'
     | '/docs/$'
     | '/packages/fetch'
@@ -155,7 +144,6 @@ export interface FileRouteTypes {
     | '/_marketing'
     | '/llms-full.txt'
     | '/llms.txt'
-    | '/local-ts'
     | '/api/search'
     | '/docs/$'
     | '/packages/fetch'
@@ -170,7 +158,6 @@ export interface RootRouteChildren {
   MarketingRouteRoute: typeof MarketingRouteRouteWithChildren
   LlmsFullDottxtRoute: typeof LlmsFullDottxtRoute
   LlmsDottxtRoute: typeof LlmsDottxtRoute
-  LocalTsRoute: typeof LocalTsRoute
   ApiSearchRoute: typeof ApiSearchRoute
   DocsSplatRoute: typeof DocsSplatRoute
   PackagesFetchRoute: typeof PackagesFetchRoute
@@ -182,13 +169,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/local-ts': {
-      id: '/local-ts'
-      path: '/local-ts'
-      fullPath: '/local-ts'
-      preLoaderRoute: typeof LocalTsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/llms.txt': {
       id: '/llms.txt'
       path: '/llms.txt'
@@ -285,7 +265,6 @@ const rootRouteChildren: RootRouteChildren = {
   MarketingRouteRoute: MarketingRouteRouteWithChildren,
   LlmsFullDottxtRoute: LlmsFullDottxtRoute,
   LlmsDottxtRoute: LlmsDottxtRoute,
-  LocalTsRoute: LocalTsRoute,
   ApiSearchRoute: ApiSearchRoute,
   DocsSplatRoute: DocsSplatRoute,
   PackagesFetchRoute: PackagesFetchRoute,
