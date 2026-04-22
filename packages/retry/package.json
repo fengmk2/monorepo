@@ -38,6 +38,7 @@
     "./error": "./dist/error.mjs",
     "./exponential-backoff": "./dist/exponential-backoff.mjs",
     "./fixed-delay": "./dist/fixed-delay.mjs",
+    "./types": "./dist/types.mjs",
     "./package.json": "./package.json"
   },
   "publishConfig": {
