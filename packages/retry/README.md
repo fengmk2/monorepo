@@ -11,7 +11,8 @@ npm install @zap-studio/retry
 ## Usage
 
 ```ts
-import { ExponentialBackoff, FixedDelay } from "@zap-studio/retry";
+import { FixedDelay } from "@zap-studio/retry/fixed-delay";
+import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
 
 const exponential = new ExponentialBackoff({
   maxAttempts: 5,
