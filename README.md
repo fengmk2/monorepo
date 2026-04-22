@@ -19,21 +19,10 @@ Documentation: [zapstudio.dev](https://www.zapstudio.dev)
 
 ## Agent Skills
 
-We publish skills with AI-agent workflows in mind.
+Skills are focused by workflow and package so AI agents can load only the relevant guidance.
 
-- Use the Vercel Skills CLI for manual installation.
-- We also ship `SKILL.md` files inside npm packages via `@tanstack/intent`, so skill guidance stays versioned with each release.
-
-Official documentation: [Vercel Skills](https://skills.sh/docs) and [TanStack Intent](https://tanstack.com/intent).
-
-Manual install with Vercel Skills:
+Install them with the Vercel Skills CLI:
 
 ```bash
 npx skills add zap-studio/monorepo
-```
-
-Install bundled skills from your installed dependencies with TanStack Intent:
-
-```bash
-npx @tanstack/intent install
 ```
