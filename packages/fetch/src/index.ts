@@ -121,7 +121,7 @@ export const api: ApiMethods = {
  * const user = await api.get("/users/1", UserSchema);
  *
  * // Or use $fetch directly
- * const response = await $fetch("/users", UserSchema, { method: "POST", body: { name: "John" } });
+ * const response = await $fetch("/users", UserSchema, { method: "POST", json: { name: "John" } });
  */
 export function createFetch(factoryOptions: Partial<FetchDefaults> = {}): {
   $fetch: $Fetch;
