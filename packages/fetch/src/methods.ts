@@ -9,7 +9,7 @@ export function createMethod<TFetch extends $Fetch>(fetchFn: TFetch, method: str
   function methodFetch<TSchema extends StandardSchemaV1>(
     resource: RequestInfo,
     schema: TSchema,
-    options: Omit<ExtendedRequestInit, "method"> & {
+    options: ExtendedRequestInit & {
       throwOnValidationError: false;
     },
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
@@ -17,20 +17,17 @@ export function createMethod<TFetch extends $Fetch>(fetchFn: TFetch, method: str
   function methodFetch<TSchema extends StandardSchemaV1>(
     resource: RequestInfo,
     schema: TSchema,
-    options?: Omit<ExtendedRequestInit, "method"> & {
+    options?: ExtendedRequestInit & {
       throwOnValidationError?: true | undefined;
     },
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
-  function methodFetch(
-    resource: RequestInfo,
-    options?: Omit<ExtendedRequestInit, "method">,
-  ): Promise<Response>;
+  function methodFetch(resource: RequestInfo, options?: ExtendedRequestInit): Promise<Response>;
 
   function methodFetch(
     resource: RequestInfo,
-    schemaOrOptions?: StandardSchemaV1 | Omit<ExtendedRequestInit, "method">,
-    optionsOrUndefined?: Omit<ExtendedRequestInit, "method">,
+    schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
+    optionsOrUndefined?: ExtendedRequestInit,
   ): Promise<unknown> {
     if (isStandardSchema(schemaOrOptions)) {
       if (optionsOrUndefined?.throwOnValidationError === false) {
