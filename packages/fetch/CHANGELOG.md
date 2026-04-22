@@ -22,6 +22,7 @@
 ### Fixed
 
 - Fixed absolute URL handling when no `baseURL` is configured.
+- `resolveSearchParams` keeps a trailing `#` when the input URL had an empty fragment (for example `.../path#`), matching typical `URL` serialization instead of dropping the delimiter.
 
 ### Tests
 

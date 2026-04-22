@@ -88,4 +88,16 @@ describe("resolveRequestUrl", () => {
       resolveRequestUrl("users#team", { ...DEFAULTS, baseURL: "https://api.example.com" }, {}),
     ).toBe("https://api.example.com/users#team");
   });
+
+  it("preserves an explicit empty fragment", () => {
+    expect(resolveRequestUrl("https://api.example.com/users#", DEFAULTS, undefined)).toBe(
+      "https://api.example.com/users#",
+    );
+  });
+
+  it("preserves an explicit empty fragment when adding search params", () => {
+    expect(resolveRequestUrl("https://api.example.com/users#", DEFAULTS, { q: "zap" })).toBe(
+      "https://api.example.com/users?q=zap#",
+    );
+  });
 });
