@@ -10,6 +10,7 @@
  * @param base - Base/default headers.
  * @param override - Request-level override headers.
  * @returns A merged `Headers` object, or `undefined` when both inputs are empty.
+ * @throws {TypeError} When either header input contains invalid header names or values.
  *
  * @example
  * const headers = mergeHeaders(

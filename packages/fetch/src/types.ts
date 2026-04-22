@@ -99,6 +99,13 @@ export interface $Fetch {
    * @param schema - Standard Schema for response validation
    * @param options - Extended request options with throwOnValidationError: false
    * @returns Standard Schema Result object with value or issues
+   * @throws {FetchError} When `throwOnFetchError` is `true` and the response is not ok.
+   * @throws {TypeError} When request construction, headers, search params, or native
+   *   `fetch` fail with a `TypeError`.
+   * @throws {DOMException} When the native `fetch` rejects an aborted request as an
+   *   `AbortError` DOMException.
+   * @throws {SyntaxError} When `response.json()` cannot parse the response body.
+   * @throws Any error thrown or rejected by the provided Standard Schema validator.
    */
   <TSchema extends StandardSchemaV1>(
     resource: RequestInfo,
@@ -112,6 +119,14 @@ export interface $Fetch {
    * @param schema - Standard Schema for response validation
    * @param options - Extended request options
    * @returns Validated data of type TSchema
+   * @throws {FetchError} When `throwOnFetchError` is `true` and the response is not ok.
+   * @throws {ValidationError} When validation returns issues.
+   * @throws {TypeError} When request construction, headers, search params, or native
+   *   `fetch` fail with a `TypeError`.
+   * @throws {DOMException} When the native `fetch` rejects an aborted request as an
+   *   `AbortError` DOMException.
+   * @throws {SyntaxError} When `response.json()` cannot parse the response body.
+   * @throws Any error thrown or rejected by the provided Standard Schema validator.
    */
   <TSchema extends StandardSchemaV1>(
     resource: RequestInfo,
@@ -126,6 +141,11 @@ export interface $Fetch {
    * @param resource - URL or path to fetch
    * @param options - Extended request options
    * @returns Raw Response object
+   * @throws {FetchError} When `throwOnFetchError` is `true` and the response is not ok.
+   * @throws {TypeError} When request construction, headers, search params, or native
+   *   `fetch` fail with a `TypeError`.
+   * @throws {DOMException} When the native `fetch` rejects an aborted request as an
+   *   `AbortError` DOMException.
    */
   (resource: RequestInfo, options?: ExtendedRequestInit): Promise<Response>;
 }

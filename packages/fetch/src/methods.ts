@@ -17,6 +17,8 @@ import type { $Fetch, ExtendedRequestInit } from "./types.js";
  * @param fetchFn - Fetch function to wrap.
  * @param method - HTTP method to enforce.
  * @returns Method-bound fetch function.
+ * @throws Any error thrown or rejected by `fetchFn` when the returned method-bound
+ *   fetch function is called.
  *
  * @example
  * const get = createMethod($fetch, "GET");

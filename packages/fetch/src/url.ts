@@ -21,6 +21,10 @@ import type { ExtendedRequestInit, FetchDefaults } from "./types.js";
  *   { page: "3" },
  * );
  * // https://api.example.com/users?locale=en&page=3
+ *
+ * @throws {TypeError} When `baseURL` and `resourceUrl` cannot be resolved by
+ *   `URL`, or when default/per-request search params cannot be converted by
+ *   `URLSearchParams`.
  */
 export function resolveRequestUrl(
   resourceUrl: string,

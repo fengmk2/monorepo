@@ -25,6 +25,17 @@ import { resolveRequestUrl } from "./url.js";
  * @param options - Optional request options and package-specific flags.
  * @param defaults - Effective client defaults.
  * @returns Raw `Response` when no schema is provided; otherwise validated output.
+ * @throws {FetchError} When `throwOnFetchError` is `true` and the response is not ok.
+ * @throws {ValidationError} When a schema is provided, validation returns issues, and
+ *   `throwOnValidationError` is `true`.
+ * @throws {TypeError} When both `body` and `json` are provided, when request construction
+ *   fails, when headers/search params are invalid, or when the runtime `fetch` implementation
+ *   rejects network-level failures as `TypeError`.
+ * @throws {DOMException} When the runtime `fetch` implementation rejects an aborted request
+ *   as an `AbortError` DOMException.
+ * @throws {SyntaxError} When a schema is provided and `response.json()` cannot parse the
+ *   response body.
+ * @throws Any error thrown or rejected by the provided Standard Schema validator.
  */
 export async function fetchInternal(
   resource: RequestInfo,

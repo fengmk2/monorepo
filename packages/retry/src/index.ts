@@ -22,6 +22,7 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
    * Returns the retry decision for a failed attempt.
    *
    * @param input - Attempt context used to compute retry behavior.
+   * @throws Any error thrown by a concrete retry policy implementation.
    */
   public abstract next(input: RetryDecisionInput<TError, TData>): RetryDecision;
 
@@ -32,6 +33,7 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
    *
    * @param input - Exhaustion context.
    * @returns `RetryError` by default.
+   * @throws Any error thrown by an overriding policy implementation.
    */
   public onExhausted(input: RetryExhaustedInput<TError, TData>): RetryError {
     return new RetryError("Retry policy exhausted all attempts.", {
@@ -52,6 +54,11 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
    * @param execute - Async function to execute per attempt.
    * @param options - Optional runner settings.
    * @returns The successful execution value.
+   * @throws {RetryError} When retries are exhausted and `onExhausted` returns the
+   *   default terminal error. The last execution failure is available on
+   *   `RetryError.lastError`.
+   * @throws Any error thrown by `next`, by `onExhausted`, or by a custom `sleep`
+   *   function.
    */
   public async run<T>(
     execute: (attempt: number) => Promise<T>,
@@ -66,6 +73,9 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
    * @param execute - Async function to execute per attempt.
    * @param options - Runner settings.
    * @returns Success value or terminal result object based on option mode.
+   * @throws Any error thrown by `next`, by `onExhausted`, or by a custom `sleep`
+   *   function. When `throwOnExhausted` is `false`, exhaustion itself is returned
+   *   as `{ ok: false }` instead of thrown.
    *
    * @example
    * const result = await policy.run(doWork, { throwOnExhausted: false });

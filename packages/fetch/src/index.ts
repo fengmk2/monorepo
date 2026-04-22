@@ -25,8 +25,17 @@ import type { $Fetch, ApiMethods, ExtendedRequestInit, FetchDefaults } from "./t
  *
  * If no schema is provided, returns the raw `Response` object.
  *
- * @throws {FetchError} When `throwOnFetchError: true` and response is not ok
- * @throws {ValidationError} When `throwOnValidationError: true` and validation fails
+ * @throws {FetchError} When `throwOnFetchError` is `true` and the response is not ok.
+ * @throws {ValidationError} When a schema is provided, validation returns issues, and
+ *   `throwOnValidationError` is `true`.
+ * @throws {TypeError} When both `body` and `json` are provided, when request construction
+ *   fails, when headers/search params are invalid, or when the runtime `fetch` implementation
+ *   rejects network-level failures as `TypeError`.
+ * @throws {DOMException} When the runtime `fetch` implementation rejects an aborted request
+ *   as an `AbortError` DOMException.
+ * @throws {SyntaxError} When a schema is provided and `response.json()` cannot parse the
+ *   response body.
+ * @throws Any error thrown or rejected by the provided Standard Schema validator.
  *
  * @example
  * import { z } from "zod";
@@ -87,6 +96,8 @@ export async function $fetch(
  * These methods always require a schema for validation.
  * For raw responses without validation, use `$fetch` directly.
  *
+ * Each method has the same throw behavior as {@link $fetch}.
+ *
  * @example
  * import { z } from "zod";
  * import { api } from "@zap-studio/fetch";
@@ -115,6 +126,9 @@ export const api: ApiMethods = {
  *
  * Use this factory to create API clients with a base URL, default headers,
  * and other shared configuration. Each instance is independent.
+ *
+ * The returned `$fetch` and `api` methods have the same throw behavior as the
+ * top-level {@link $fetch} export.
  *
  * @example
  * import { z } from "zod";

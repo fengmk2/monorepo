@@ -26,6 +26,7 @@ export interface NormalizedRequest {
  * @param resource - Request URL/path or Request instance.
  * @param options - Optional request options.
  * @returns A normalized request structure for internal processing.
+ * @throws {TypeError} When cloning a `Request` fails or the merged headers are invalid.
  *
  * @example
  * const normalized = normalizeRequest("/users", { method: "GET" });
