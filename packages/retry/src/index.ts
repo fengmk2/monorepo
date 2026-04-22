@@ -1,3 +1,9 @@
+/**
+ * Retry runner base class and shared orchestration implementation.
+ *
+ * @module
+ */
+
 import { RetryError } from "./error.js";
 import type {
   RetryDecision,
@@ -12,8 +18,21 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
   TError,
   TData
 > {
+  /**
+   * Returns the retry decision for a failed attempt.
+   *
+   * @param input - Attempt context used to compute retry behavior.
+   */
   public abstract next(input: RetryDecisionInput<TError, TData>): RetryDecision;
 
+  /**
+   * Builds the terminal error thrown or returned when retries are exhausted.
+   *
+   * Override this when you need custom terminal error types.
+   *
+   * @param input - Exhaustion context.
+   * @returns `RetryError` by default.
+   */
   public onExhausted(input: RetryExhaustedInput<TError, TData>): RetryError {
     return new RetryError("Retry policy exhausted all attempts.", {
       attempts: input.attempts,
@@ -27,11 +46,31 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
     options: RetryRunOptions & { throwOnExhausted: false },
   ): Promise<RetryRunResult<T>>;
 
+  /**
+   * Runs retry orchestration and throws terminal error on exhaustion.
+   *
+   * @param execute - Async function to execute per attempt.
+   * @param options - Optional runner settings.
+   * @returns The successful execution value.
+   */
   public async run<T>(
     execute: (attempt: number) => Promise<T>,
     options?: RetryRunOptions & { throwOnExhausted?: true | undefined },
   ): Promise<T>;
 
+  /**
+   * Runs retry orchestration in non-throw mode.
+   *
+   * When `throwOnExhausted` is `false`, returns a discriminated result union.
+   *
+   * @param execute - Async function to execute per attempt.
+   * @param options - Runner settings.
+   * @returns Success value or terminal result object based on option mode.
+   *
+   * @example
+   * const result = await policy.run(doWork, { throwOnExhausted: false });
+   * if (!result.ok) console.error(result.error);
+   */
   public async run<T>(
     execute: (attempt: number) => Promise<T>,
     options: RetryRunOptions = {},
@@ -55,7 +94,10 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
         });
 
         if (!decision.shouldRetry) {
-          const terminalError = this.onExhausted({ attempts: attempt, error: lastError });
+          const terminalError = this.onExhausted({
+            attempts: attempt,
+            error: lastError,
+          });
           if (options.throwOnExhausted === false) {
             return {
               ok: false,
