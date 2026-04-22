@@ -10,6 +10,17 @@ import type { $Fetch, ExtendedRequestInit } from "./types.js";
 
 /**
  * Creates an HTTP method helper bound to a fetch function.
+ *
+ * The returned function mirrors `$Fetch` overloads but forces the provided
+ * HTTP method (`GET`, `POST`, etc.) into request options.
+ *
+ * @param fetchFn - Fetch function to wrap.
+ * @param method - HTTP method to enforce.
+ * @returns Method-bound fetch function.
+ *
+ * @example
+ * const get = createMethod($fetch, "GET");
+ * const user = await get("/users/1", UserSchema);
  */
 export function createMethod<TFetch extends $Fetch>(fetchFn: TFetch, method: string): $Fetch {
   function methodFetch<TSchema extends StandardSchemaV1>(

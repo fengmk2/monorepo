@@ -15,6 +15,16 @@ import { resolveRequestUrl } from "./url.js";
 
 /**
  * Internal fetch implementation used by both $fetch and createFetch.
+ *
+ * This function normalizes request input, resolves final URL + query params,
+ * executes `fetch`, optionally throws `FetchError`, and optionally validates
+ * JSON response payloads using Standard Schema.
+ *
+ * @param resource - Request URL, path, or Request object.
+ * @param schema - Optional Standard Schema for response validation.
+ * @param options - Optional request options and package-specific flags.
+ * @param defaults - Effective client defaults.
+ * @returns Raw `Response` when no schema is provided; otherwise validated output.
  */
 export async function fetchInternal(
   resource: RequestInfo,
@@ -49,6 +59,10 @@ export async function fetchInternal(
 
 /**
  * Normalizes request-level options into a final RequestInit payload and runtime flags.
+ *
+ * @param options - Request-level options.
+ * @param defaults - Client-level defaults.
+ * @returns Fully merged request init payload and effective runtime flags.
  */
 function prepareRequestInit(
   options: ExtendedRequestInit,

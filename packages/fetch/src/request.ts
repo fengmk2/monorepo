@@ -9,6 +9,10 @@ import type { ExtendedRequestInit } from "./types.js";
 
 /**
  * Normalized representation used by internal request execution.
+ *
+ * - `url`: resolved string URL from `RequestInfo`
+ * - `request`: original Request clone when input is a Request
+ * - `options`: normalized request options merged with Request headers
  */
 export interface NormalizedRequest {
   url: string;
@@ -18,6 +22,14 @@ export interface NormalizedRequest {
 
 /**
  * Normalizes RequestInfo and request-level options into a consistent internal shape.
+ *
+ * @param resource - Request URL/path or Request instance.
+ * @param options - Optional request options.
+ * @returns A normalized request structure for internal processing.
+ *
+ * @example
+ * const normalized = normalizeRequest("/users", { method: "GET" });
+ * console.log(normalized.url); // "/users"
  */
 export function normalizeRequest(
   resource: RequestInfo,

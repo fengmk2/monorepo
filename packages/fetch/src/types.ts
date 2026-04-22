@@ -41,11 +41,25 @@ type CustomRequestInit = {
 
 /**
  * Extended RequestInit type to include custom fetch options
+ *
+ * @example
+ * const options: ExtendedRequestInit = {
+ *   method: "POST",
+ *   json: { name: "Ada" },
+ *   throwOnFetchError: true,
+ * };
  */
 export type ExtendedRequestInit = (RequestBodyInit | JsonBodyInit) & CustomRequestInit;
 
 /**
  * Internal defaults used by fetchInternal
+ *
+ * @example
+ * const defaults: FetchDefaults = {
+ *   baseURL: "https://api.example.com",
+ *   throwOnFetchError: true,
+ *   throwOnValidationError: true,
+ * };
  */
 export interface FetchDefaults {
   /**
@@ -118,6 +132,9 @@ export interface $Fetch {
 
 /**
  * API HTTP method-specific fetch functions
+ *
+ * @example
+ * const user = await api.get("/users/1", UserSchema);
  */
 export interface ApiMethods {
   /**

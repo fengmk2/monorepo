@@ -8,6 +8,19 @@ import type { ExtendedRequestInit, FetchDefaults } from "./types.js";
 
 /**
  * Resolves final request URL by applying baseURL and layered search params.
+ *
+ * Search param precedence:
+ * 1. `defaults.searchParams`
+ * 2. search params already present in `resourceUrl`
+ * 3. per-request `searchParams`
+ *
+ * @example
+ * const finalUrl = resolveRequestUrl(
+ *   "/users?page=2",
+ *   { ...defaults, baseURL: "https://api.example.com", searchParams: { locale: "en" } },
+ *   { page: "3" },
+ * );
+ * // https://api.example.com/users?locale=en&page=3
  */
 export function resolveRequestUrl(
   resourceUrl: string,

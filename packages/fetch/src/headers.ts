@@ -6,6 +6,18 @@
 
 /**
  * Merges two HeadersInit objects, with the second one taking precedence.
+ *
+ * @param base - Base/default headers.
+ * @param override - Request-level override headers.
+ * @returns A merged `Headers` object, or `undefined` when both inputs are empty.
+ *
+ * @example
+ * const headers = mergeHeaders(
+ *   { Authorization: "Bearer token" },
+ *   { "X-Trace-Id": "abc" },
+ * );
+ *
+ * console.log(headers?.get("Authorization")); // Bearer token
  */
 export function mergeHeaders(base?: HeadersInit, override?: HeadersInit): Headers | undefined {
   if (!(base || override)) {
