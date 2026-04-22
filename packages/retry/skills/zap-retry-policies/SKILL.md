@@ -57,12 +57,13 @@ const exhausted: RetryExhaustedInput = {
 ### Use `policy.run()` to run policies
 
 ```ts
+import { $fetch } from "@zap-studio/fetch";
+
 const data = await policy.run(async () => {
-  const result = await fetch("https://api.example.com/users");
-  if (!result.ok) {
-    throw new Error(`HTTP ${result.status}`);
-  }
-  return await result.json();
+  const response = await $fetch("https://api.example.com/users", {
+    throwOnFetchError: true,
+  });
+  return await response.json();
 });
 ```
 

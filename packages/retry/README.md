@@ -13,6 +13,7 @@ npm install @zap-studio/retry
 ```ts
 import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
 import { FixedDelay } from "@zap-studio/retry/fixed-delay";
+import { $fetch } from "@zap-studio/fetch";
 
 const exponential = new ExponentialBackoff({
   maxAttempts: 5,
@@ -20,7 +21,12 @@ const exponential = new ExponentialBackoff({
   maxDelayMs: 2_000,
 });
 
-const data = await exponential.run(async () => fetch("https://api.example.com/users"));
+const data = await exponential.run(async () => {
+  const response = await $fetch("https://api.example.com/users", {
+    throwOnFetchError: true,
+  });
+  return await response.json();
+});
 ```
 
 Use `ExponentialBackoff` for transient network instability and shared upstream services.
