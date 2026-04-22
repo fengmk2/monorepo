@@ -134,10 +134,10 @@ export function createFetch(factoryOptions: CreateFetchOptions = {}): {
 } {
   const defaults: FetchDefaults = {
     baseURL: factoryOptions.baseURL ?? "",
-    throwOnFetchError: factoryOptions.throwOnFetchError ?? true,
-    throwOnValidationError: factoryOptions.throwOnValidationError ?? true,
     headers: factoryOptions.headers,
     searchParams: factoryOptions.searchParams,
+    throwOnFetchError: factoryOptions.throwOnFetchError ?? true,
+    throwOnValidationError: factoryOptions.throwOnValidationError ?? true,
   };
 
   async function customFetch<TSchema extends StandardSchemaV1>(
