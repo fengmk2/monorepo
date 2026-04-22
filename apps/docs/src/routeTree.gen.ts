@@ -13,8 +13,8 @@ import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
 import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
 import { Route as MarketingRouteRouteImport } from './routes/_marketing/route'
 import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
-import { Route as PackagesValidationRouteImport } from './routes/packages/validation'
 import { Route as PackagesWebhooksRouteImport } from './routes/packages/webhooks'
+import { Route as PackagesValidationRouteImport } from './routes/packages/validation'
 import { Route as PackagesRetryRouteImport } from './routes/packages/retry'
 import { Route as PackagesPermitRouteImport } from './routes/packages/permit'
 import { Route as PackagesFetchRouteImport } from './routes/packages/fetch'
@@ -42,14 +42,14 @@ const MarketingIndexRoute = MarketingIndexRouteImport.update({
   path: '/',
   getParentRoute: () => MarketingRouteRoute,
 } as any)
-const PackagesValidationRoute = PackagesValidationRouteImport.update({
-  id: '/packages/validation',
-  path: '/packages/validation',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PackagesWebhooksRoute = PackagesWebhooksRouteImport.update({
   id: '/packages/webhooks',
   path: '/packages/webhooks',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PackagesValidationRoute = PackagesValidationRouteImport.update({
+  id: '/packages/validation',
+  path: '/packages/validation',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PackagesRetryRoute = PackagesRetryRouteImport.update({
@@ -223,18 +223,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketingIndexRouteImport
       parentRoute: typeof MarketingRouteRoute
     }
+    '/packages/webhooks': {
+      id: '/packages/webhooks'
+      path: '/packages/webhooks'
+      fullPath: '/packages/webhooks'
+      preLoaderRoute: typeof PackagesWebhooksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/packages/validation': {
       id: '/packages/validation'
       path: '/packages/validation'
       fullPath: '/packages/validation'
       preLoaderRoute: typeof PackagesValidationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/packages/permit': {
-      id: '/packages/permit'
-      path: '/packages/permit'
-      fullPath: '/packages/permit'
-      preLoaderRoute: typeof PackagesPermitRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/packages/retry': {
@@ -244,18 +244,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PackagesRetryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/packages/permit': {
+      id: '/packages/permit'
+      path: '/packages/permit'
+      fullPath: '/packages/permit'
+      preLoaderRoute: typeof PackagesPermitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/packages/fetch': {
       id: '/packages/fetch'
       path: '/packages/fetch'
       fullPath: '/packages/fetch'
       preLoaderRoute: typeof PackagesFetchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/packages/webhooks': {
-      id: '/packages/webhooks'
-      path: '/packages/webhooks'
-      fullPath: '/packages/webhooks'
-      preLoaderRoute: typeof PackagesWebhooksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/docs/$': {
