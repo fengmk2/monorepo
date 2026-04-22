@@ -35,6 +35,7 @@
   "types": "./dist/index.d.mts",
   "exports": {
     ".": "./dist/index.mjs",
+    "./error": "./dist/error.mjs",
     "./exponential-backoff": "./dist/exponential-backoff.mjs",
     "./fixed-delay": "./dist/fixed-delay.mjs",
     "./package.json": "./package.json"
