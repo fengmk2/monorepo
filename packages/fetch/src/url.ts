@@ -5,20 +5,37 @@ export function resolveRequestUrl(
   defaults: FetchDefaults,
   searchParams: ExtendedRequestInit["searchParams"] | undefined,
 ): string {
-  const isRelativeOutput = !defaults.baseURL && !isAbsoluteURL(resourceUrl);
-  const url = new URL(resourceUrl, ensureTrailingSlash(defaults.baseURL));
-  const urlSearchParams = new URLSearchParams(url.search);
+  const url = defaults.baseURL
+    ? new URL(resourceUrl, ensureTrailingSlash(defaults.baseURL)).toString()
+    : resourceUrl;
 
-  url.search = "";
-  mergeSearchParams(url.searchParams, defaults.searchParams);
-  mergeSearchParams(url.searchParams, urlSearchParams);
-  mergeSearchParams(url.searchParams, searchParams);
+  return resolveSearchParams(url, defaults.searchParams, searchParams);
+}
 
-  if (isRelativeOutput) {
-    return `${url.pathname}${url.search}${url.hash}`;
+function resolveSearchParams(
+  url: string,
+  defaultSearchParams: FetchDefaults["searchParams"] | undefined,
+  searchParams: ExtendedRequestInit["searchParams"] | undefined,
+): string {
+  const [urlWithoutHash = "", hash] = url.split("#", 2);
+  const [pathname = "", urlSearchParams] = urlWithoutHash.split("?", 2);
+  const resolvedSearchParams = new URLSearchParams();
+
+  mergeSearchParams(resolvedSearchParams, defaultSearchParams);
+  mergeSearchParams(resolvedSearchParams, urlSearchParams);
+  mergeSearchParams(resolvedSearchParams, searchParams);
+
+  const resolvedSearch = resolvedSearchParams.toString();
+
+  if (!resolvedSearch) {
+    return [pathname, hash].filter(Boolean).join("#");
   }
 
-  return url.toString();
+  return `${pathname}?${resolvedSearch}${hash ? `#${hash}` : ""}`;
+}
+
+function ensureTrailingSlash(url: string): string {
+  return url.endsWith("/") ? url : `${url}/`;
 }
 
 function mergeSearchParams(
@@ -28,12 +45,4 @@ function mergeSearchParams(
   for (const [key, value] of new URLSearchParams(source)) {
     target.set(key, value);
   }
-}
-
-function ensureTrailingSlash(url: string): string {
-  return url.endsWith("/") ? url : `${url}/`;
-}
-
-function isAbsoluteURL(url: string): boolean {
-  return /^(?:https?:)?\/\//i.test(url);
 }
