@@ -10,7 +10,9 @@ library_version: "0.4.6"
 sources:
   - "zap-studio/monorepo:packages/fetch/README.md"
   - "zap-studio/monorepo:packages/fetch/src/index.ts"
-  - "zap-studio/monorepo:packages/fetch/src/utils.ts"
+  - "zap-studio/monorepo:packages/fetch/src/internal.ts"
+  - "zap-studio/monorepo:packages/fetch/src/request.ts"
+  - "zap-studio/monorepo:packages/fetch/src/url.ts"
 ---
 
 # @zap-studio/fetch — Typed HTTP Client
@@ -147,6 +149,6 @@ await api.post("/users", UserSchema, {
 
 Only plain object bodies are auto-JSON-stringified; other `BodyInit` forms keep their native encoding behavior.
 
-Source: zap-studio/monorepo:packages/fetch/src/utils.ts
+Source: zap-studio/monorepo:packages/fetch/src/internal.ts
 
 See also: zap-validation-standard-schema/SKILL.md — response validation result handling.
