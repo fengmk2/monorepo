@@ -47,21 +47,24 @@ import { createMethod, fetchInternal } from "./utils.js";
  * }
  */
 export async function $fetch<TSchema extends StandardSchemaV1>(
-  resource: string,
+  resource: RequestInfo,
   schema: TSchema,
   options: ExtendedRequestInit & { throwOnValidationError: false },
 ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
 export async function $fetch<TSchema extends StandardSchemaV1>(
-  resource: string,
+  resource: RequestInfo,
   schema: TSchema,
   options?: ExtendedRequestInit & { throwOnValidationError?: true | undefined },
 ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
-export async function $fetch(resource: string, options?: ExtendedRequestInit): Promise<Response>;
+export async function $fetch(
+  resource: RequestInfo,
+  options?: ExtendedRequestInit,
+): Promise<Response>;
 
 export async function $fetch(
-  resource: string,
+  resource: RequestInfo,
   schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
   optionsOrUndefined?: ExtendedRequestInit,
 ): Promise<unknown> {
@@ -138,21 +141,26 @@ export function createFetch(factoryOptions: CreateFetchOptions = {}): {
   };
 
   async function customFetch<TSchema extends StandardSchemaV1>(
-    resource: string,
+    resource: RequestInfo,
     schema: TSchema,
     options: ExtendedRequestInit & { throwOnValidationError: false },
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
   async function customFetch<TSchema extends StandardSchemaV1>(
-    resource: string,
+    resource: RequestInfo,
     schema: TSchema,
-    options?: ExtendedRequestInit & { throwOnValidationError?: true | undefined },
+    options?: ExtendedRequestInit & {
+      throwOnValidationError?: true | undefined;
+    },
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
-  async function customFetch(resource: string, options?: ExtendedRequestInit): Promise<Response>;
+  async function customFetch(
+    resource: RequestInfo,
+    options?: ExtendedRequestInit,
+  ): Promise<Response>;
 
   async function customFetch(
-    resource: string,
+    resource: RequestInfo,
     schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
     optionsOrUndefined?: ExtendedRequestInit,
   ): Promise<unknown> {

@@ -202,7 +202,7 @@ function buildUrlWithMergedSearchParams(
  * Internal fetch implementation used by both $fetch and createFetch
  */
 export async function fetchInternal(
-  resource: string,
+  resource: RequestInfo,
   schema: StandardSchemaV1 | undefined,
   options: ExtendedRequestInit | undefined,
   defaults: FetchDefaults,
@@ -277,13 +277,15 @@ export async function fetchInternal(
  */
 export function createMethod<TFetch extends $Fetch>(fetchFn: TFetch, method: string): $Fetch {
   function methodFetch<TSchema extends StandardSchemaV1>(
-    resource: string,
+    resource: RequestInfo,
     schema: TSchema,
-    options: Omit<ExtendedRequestInit, "method"> & { throwOnValidationError: false },
+    options: Omit<ExtendedRequestInit, "method"> & {
+      throwOnValidationError: false;
+    },
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
   function methodFetch<TSchema extends StandardSchemaV1>(
-    resource: string,
+    resource: RequestInfo,
     schema: TSchema,
     options?: Omit<ExtendedRequestInit, "method"> & {
       throwOnValidationError?: true | undefined;
@@ -291,12 +293,12 @@ export function createMethod<TFetch extends $Fetch>(fetchFn: TFetch, method: str
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
   function methodFetch(
-    resource: string,
+    resource: RequestInfo,
     options?: Omit<ExtendedRequestInit, "method">,
   ): Promise<Response>;
 
   function methodFetch(
-    resource: string,
+    resource: RequestInfo,
     schemaOrOptions?: StandardSchemaV1 | Omit<ExtendedRequestInit, "method">,
     optionsOrUndefined?: Omit<ExtendedRequestInit, "method">,
   ): Promise<unknown> {
