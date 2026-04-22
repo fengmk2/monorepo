@@ -627,7 +627,7 @@ describe("createMethod", () => {
           validate: (i: unknown) => ({ value: i }),
         },
       } satisfies StandardSchemaV1;
-      const badOptions = { method: "GET" } as Omit<ExtendedRequestInit<true>, "method">;
+      const badOptions = { method: "GET" } as Omit<ExtendedRequestInit, "method">;
       await del("/users/1", schema, badOptions);
       const call = (vi.mocked($fetchMock).mock.calls[0] ?? []) as unknown[];
       expect(call[2]).toMatchObject({ method: "DELETE" });

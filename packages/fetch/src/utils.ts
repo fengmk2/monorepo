@@ -279,13 +279,15 @@ export function createMethod<TFetch extends $Fetch>(fetchFn: TFetch, method: str
   function methodFetch<TSchema extends StandardSchemaV1>(
     resource: string,
     schema: TSchema,
-    options: Omit<ExtendedRequestInit<false>, "method">,
+    options: Omit<ExtendedRequestInit, "method"> & { throwOnValidationError: false },
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
   function methodFetch<TSchema extends StandardSchemaV1>(
     resource: string,
     schema: TSchema,
-    options?: Omit<ExtendedRequestInit<true | undefined>, "method">,
+    options?: Omit<ExtendedRequestInit, "method"> & {
+      throwOnValidationError?: true | undefined;
+    },
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
   function methodFetch(

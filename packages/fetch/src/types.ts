@@ -9,29 +9,9 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
 export type SearchParams = URLSearchParams | Record<string, string> | string | [string, string][];
 
 /**
- * JSON-serializable value used for request bodies.
+ * Extended RequestInit type to include custom fetch options
  */
-export type JsonValue =
-  | string
-  | number
-  | boolean
-  | null
-  | JsonValue[]
-  | { [key: string]: JsonValue };
-
-/**
- * Request body type accepted by the fetch wrapper.
- */
-export type RequestBody = BodyInit | JsonValue;
-
-/**
- * Base extended request options without throwOnValidationError
- */
-type BaseExtendedRequestInit = Omit<RequestInit, "body"> & {
-  /**
-   * Request body - can be a BodyInit value or an object that will be JSON-stringified
-   */
-  body?: RequestBody | undefined;
+export type ExtendedRequestInit = RequestInit & {
   /**
    * Per-request query/search params
    * @default undefined
@@ -42,19 +22,11 @@ type BaseExtendedRequestInit = Omit<RequestInit, "body"> & {
    * @default true
    */
   throwOnFetchError?: boolean | undefined;
-};
-
-/**
- * Extended RequestInit type to include custom fetch options
- */
-export type ExtendedRequestInit<
-  TThrowOnValidationError extends boolean | undefined = boolean | undefined,
-> = BaseExtendedRequestInit & {
   /**
    * Whether to throw a ValidationError on validation errors
    * @default true
    */
-  throwOnValidationError?: TThrowOnValidationError | undefined;
+  throwOnValidationError?: boolean | undefined;
 };
 
 /**
@@ -105,9 +77,9 @@ export interface $Fetch {
    * @returns Standard Schema Result object with value or issues
    */
   <TSchema extends StandardSchemaV1>(
-    resource: string,
+    resource: RequestInfo,
     schema: TSchema,
-    options: ExtendedRequestInit<false>,
+    options: ExtendedRequestInit & { throwOnValidationError: false },
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
   /**
@@ -118,9 +90,9 @@ export interface $Fetch {
    * @returns Validated data of type TSchema
    */
   <TSchema extends StandardSchemaV1>(
-    resource: string,
+    resource: RequestInfo,
     schema: TSchema,
-    options?: ExtendedRequestInit<true | undefined>,
+    options?: ExtendedRequestInit & { throwOnValidationError?: true | undefined },
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
   /**
@@ -129,7 +101,7 @@ export interface $Fetch {
    * @param options - Extended request options
    * @returns Raw Response object
    */
-  (resource: string, options?: ExtendedRequestInit): Promise<Response>;
+  (resource: RequestInfo, options?: ExtendedRequestInit): Promise<Response>;
 }
 
 /**

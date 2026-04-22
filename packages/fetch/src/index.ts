@@ -49,13 +49,13 @@ import { createMethod, fetchInternal } from "./utils.js";
 export async function $fetch<TSchema extends StandardSchemaV1>(
   resource: string,
   schema: TSchema,
-  options: ExtendedRequestInit<false>,
+  options: ExtendedRequestInit & { throwOnValidationError: false },
 ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
 export async function $fetch<TSchema extends StandardSchemaV1>(
   resource: string,
   schema: TSchema,
-  options?: ExtendedRequestInit<true | undefined>,
+  options?: ExtendedRequestInit & { throwOnValidationError?: true | undefined },
 ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
 export async function $fetch(resource: string, options?: ExtendedRequestInit): Promise<Response>;
@@ -140,13 +140,13 @@ export function createFetch(factoryOptions: CreateFetchOptions = {}): {
   async function customFetch<TSchema extends StandardSchemaV1>(
     resource: string,
     schema: TSchema,
-    options: ExtendedRequestInit<false>,
+    options: ExtendedRequestInit & { throwOnValidationError: false },
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
   async function customFetch<TSchema extends StandardSchemaV1>(
     resource: string,
     schema: TSchema,
-    options?: ExtendedRequestInit<true | undefined>,
+    options?: ExtendedRequestInit & { throwOnValidationError?: true | undefined },
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
   async function customFetch(resource: string, options?: ExtendedRequestInit): Promise<Response>;
