@@ -261,7 +261,7 @@ describe("$fetch", () => {
       expect(calledHeaders.get("X-Custom-Header")).toBe("custom-value");
     });
 
-    it("should auto-set Content-Type to application/json when schema and body are provided", async () => {
+    it("should auto-set Content-Type to application/json when schema and json are provided", async () => {
       const userData = { id: 1, name: "John" };
       const mockResponse = new Response(JSON.stringify(userData), {
         status: 200,
@@ -270,7 +270,7 @@ describe("$fetch", () => {
 
       await $fetch("https://api.example.com/user", UserSchema, {
         method: "POST",
-        body: { name: "New User" },
+        json: { name: "New User" },
       });
 
       const calledHeaders = fetchMock.mock.calls[0]?.[1]?.headers as Headers;
@@ -286,7 +286,7 @@ describe("$fetch", () => {
 
       await $fetch("https://api.example.com/user", UserSchema, {
         method: "POST",
-        body: { name: "New User" },
+        json: { name: "New User" },
         headers: {
           "Content-Type": "application/json; charset=utf-8",
         },
@@ -303,7 +303,7 @@ describe("$fetch", () => {
       name: string(),
     });
 
-    it("should auto-stringify body when schema is provided", async () => {
+    it("should stringify json when schema is provided", async () => {
       const userData = { id: 1, name: "John" };
       const mockResponse = new Response(JSON.stringify(userData), {
         status: 200,
@@ -313,14 +313,14 @@ describe("$fetch", () => {
       const bodyData = { name: "New User", email: "user@example.com" };
       await $fetch("https://api.example.com/user", UserSchema, {
         method: "POST",
-        body: bodyData,
+        json: bodyData,
       });
 
       const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
       expect(calledBody).toBe(JSON.stringify(bodyData));
     });
 
-    it("should auto-stringify plain object body when no schema is provided", async () => {
+    it("should stringify plain object json when no schema is provided", async () => {
       const mockResponse = new Response(JSON.stringify({ success: true }), {
         status: 200,
       });
@@ -329,7 +329,7 @@ describe("$fetch", () => {
       const bodyData = { name: "New User", email: "user@example.com" };
       await $fetch("https://api.example.com/user", {
         method: "POST",
-        body: bodyData,
+        json: bodyData,
       });
 
       const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
@@ -338,7 +338,7 @@ describe("$fetch", () => {
       expect(calledHeaders.get("Content-Type")).toBe("application/json");
     });
 
-    it("should auto-stringify array body when no schema is provided", async () => {
+    it("should stringify array json when no schema is provided", async () => {
       const mockResponse = new Response(JSON.stringify({ success: true }), {
         status: 200,
       });
@@ -347,7 +347,7 @@ describe("$fetch", () => {
       const bodyData = [{ token_id: "token_123" }];
       await $fetch("https://api.example.com/user", {
         method: "POST",
-        body: bodyData,
+        json: bodyData,
       });
 
       const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
@@ -502,7 +502,7 @@ describe("createFetch", () => {
       );
     });
 
-    it("should not modify protocol-relative URLs", async () => {
+    it("should resolve protocol-relative URLs with the base protocol", async () => {
       const mockResponse = new Response(JSON.stringify({ data: "test" }), {
         status: 200,
       });
@@ -514,7 +514,10 @@ describe("createFetch", () => {
 
       await customFetch("//other-api.example.com/users");
 
-      expect(fetchMock).toHaveBeenCalledWith("//other-api.example.com/users", expect.any(Object));
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://other-api.example.com/users",
+        expect.any(Object),
+      );
     });
 
     it("should work without baseURL", async () => {
@@ -892,7 +895,7 @@ describe("api convenience methods", () => {
       expect(result).toEqual(userData);
     });
 
-    it("should handle request body", async () => {
+    it("should handle json request bodies", async () => {
       const userData = { id: 1, name: "John" };
       const mockResponse = new Response(JSON.stringify(userData), {
         status: 201,
@@ -901,7 +904,7 @@ describe("api convenience methods", () => {
 
       const bodyData = { name: "John" };
       await api.post("https://api.example.com/users", UserSchema, {
-        body: bodyData,
+        json: bodyData,
       });
 
       const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
@@ -960,7 +963,7 @@ describe("api convenience methods", () => {
       expect(result).toEqual(userData);
     });
 
-    it("should handle request body", async () => {
+    it("should handle json request bodies", async () => {
       const userData = { id: 1, name: "John Updated" };
       const mockResponse = new Response(JSON.stringify(userData), {
         status: 200,
@@ -969,7 +972,7 @@ describe("api convenience methods", () => {
 
       const bodyData = { name: "John Updated" };
       await api.put("https://api.example.com/users/1", UserSchema, {
-        body: bodyData,
+        json: bodyData,
       });
 
       const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
@@ -1028,7 +1031,7 @@ describe("api convenience methods", () => {
       expect(result).toEqual(userData);
     });
 
-    it("should handle request body", async () => {
+    it("should handle json request bodies", async () => {
       const userData = { id: 1, name: "John Patched" };
       const mockResponse = new Response(JSON.stringify(userData), {
         status: 200,
@@ -1037,7 +1040,7 @@ describe("api convenience methods", () => {
 
       const bodyData = { name: "John Patched" };
       await api.patch("https://api.example.com/users/1", UserSchema, {
-        body: bodyData,
+        json: bodyData,
       });
 
       const calledBody = fetchMock.mock.calls[0]?.[1]?.body;
