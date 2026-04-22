@@ -51,3 +51,22 @@ const result = await policy.run(async (attempt) => {
 ## Failure Flow
 
 When `next(...)` returns `shouldRetry: false`, `run(...)` throws the error returned by `onExhausted(...)`.
+
+## Handling Terminal Errors
+
+```ts
+import { RetryError } from "@zap-studio/retry/error";
+
+try {
+  const result = await policy.run(async () => {
+    return await doWork();
+  });
+  console.log(result);
+} catch (error) {
+  if (error instanceof RetryError) {
+    console.error("Exhausted after attempts:", error.attempts);
+  } else {
+    throw error;
+  }
+}
+```

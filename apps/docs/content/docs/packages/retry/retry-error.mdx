@@ -35,6 +35,23 @@ const policy = new ExponentialBackoff({
 
 When retries are exhausted, `policy.run(...)` throws the value returned by `onExhausted(...)`.
 
+## Catching RetryError
+
+```ts
+try {
+  await policy.run(async () => {
+    return await doWork();
+  });
+} catch (error) {
+  if (error instanceof RetryError) {
+    console.error("Attempts:", error.attempts);
+    console.error("Last error:", error.lastError);
+  } else {
+    throw error;
+  }
+}
+```
+
 ## Custom Terminal Errors
 
 You can override `onExhausted(...)` in a custom policy to throw your own error type while keeping the same retry orchestration flow.

@@ -29,8 +29,36 @@ const data = await exponential.run(async () => {
 });
 ```
 
+## Handling Errors
+
+`run(...)` throws when retries are exhausted.
+
+By default, policies extending `BaseRetryPolicy` throw `RetryError`.
+
+```ts
+import { RetryError } from "@zap-studio/retry/error";
+
+try {
+  const data = await exponential.run(async () => {
+    const response = await $fetch("https://api.example.com/users", {
+      throwOnFetchError: true,
+    });
+    return await response.json();
+  });
+  console.log(data);
+} catch (error) {
+  if (error instanceof RetryError) {
+    console.error("Retries exhausted:", error.attempts);
+    console.error("Last error:", error.lastError);
+  } else {
+    throw error;
+  }
+}
+```
+
+## Choosing The Right Policy
+
 Use `ExponentialBackoff` for transient network instability and shared upstream services.
-Use `FixedDelay` for stable, predictable retry intervals in controlled environments.
 
 ```ts
 const unstableNetworkPolicy = new ExponentialBackoff({
@@ -38,7 +66,11 @@ const unstableNetworkPolicy = new ExponentialBackoff({
   baseDelayMs: 100,
   maxDelayMs: 2_000,
 });
+```
 
+Use `FixedDelay` for stable, predictable retry intervals in controlled environments.
+
+```ts
 const predictableIntervalPolicy = new FixedDelay({
   maxAttempts: 4,
   delayMs: 300,

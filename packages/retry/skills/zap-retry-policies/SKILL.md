@@ -67,6 +67,29 @@ const data = await policy.run(async () => {
 });
 ```
 
+### Handle exhausted retries with `RetryError`
+
+```ts
+import { RetryError } from "@zap-studio/retry/error";
+
+try {
+  const data = await policy.run(async () => {
+    const response = await $fetch("https://api.example.com/users", {
+      throwOnFetchError: true,
+    });
+    return await response.json();
+  });
+  console.log(data);
+} catch (error) {
+  if (error instanceof RetryError) {
+    console.error(error.attempts);
+    console.error(error.lastError);
+  } else {
+    throw error;
+  }
+}
+```
+
 ### Choose exponential backoff for unstable networks
 
 ```ts
