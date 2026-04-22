@@ -1,8 +1,9 @@
 import { isStandardSchema, type StandardSchemaV1 } from "@zap-studio/validation";
 
 import { GLOBAL_DEFAULTS } from "./constants.js";
+import { fetchInternal } from "./internal.js";
+import { createMethod } from "./methods.js";
 import type { $Fetch, ApiMethods, ExtendedRequestInit, FetchDefaults } from "./types.js";
-import { createMethod, fetchInternal } from "./utils.js";
 
 /**
  * Type-safe fetch wrapper with Standard Schema validation.
