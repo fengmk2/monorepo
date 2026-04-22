@@ -4,7 +4,21 @@
  * @module
  */
 
-import type { RetryError } from "./error";
+import type { RetryError } from "./error.js";
+
+/**
+ * Retry policy contract used by `BaseRetryPolicy`.
+ *
+ * @example
+ * const policy: RetryPolicy = {
+ *   next: ({ attempt }) => ({ shouldRetry: attempt < 3, delayMs: 100 }),
+ *   onExhausted: ({ attempts }) => new RetryError("done", { attempts }),
+ * };
+ */
+export interface RetryPolicy<TError = unknown, TData = unknown> {
+  next(input: RetryDecisionInput<TError, TData>): RetryDecision;
+  onExhausted(input: RetryExhaustedInput<TError, TData>): RetryError;
+}
 
 /**
  * Decision returned by a retry policy for a specific attempt.
@@ -32,20 +46,6 @@ export interface RetryExhaustedInput<TError = unknown, TData = unknown> {
   readonly attempts: number;
   readonly error?: TError;
   readonly data?: TData;
-}
-
-/**
- * Retry policy contract used by `BaseRetryPolicy`.
- *
- * @example
- * const policy: RetryPolicy = {
- *   next: ({ attempt }) => ({ shouldRetry: attempt < 3, delayMs: 100 }),
- *   onExhausted: ({ attempts }) => new RetryError("done", { attempts }),
- * };
- */
-export interface RetryPolicy<TError = unknown, TData = unknown> {
-  next(input: RetryDecisionInput<TError, TData>): RetryDecision;
-  onExhausted(input: RetryExhaustedInput<TError, TData>): RetryError;
 }
 
 /**
