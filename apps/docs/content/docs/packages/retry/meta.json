@@ -4,10 +4,12 @@
   "root": true,
   "pages": [
     "index",
-    "types",
+    "getting-started",
     "fixed-delay",
     "exponential-backoff",
+    "running-policies",
+    "custom-policies",
     "retry-error",
-    "running-policies"
+    "types"
   ]
 }

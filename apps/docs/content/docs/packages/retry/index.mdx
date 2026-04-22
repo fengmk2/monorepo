@@ -3,8 +3,6 @@ title: Overview
 description: A composable retry package with policy classes, a built-in runner, and structured terminal errors.
 ---
 
-import { Tab, Tabs } from "fumadocs-ui/components/tabs";
-
 `retry` gives you reusable retry policies and a built-in runner so you can add resilient retries without rewriting orchestration loops.
 
 ## Why retry?
@@ -19,78 +17,21 @@ Most retry implementations end up duplicating the same logic:
 
 `@zap-studio/retry` centralizes that flow in policy classes like `ExponentialBackoff` and `FixedDelay`.
 
+## What You Get
+
+- **Built-in policies** with fixed and exponential delay strategies.
+- **A shared runner** via `BaseRetryPolicy.run(...)`.
+- **Structured terminal errors** through `RetryError`.
+- **Non-throw mode** for callers that prefer result objects.
+- **Custom policy contracts** when the built-in policies are not enough.
+
 ## Core Concepts
 
-- **Policy** decides _if_ and _when_ to retry (`next`)
-- **Runner** executes retries (`policy.run(...)`)
-- **Terminal error** is shaped consistently (`onExhausted` + `RetryError`)
+- **Policy** decides _if_ and _when_ to retry with `next(...)`.
+- **Runner** executes attempts, catches failures, sleeps, and stops.
+- **Terminal error** is shaped by `onExhausted(...)`.
 
-## Installation
+## Built-in Policies
 
-<Tabs items={["npm", "yarn", "pnpm", "bun", "deno"]}>
-  <Tab value="npm">
-
-```bash
-npm install @zap-studio/retry
-```
-
-  </Tab>
-  <Tab value="yarn">
-
-```bash
-yarn add @zap-studio/retry
-```
-
-  </Tab>
-  <Tab value="pnpm">
-
-```bash
-pnpm add @zap-studio/retry
-```
-
-  </Tab>
-  <Tab value="bun">
-
-```bash
-bun add @zap-studio/retry
-```
-
-  </Tab>
-  <Tab value="deno">
-
-```bash
-deno add jsr:@zap-studio/retry
-```
-
-  </Tab>
-</Tabs>
-
-## Quick Start
-
-```ts
-import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
-import { $fetch } from "@zap-studio/fetch";
-
-const policy = new ExponentialBackoff({
-  maxAttempts: 5,
-  baseDelayMs: 100,
-  maxDelayMs: 2_000,
-});
-
-const result = await policy.run(async () => {
-  const response = await $fetch("https://api.example.com/users", {
-    throwOnFetchError: true,
-  });
-  return await response.json();
-});
-```
-
-By default, exhaustion throws `RetryError`. Use `run(..., { throwOnExhausted: false })` if you prefer result-based control flow.
-
-## What to Read Next
-
-- **Types** for generic contracts and extension points
-- **FixedDelay** for constant retry intervals
-- **ExponentialBackoff** for scalable backoff behavior
-- **RetryError** for terminal failure handling
-- **Running Policies** for orchestration options
+- Use **FixedDelay** when every retry should wait the same amount of time.
+- Use **ExponentialBackoff** when retries target shared services or transient network failures.

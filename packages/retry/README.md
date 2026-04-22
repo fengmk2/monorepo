@@ -98,42 +98,44 @@ const predictableIntervalPolicy = new FixedDelay({
 });
 ```
 
-## Types
+## Custom Policies
 
-All policy types are generic:
+Extend `BaseRetryPolicy` when the built-in policies do not match your retry rules.
+You implement `next(...)`; the base class keeps the shared `run(...)` orchestration and
+default `RetryError` exhaustion behavior.
 
-- `RetryPolicy<TError, TData>`
-- `RetryDecisionInput<TError, TData>`
-- `RetryExhaustedInput<TError, TData>`
-- `RetryRunResult<T>`
+```ts
+import { BaseRetryPolicy } from "@zap-studio/retry";
+import type { RetryDecision, RetryDecisionInput } from "@zap-studio/retry/types";
 
-`BaseRetryPolicy` adds orchestration via `run(execute, options)`.
+class LinearBackoff extends BaseRetryPolicy {
+  constructor(
+    private readonly maxAttempts: number,
+    private readonly stepMs: number,
+  ) {
+    super();
+  }
 
-`RetryDecision` includes:
+  public next(input: RetryDecisionInput): RetryDecision {
+    if (input.attempt >= this.maxAttempts) {
+      return {
+        shouldRetry: false,
+        delayMs: 0,
+        reason: "max-attempts-reached",
+      };
+    }
 
-- `shouldRetry` whether to schedule another attempt
-- `delayMs` delay before the next attempt
-- `reason` optional decision tag (`retry`, `max-attempts-reached`, `policy-declined`)
+    return {
+      shouldRetry: true,
+      delayMs: input.attempt * this.stepMs,
+      reason: "retry",
+    };
+  }
+}
 
-`RetryDecisionInput<TError, TData>` includes:
-
-- `attempt` current attempt number
-- `error` optional previous thrown error of type `TError`
-- `data` optional previous value of type `TData`
-- `maxAttempts` optional orchestrator hint
-
-`RetryExhaustedInput<TError, TData>` includes:
-
-- `attempts` total attempts performed before stopping
-- `error` optional last thrown error
-- `data` optional last value
-
-`BaseRetryPolicy` provides shared default terminal error behavior for `onExhausted(input)`.
-
-`RetryRunOptions` includes:
-
-- `sleep` optional delay implementation override used by `BaseRetryPolicy.run(...)` (useful for tests)
-- `throwOnExhausted` when `false`, returns a result object instead of throwing
+const policy = new LinearBackoff(5, 250);
+const value = await policy.run(doWork);
+```
 
 ## RetryError
 
