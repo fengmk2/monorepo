@@ -25,18 +25,11 @@ Skills are split by package and maintenance workflow so agents can load focused 
 
 Install them with the Vercel Skills CLI:
 
-<Tabs items={["npm", "pnpm", "yarn", "bun"]}>
+<Tabs items={["npm", "yarn", "pnpm", "bun", "deno"]}>
   <Tab value="npm">
 
 ```bash
 npx skills add zap-studio/monorepo
-```
-
-  </Tab>
-  <Tab value="pnpm">
-
-```bash
-pnpm dlx skills add zap-studio/monorepo
 ```
 
   </Tab>
@@ -47,10 +40,24 @@ yarn dlx skills add zap-studio/monorepo
 ```
 
   </Tab>
+  <Tab value="pnpm">
+
+```bash
+pnpm dlx skills add zap-studio/monorepo
+```
+
+  </Tab>
   <Tab value="bun">
 
 ```bash
 bunx skills add zap-studio/monorepo
+```
+
+  </Tab>
+  <Tab value="deno">
+
+```bash
+deno run -A npm:skills add zap-studio/monorepo
 ```
 
   </Tab>

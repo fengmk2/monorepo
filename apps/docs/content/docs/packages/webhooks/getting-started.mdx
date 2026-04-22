@@ -3,13 +3,49 @@ title: Getting Started
 description: Install the package and register your first schema-first webhook route.
 ---
 
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+
 ## 1. Install
 
 You need the router package and a Standard Schema-compatible validator.
 
-```npm
+<Tabs items={["npm", "yarn", "pnpm", "bun", "deno"]}>
+  <Tab value="npm">
+
+```bash
 npm install @zap-studio/webhooks
 ```
+
+  </Tab>
+  <Tab value="yarn">
+
+```bash
+yarn add @zap-studio/webhooks
+```
+
+  </Tab>
+  <Tab value="pnpm">
+
+```bash
+pnpm add @zap-studio/webhooks
+```
+
+  </Tab>
+  <Tab value="bun">
+
+```bash
+bun add @zap-studio/webhooks
+```
+
+  </Tab>
+  <Tab value="deno">
+
+```bash
+deno add jsr:@zap-studio/webhooks
+```
+
+  </Tab>
+</Tabs>
 
 ## 2. Create router
 

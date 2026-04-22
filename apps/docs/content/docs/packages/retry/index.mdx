@@ -3,6 +3,8 @@ title: Overview
 description: A composable retry package with policy classes, a built-in runner, and structured terminal errors.
 ---
 
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+
 `retry` gives you reusable retry policies and a built-in runner so you can add resilient retries without rewriting orchestration loops.
 
 ## Why retry?
@@ -25,9 +27,43 @@ Most retry implementations end up duplicating the same logic:
 
 ## Installation
 
+<Tabs items={["npm", "yarn", "pnpm", "bun", "deno"]}>
+  <Tab value="npm">
+
 ```bash
 npm install @zap-studio/retry
 ```
+
+  </Tab>
+  <Tab value="yarn">
+
+```bash
+yarn add @zap-studio/retry
+```
+
+  </Tab>
+  <Tab value="pnpm">
+
+```bash
+pnpm add @zap-studio/retry
+```
+
+  </Tab>
+  <Tab value="bun">
+
+```bash
+bun add @zap-studio/retry
+```
+
+  </Tab>
+  <Tab value="deno">
+
+```bash
+deno add jsr:@zap-studio/retry
+```
+
+  </Tab>
+</Tabs>
 
 ## Quick Start
 
