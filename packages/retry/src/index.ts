@@ -55,8 +55,8 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
    * @param options - Optional runner settings.
    * @returns The successful execution value.
    * @throws {RetryError} When retries are exhausted and `onExhausted` returns the
-   *   default terminal error. The last execution failure is available on
-   *   `RetryError.lastError`.
+   *   terminal retry error. The default implementation returns `RetryError` with the last
+   *   execution failure available on `RetryError.lastError`.
    * @throws Any error thrown by `next`, by `onExhausted`, or by a custom `sleep`
    *   function.
    */

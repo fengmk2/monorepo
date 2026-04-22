@@ -100,10 +100,11 @@ export interface $Fetch {
    * @param options - Extended request options with throwOnValidationError: false
    * @returns Standard Schema Result object with value or issues
    * @throws {FetchError} When `throwOnFetchError` is `true` and the response is not ok.
-   * @throws {TypeError} When request construction, headers, search params, or native
-   *   `fetch` fail with a `TypeError`.
-   * @throws {DOMException} When the native `fetch` rejects an aborted request as an
-   *   `AbortError` DOMException.
+   * @throws {TypeError} When request construction, JSON request serialization, headers,
+   *   search params, native `fetch`, or `response.json()` body reading fail with a
+   *   `TypeError`.
+   * @throws {DOMException} When native `fetch` or `response.json()` rejects an aborted
+   *   request/body read as an `AbortError` DOMException.
    * @throws {SyntaxError} When `response.json()` cannot parse the response body.
    * @throws Any error thrown or rejected by the provided Standard Schema validator.
    */
@@ -121,10 +122,11 @@ export interface $Fetch {
    * @returns Validated data of type TSchema
    * @throws {FetchError} When `throwOnFetchError` is `true` and the response is not ok.
    * @throws {ValidationError} When validation returns issues.
-   * @throws {TypeError} When request construction, headers, search params, or native
-   *   `fetch` fail with a `TypeError`.
-   * @throws {DOMException} When the native `fetch` rejects an aborted request as an
-   *   `AbortError` DOMException.
+   * @throws {TypeError} When request construction, JSON request serialization, headers,
+   *   search params, native `fetch`, or `response.json()` body reading fail with a
+   *   `TypeError`.
+   * @throws {DOMException} When native `fetch` or `response.json()` rejects an aborted
+   *   request/body read as an `AbortError` DOMException.
    * @throws {SyntaxError} When `response.json()` cannot parse the response body.
    * @throws Any error thrown or rejected by the provided Standard Schema validator.
    */
@@ -142,9 +144,9 @@ export interface $Fetch {
    * @param options - Extended request options
    * @returns Raw Response object
    * @throws {FetchError} When `throwOnFetchError` is `true` and the response is not ok.
-   * @throws {TypeError} When request construction, headers, search params, or native
-   *   `fetch` fail with a `TypeError`.
-   * @throws {DOMException} When the native `fetch` rejects an aborted request as an
+   * @throws {TypeError} When request construction, JSON request serialization, headers,
+   *   search params, or native `fetch` fail with a `TypeError`.
+   * @throws {DOMException} When native `fetch` rejects an aborted request as an
    *   `AbortError` DOMException.
    */
   (resource: RequestInfo, options?: ExtendedRequestInit): Promise<Response>;

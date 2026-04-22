@@ -70,6 +70,8 @@ export function isStandardSchema(value: unknown): value is StandardSchemaV1 {
  * @returns An async validator function.
  * @throws {ValidationError} When the returned validator is called with
  *   `throwOnError: true` and validation returns issues.
+ * @throws {TypeError} When the returned validator is called and the provided value does not
+ *   expose a callable Standard Schema `~standard.validate` implementation at runtime.
  * @throws Any error thrown or rejected by the schema's Standard Schema
  *   `validate` function when the returned validator is called.
  *
@@ -148,6 +150,8 @@ export function createStandardValidator<TSchema extends StandardSchemaV1>(
  *   The message is `Async schemas are not supported by createSyncStandardValidator`.
  * @throws {ValidationError} When the returned validator is called with
  *   `throwOnError: true` and validation returns issues.
+ * @throws {TypeError} When the returned validator is called and the provided value does not
+ *   expose a callable Standard Schema `~standard.validate` implementation at runtime.
  * @throws Any error thrown by the schema's Standard Schema `validate` function
  *   when the returned validator is called.
  *
@@ -240,6 +244,8 @@ export function createSyncStandardValidator<TSchema extends StandardSchemaV1>(
  * @param options - Options for validation behavior.
  * @returns The parsed value or the raw validation result.
  * @throws {ValidationError} If validation fails and `throwOnError` is `true`.
+ * @throws {TypeError} If the provided value does not expose a callable Standard Schema
+ *   `~standard.validate` implementation at runtime.
  * @throws Any error thrown or rejected by the schema's Standard Schema
  *   `validate` function.
  *
@@ -316,6 +322,8 @@ export async function standardValidate<TSchema extends StandardSchemaV1>(
  * @throws {Error} If the schema performs asynchronous validation. The message is
  *   `Async schemas are not supported by standardValidateSync`.
  * @throws {ValidationError} If validation fails and `throwOnError` is `true`.
+ * @throws {TypeError} If the provided value does not expose a callable Standard Schema
+ *   `~standard.validate` implementation at runtime.
  * @throws Any error thrown by the schema's Standard Schema `validate` function.
  *
  * @example

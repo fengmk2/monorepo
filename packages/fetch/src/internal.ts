@@ -28,10 +28,11 @@ import { resolveRequestUrl } from "./url.js";
  * @throws {FetchError} When `throwOnFetchError` is `true` and the response is not ok.
  * @throws {ValidationError} When a schema is provided, validation returns issues, and
  *   `throwOnValidationError` is `true`.
- * @throws {TypeError} When both `body` and `json` are provided, when request construction
- *   fails, when headers/search params are invalid, or when the runtime `fetch` implementation
- *   rejects network-level failures as `TypeError`.
- * @throws {DOMException} When the runtime `fetch` implementation rejects an aborted request
+ * @throws {TypeError} When both `body` and `json` are provided, when JSON request
+ *   serialization fails, when request construction fails, when headers/search params are
+ *   invalid, when `response.json()` cannot read the body, or when the runtime `fetch`
+ *   implementation rejects network-level failures as `TypeError`.
+ * @throws {DOMException} When the runtime rejects an aborted request or response body read
  *   as an `AbortError` DOMException.
  * @throws {SyntaxError} When a schema is provided and `response.json()` cannot parse the
  *   response body.
