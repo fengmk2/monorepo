@@ -1,13 +1,7 @@
 import { isStandardSchema, type StandardSchemaV1 } from "@zap-studio/validation";
 
 import { GLOBAL_DEFAULTS } from "./constants.js";
-import type {
-  $Fetch,
-  ApiMethods,
-  CreateFetchOptions,
-  ExtendedRequestInit,
-  FetchDefaults,
-} from "./types.js";
+import type { $Fetch, ApiMethods, ExtendedRequestInit, FetchDefaults } from "./types.js";
 import { createMethod, fetchInternal } from "./utils.js";
 
 /**
@@ -128,7 +122,7 @@ export const api: ApiMethods = {
  * // Or use $fetch directly
  * const response = await $fetch("/users", UserSchema, { method: "POST", body: { name: "John" } });
  */
-export function createFetch(factoryOptions: CreateFetchOptions = {}): {
+export function createFetch(factoryOptions: Partial<FetchDefaults> = {}): {
   $fetch: $Fetch;
   api: ApiMethods;
 } {

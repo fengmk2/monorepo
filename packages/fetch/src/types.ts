@@ -1,12 +1,6 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
-/**
- * Type representing various formats for search parameters
- * that can be used in requests.
- * Can be a URLSearchParams object, a record of string pairs,
- * a query string, or an array of tuples.
- */
-export type SearchParams = URLSearchParams | Record<string, string> | string | [string, string][];
+type URLSearchParamsInput = ConstructorParameters<typeof URLSearchParams>[0];
 
 /**
  * Extended RequestInit type to include custom fetch options
@@ -16,7 +10,7 @@ export type ExtendedRequestInit = RequestInit & {
    * Per-request query/search params
    * @default undefined
    */
-  searchParams?: SearchParams | undefined;
+  searchParams?: URLSearchParamsInput | undefined;
   /**
    * Whether to throw a FetchError on HTTP errors (non-2xx responses)
    * @default true
@@ -47,7 +41,7 @@ export interface FetchDefaults {
    * Default query/search params applied to every request (can be overridden per request)
    * @default undefined
    */
-  searchParams?: SearchParams | undefined;
+  searchParams?: URLSearchParamsInput | undefined;
   /**
    * Whether to throw a `FetchError` on HTTP errors (non-2xx responses)
    * @default true
@@ -59,11 +53,6 @@ export interface FetchDefaults {
    */
   throwOnValidationError: boolean;
 }
-
-/**
- * Options for creating a custom fetch instance with `createFetch`
- */
-export type CreateFetchOptions = Partial<FetchDefaults>;
 
 /**
  * Type-safe fetch function with Standard Schema validation support
@@ -92,7 +81,9 @@ export interface $Fetch {
   <TSchema extends StandardSchemaV1>(
     resource: RequestInfo,
     schema: TSchema,
-    options?: ExtendedRequestInit & { throwOnValidationError?: true | undefined },
+    options?: ExtendedRequestInit & {
+      throwOnValidationError?: true | undefined;
+    },
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
   /**

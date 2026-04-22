@@ -2,7 +2,7 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { isStandardSchema, standardValidate } from "@zap-studio/validation";
 
 import { FetchError } from "./errors.js";
-import type { $Fetch, ExtendedRequestInit, FetchDefaults, SearchParams } from "./types.js";
+import type { $Fetch, ExtendedRequestInit, FetchDefaults } from "./types.js";
 
 /**
  * Merges two HeadersInit objects, with the second one taking precedence
@@ -65,36 +65,8 @@ const ABSOLUTE_URL_PATTERN = /^(?:https?:)?\/\//i;
 /**
  * Checks if a URL is absolute (starts with http://, https://, or //)
  */
-function isAbsoluteURL(url: string): boolean {
-  return ABSOLUTE_URL_PATTERN.test(url);
-}
-
-/**
- * Normalizes search parameters into a URLSearchParams object.
- */
-function normalizeSearchParams(input: SearchParams | undefined): URLSearchParams {
-  if (input === undefined || input === null) {
-    return new URLSearchParams();
-  }
-
-  if (input instanceof URLSearchParams) {
-    return new URLSearchParams(input);
-  }
-
-  if (typeof input === "string") {
-    return new URLSearchParams(input);
-  }
-
-  if (Array.isArray(input)) {
-    return new URLSearchParams(input);
-  }
-
-  const params = new URLSearchParams();
-  for (const [k, v] of Object.entries(input)) {
-    params.set(k, v);
-  }
-
-  return params;
+function isAbsoluteURL(resource: string): boolean {
+  return ABSOLUTE_URL_PATTERN.test(resource);
 }
 
 /**
@@ -175,8 +147,8 @@ function buildUrlWithMergedSearchParams(
   const mergedParams = new URLSearchParams();
 
   const resourceParams = new URLSearchParams(existingQuery);
-  const factoryParams = normalizeSearchParams(factorySearch);
-  const reqParams = normalizeSearchParams(requestSearch);
+  const factoryParams = new URLSearchParams(factorySearch);
+  const reqParams = new URLSearchParams(requestSearch);
 
   for (const [k, v] of factoryParams.entries()) {
     mergedParams.set(k, v);
