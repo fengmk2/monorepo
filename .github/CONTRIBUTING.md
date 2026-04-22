@@ -62,7 +62,7 @@ Useful issues are specific and reproducible.
 If your change affects a published package, add a changeset:
 
 ```bash
-vp exec changeset
+vpx -p @changesets/cli changeset
 ```
 
 Write the changeset from the user or package-consumer perspective.

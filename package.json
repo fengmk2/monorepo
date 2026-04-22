@@ -8,13 +8,7 @@
     "react-doctor": "vp run docs#react-doctor"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "catalog:",
-    "@changesets/cli": "catalog:",
-    "@commitlint/cli": "catalog:",
-    "@commitlint/config-conventional": "catalog:",
     "@vitest/coverage-v8": "catalog:",
-    "jsr": "catalog:",
-    "publint": "catalog:",
     "vite-plus": "catalog:",
     "vitest": "catalog:"
   },
