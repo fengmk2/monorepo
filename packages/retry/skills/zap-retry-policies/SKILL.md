@@ -1,14 +1,14 @@
 ---
 name: zap-retry-policies
 description: >
-  Implement retry policies with @zap-studio/retry using RetryPolicy,
-  ExponentialBackoff, and FixedDelay for transport-agnostic retry orchestration.
+  Implement retry policies with @zap-studio/retry module imports using
+  ExponentialBackoff and FixedDelay classes with a local RetryPolicy shape
+  for transport-agnostic retry orchestration.
 type: core
 library: "@zap-studio/retry"
 library_version: "0.1.0"
 sources:
   - "zap-studio/monorepo:packages/retry/README.md"
-  - "zap-studio/monorepo:packages/retry/src/index.ts"
   - "zap-studio/monorepo:packages/retry/src/exponential-backoff.ts"
   - "zap-studio/monorepo:packages/retry/src/fixed-delay.ts"
 ---
@@ -18,7 +18,9 @@ sources:
 ## Setup
 
 ```ts
-import { ExponentialBackoff, FixedDelay, type RetryPolicy } from "@zap-studio/retry";
+import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
+import { FixedDelay } from "@zap-studio/retry/fixed-delay";
+import type { RetryDecisionInput, RetryDecision, RetryPolicy } from "@zap-studio/retry";
 
 const policy: RetryPolicy = new ExponentialBackoff({
   maxAttempts: 5,
@@ -50,6 +52,8 @@ if (decision.shouldRetry) {
 ### Choose exponential backoff for unstable networks
 
 ```ts
+import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
+
 const retry = new ExponentialBackoff({
   maxAttempts: 6,
   baseDelayMs: 100,
@@ -60,6 +64,8 @@ const retry = new ExponentialBackoff({
 ### Choose fixed delay for predictable retry cadence
 
 ```ts
+import { FixedDelay } from "@zap-studio/retry/fixed-delay";
+
 const retry = new FixedDelay({
   maxAttempts: 4,
   delayMs: 300,
