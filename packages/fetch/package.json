@@ -68,6 +68,7 @@
     "@zap-studio/validation": "workspace:*"
   },
   "devDependencies": {
+    "@tanstack/intent": "catalog:",
     "@zap-studio/typescript": "workspace:*",
     "arktype": "catalog:",
     "typescript": "catalog:",

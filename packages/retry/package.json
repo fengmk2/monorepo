@@ -10,6 +10,7 @@
     "http",
     "resilience",
     "retry",
+    "tanstack-intent",
     "typescript"
   ],
   "homepage": "https://www.zapstudio.dev/packages/retry",
@@ -28,7 +29,8 @@
     "LICENSE",
     "README.md",
     "skills",
-    "bin"
+    "bin",
+    "!skills/_artifacts"
   ],
   "type": "module",
   "sideEffects": false,
@@ -51,6 +53,7 @@
     "test:watch": "vp test watch"
   },
   "devDependencies": {
+    "@tanstack/intent": "catalog:",
     "@zap-studio/typescript": "workspace:*",
     "typescript": "catalog:",
     "vite-plus": "catalog:"

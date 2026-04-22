@@ -52,6 +52,7 @@
     "@standard-schema/spec": "catalog:"
   },
   "devDependencies": {
+    "@tanstack/intent": "catalog:",
     "@zap-studio/typescript": "workspace:*",
     "typescript": "catalog:",
     "vite-plus": "catalog:"
