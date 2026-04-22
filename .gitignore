@@ -22,7 +22,6 @@ coverage/
 **/.out/
 **/.output/
 **/.source/
-**/.turbo/
 
 # TypeScript
 *.tsbuildinfo
