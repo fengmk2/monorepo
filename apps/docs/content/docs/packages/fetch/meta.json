@@ -2,5 +2,13 @@
   "title": "fetch",
   "icon": "Globe",
   "root": true,
-  "pages": ["index", "api-methods", "fetch-function", "create-fetch", "errors", "validation"]
+  "pages": [
+    "index",
+    "getting-started",
+    "fetch-function",
+    "api-methods",
+    "create-fetch",
+    "validation",
+    "errors"
+  ]
 }

@@ -86,6 +86,8 @@ import { $fetch } from "@zap-studio/fetch";
 const user = await $fetch("/api/users/1", UserSchema);
 ```
 
+The schema validates the response body, not the request body.
+
 When validation fails, a `ValidationError` is thrown by default.
 
 ## API Method Helpers
@@ -105,6 +107,9 @@ const created = await api.post("/api/users", UserSchema, {
 });
 ```
 
+In this example, `UserSchema` validates the response from `/api/users`.
+The `json` value is the outgoing request body and is not validated by `UserSchema`.
+
 These helpers set the HTTP method for you. For raw responses without validation, use `$fetch`.
 
 ## JSON Request Bodies
@@ -118,6 +123,9 @@ await api.post("/api/users", UserSchema, {
   },
 });
 ```
+
+The schema argument still validates the response. Validate request bodies separately before
+passing them to `json` if your application needs outgoing payload validation.
 
 This sets:
 
