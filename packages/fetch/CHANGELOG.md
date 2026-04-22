@@ -2,6 +2,10 @@
 
 ## 0.5.0
 
+### Breaking
+
+- Request bodies are no longer auto-serialized from plain objects; use the explicit `json` option (or set `body` yourself). `body` and `json` are mutually exclusive at the type level and enforced at runtime.
+
 ### Changed
 
 - Simplified the request API around web platform types.
@@ -23,6 +27,14 @@
 
 - Reworked tests to mirror the `src` module structure.
 - Added full package coverage across statements, branches, functions, and lines.
+
+### Documentation
+
+- Documented the throwable error surface for `$fetch`, `createFetch`, and internal request execution with explicit `@throws` tags (for example `FetchError`, `ValidationError`, `TypeError`, `DOMException`, `SyntaxError`, and validator-thrown errors).
+
+### Dependencies
+
+- JSR dependency mapping now pins `@zap-studio/validation` to `0.3.2`.
 
 ## 0.4.7
 

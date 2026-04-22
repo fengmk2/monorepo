@@ -12,3 +12,7 @@
 - Added `ExponentialBackoff` policy with bounded exponential delay via `baseDelayMs`, `maxDelayMs`, and `maxAttempts`.
 - Added `FixedDelay` policy with constant delay and bounded attempts.
 - Added `RetryError` for exhausted-retry failures with structured attempt/error/data context.
+
+### Documentation
+
+- Documented throwable behavior on `RetryPolicy`, `BaseRetryPolicy.run`, and related contracts with explicit `@throws` tags for policy, exhaustion, and custom `sleep` failures.
