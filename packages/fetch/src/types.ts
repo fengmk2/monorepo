@@ -2,10 +2,20 @@ import type { StandardSchemaV1 } from "@zap-studio/validation";
 
 type URLSearchParamsInput = ConstructorParameters<typeof URLSearchParams>[0];
 
-/**
- * Extended RequestInit type to include custom fetch options
- */
-export type ExtendedRequestInit = RequestInit & {
+type RequestBodyInit = RequestInit & {
+  json?: never;
+};
+
+type JsonBodyInit = Omit<RequestInit, "body"> & {
+  /**
+   * JSON body convenience. When provided, this is JSON-stringified into `body`.
+   * @default undefined
+   */
+  json: unknown;
+  body?: never;
+};
+
+type CustomRequestInit = {
   /**
    * Per-request query/search params
    * @default undefined
@@ -22,6 +32,11 @@ export type ExtendedRequestInit = RequestInit & {
    */
   throwOnValidationError?: boolean | undefined;
 };
+
+/**
+ * Extended RequestInit type to include custom fetch options
+ */
+export type ExtendedRequestInit = (RequestBodyInit | JsonBodyInit) & CustomRequestInit;
 
 /**
  * Internal defaults used by fetchInternal

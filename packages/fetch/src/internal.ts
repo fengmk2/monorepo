@@ -52,6 +52,7 @@ function prepareRequestInit(
 } {
   const {
     headers,
+    json,
     searchParams,
     throwOnFetchError = defaults.throwOnFetchError,
     throwOnValidationError = defaults.throwOnValidationError,
@@ -62,6 +63,19 @@ function prepareRequestInit(
     ...rest,
     headers: mergeHeaders(defaults.headers, headers),
   } as RequestInit;
+
+  if (json !== undefined) {
+    if (init.body != null) {
+      throw new TypeError("Cannot provide both `body` and `json`.");
+    }
+
+    init.body = JSON.stringify(json);
+    const headers = new Headers(init.headers);
+    if (!headers.has("Content-Type")) {
+      headers.set("Content-Type", "application/json");
+    }
+    init.headers = headers;
+  }
 
   return {
     init,
