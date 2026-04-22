@@ -154,12 +154,12 @@ describe("fetchInternal", () => {
   });
 
   it("throws when json and body are both provided at runtime", async () => {
-    // @ts-expect-error
-    const options = {
+    // @ts-expect-error body and json are intentionally both provided to test the runtime guard.
+    const options: ExtendedRequestInit = {
       body: "raw",
       json: { name: "Zap" },
       method: "POST",
-    } as ExtendedRequestInit;
+    };
 
     await expect(fetchInternal("users", undefined, options, DEFAULTS)).rejects.toThrow(TypeError);
     expect(fetchMock).not.toHaveBeenCalled();
