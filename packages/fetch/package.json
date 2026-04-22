@@ -47,8 +47,12 @@
     ".": "./dist/index.mjs",
     "./constants": "./dist/constants.mjs",
     "./errors": "./dist/errors.mjs",
+    "./headers": "./dist/headers.mjs",
+    "./internal": "./dist/internal.mjs",
+    "./methods": "./dist/methods.mjs",
+    "./request": "./dist/request.mjs",
     "./types": "./dist/types.mjs",
-    "./utils": "./dist/utils.mjs",
+    "./url": "./dist/url.mjs",
     "./package.json": "./package.json"
   },
   "publishConfig": {

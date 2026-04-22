@@ -7,8 +7,12 @@
     ".": "./src/index.ts",
     "./constants": "./src/constants.ts",
     "./errors": "./src/errors.ts",
+    "./headers": "./src/headers.ts",
+    "./internal": "./src/internal.ts",
+    "./methods": "./src/methods.ts",
+    "./request": "./src/request.ts",
     "./types": "./src/types.ts",
-    "./utils": "./src/utils.ts"
+    "./url": "./src/url.ts"
   },
   "imports": {
     "@zap-studio/validation": "jsr:@zap-studio/validation@0.3.0"
