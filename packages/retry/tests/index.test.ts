@@ -82,6 +82,31 @@ describe("BaseRetryPolicy", () => {
     });
   });
 
+  it("returns terminal result instead of throwing when throwOnExhausted is false", async () => {
+    const policy = new SequencePolicy([
+      { shouldRetry: false, delayMs: 0, reason: "max-attempts-reached" },
+    ]);
+    const execute = vi
+      .fn<(attempt: number) => Promise<string>>()
+      .mockRejectedValue(new Error("fail"));
+
+    const result = await policy.run(execute, { throwOnExhausted: false });
+
+    expect(result).toMatchObject({
+      ok: false,
+      attempts: 1,
+    });
+  });
+
+  it("returns success result object when throwOnExhausted is false", async () => {
+    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 0, reason: "retry" }]);
+    const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
+
+    const result = await policy.run(execute, { throwOnExhausted: false });
+
+    expect(result).toEqual({ ok: true, value: "ok" });
+  });
+
   it("uses custom terminal error from overridden onExhausted", async () => {
     const policy = new CustomTerminalPolicy();
     const execute = vi

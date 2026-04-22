@@ -6,6 +6,7 @@ import type {
   RetryExhaustedInput,
   RetryPolicy,
   RetryRunOptions,
+  RetryRunResult,
 } from "../src/types.js";
 
 describe("types", () => {
@@ -41,8 +42,13 @@ describe("types", () => {
   });
 
   it("accepts empty run options", () => {
-    const options: RetryRunOptions = {};
+    const options: RetryRunOptions = { throwOnExhausted: false };
+    const result: RetryRunResult<string> = {
+      ok: true,
+      value: "ok",
+    };
 
-    expect(options).toEqual({});
+    expect(options).toEqual({ throwOnExhausted: false });
+    expect(result).toEqual({ ok: true, value: "ok" });
   });
 });

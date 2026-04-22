@@ -49,6 +49,8 @@ const result = await policy.run(async () => {
 });
 ```
 
+By default, exhaustion throws `RetryError`. Use `run(..., { throwOnExhausted: false })` if you prefer result-based control flow.
+
 ## What to Read Next
 
 - **Types** for generic contracts and extension points

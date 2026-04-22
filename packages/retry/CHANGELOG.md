@@ -8,6 +8,7 @@
 - Added required `onExhausted` hook to `RetryPolicy` for policy-specific terminal error shaping.
 - Added shared `BaseRetryPolicy` abstract class to centralize default `onExhausted` behavior.
 - Added `BaseRetryPolicy.run(execute, options)` runner method to execute retry policies with minimal boilerplate.
+- Added `throwOnExhausted` runner option with non-throw `RetryRunResult<T>` mode.
 - Added `ExponentialBackoff` policy with bounded exponential delay via `baseDelayMs`, `maxDelayMs`, and `maxAttempts`.
 - Added `FixedDelay` policy with constant delay and bounded attempts.
 - Added `RetryError` for exhausted-retry failures with structured attempt/error/data context.

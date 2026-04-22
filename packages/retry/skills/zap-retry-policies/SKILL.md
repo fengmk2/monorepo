@@ -90,6 +90,25 @@ try {
 }
 ```
 
+### Handle exhausted retries without throwing
+
+```ts
+const result = await policy.run(
+  async () => {
+    const response = await $fetch("https://api.example.com/users", {
+      throwOnFetchError: true,
+    });
+    return await response.json();
+  },
+  { throwOnExhausted: false },
+);
+
+if (!result.ok) {
+  console.error(result.attempts);
+  console.error(result.error.lastError);
+}
+```
+
 ### Choose exponential backoff for unstable networks
 
 ```ts

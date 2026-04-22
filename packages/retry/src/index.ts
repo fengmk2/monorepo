@@ -5,6 +5,7 @@ import type {
   RetryExhaustedInput,
   RetryPolicy,
   RetryRunOptions,
+  RetryRunResult,
 } from "./types.js";
 
 export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> implements RetryPolicy<
@@ -23,15 +24,29 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
 
   public async run<T>(
     execute: (attempt: number) => Promise<T>,
+    options: RetryRunOptions & { throwOnExhausted: false },
+  ): Promise<RetryRunResult<T>>;
+
+  public async run<T>(
+    execute: (attempt: number) => Promise<T>,
+    options?: RetryRunOptions & { throwOnExhausted?: true | undefined },
+  ): Promise<T>;
+
+  public async run<T>(
+    execute: (attempt: number) => Promise<T>,
     options: RetryRunOptions = {},
-  ): Promise<T> {
+  ): Promise<T | RetryRunResult<T>> {
     const sleep = options.sleep ?? defaultSleep;
     let attempt = 1;
     let lastError: TError | undefined;
 
     while (true) {
       try {
-        return await execute(attempt);
+        const value = await execute(attempt);
+        if (options.throwOnExhausted === false) {
+          return { ok: true, value };
+        }
+        return value;
       } catch (error) {
         lastError = error as TError;
         const decision = this.next({
@@ -40,7 +55,15 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
         });
 
         if (!decision.shouldRetry) {
-          throw this.onExhausted({ attempts: attempt, error: lastError });
+          const terminalError = this.onExhausted({ attempts: attempt, error: lastError });
+          if (options.throwOnExhausted === false) {
+            return {
+              ok: false,
+              error: terminalError,
+              attempts: attempt,
+            };
+          }
+          throw terminalError;
         }
 
         await sleep(decision.delayMs);

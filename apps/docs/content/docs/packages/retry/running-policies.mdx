@@ -52,6 +52,23 @@ const result = await policy.run(async (attempt) => {
 
 When `next(...)` returns `shouldRetry: false`, `run(...)` throws the error returned by `onExhausted(...)`.
 
+Set `throwOnExhausted: false` to receive a result object instead:
+
+```ts
+const result = await policy.run(
+  async () => {
+    return await doWork();
+  },
+  { throwOnExhausted: false },
+);
+
+if (!result.ok) {
+  console.error(result.attempts);
+} else {
+  console.log(result.value);
+}
+```
+
 ## Handling Terminal Errors
 
 ```ts

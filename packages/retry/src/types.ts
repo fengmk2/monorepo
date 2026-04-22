@@ -26,4 +26,16 @@ export interface RetryPolicy<TError = unknown, TData = unknown> {
 
 export interface RetryRunOptions {
   readonly sleep?: ((delayMs: number) => Promise<void>) | undefined;
+  readonly throwOnExhausted?: boolean | undefined;
 }
+
+export type RetryRunResult<T> =
+  | {
+      ok: true;
+      value: T;
+    }
+  | {
+      ok: false;
+      error: RetryError;
+      attempts: number;
+    };

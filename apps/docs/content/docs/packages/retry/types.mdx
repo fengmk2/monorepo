@@ -14,6 +14,7 @@ import type {
   RetryExhaustedInput,
   RetryPolicy,
   RetryRunOptions,
+  RetryRunResult,
 } from "@zap-studio/retry/types";
 ```
 
@@ -61,11 +62,15 @@ type HttpPolicy = RetryPolicy<TypeError, Response>;
 Used by `BaseRetryPolicy.run(...)`:
 
 - `sleep` optional custom delay implementation
+- `throwOnExhausted` controls throw (`true`, default) vs result mode (`false`)
 
 ```ts
 const options: RetryRunOptions = {
+  throwOnExhausted: false,
   sleep: async (ms) => {
     await new Promise((resolve) => setTimeout(resolve, ms));
   },
 };
 ```
+
+When `throwOnExhausted` is `false`, `run(...)` returns `RetryRunResult<T>`.

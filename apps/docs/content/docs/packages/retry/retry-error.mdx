@@ -52,6 +52,26 @@ try {
 }
 ```
 
+If you run with `throwOnExhausted: false`, exhausted runs return a result object instead of throwing.
+
+## Graceful Error Handling
+
+```ts
+const result = await policy.run(
+  async () => {
+    return await doWork();
+  },
+  { throwOnExhausted: false },
+);
+
+if (!result.ok) {
+  console.error("Exhausted after attempts:", result.attempts);
+  console.error("Last error:", result.error.lastError);
+} else {
+  console.log(result.value);
+}
+```
+
 ## Custom Terminal Errors
 
 You can override `onExhausted(...)` in a custom policy to throw your own error type while keeping the same retry orchestration flow.

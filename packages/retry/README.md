@@ -56,6 +56,27 @@ try {
 }
 ```
 
+To handle exhaustion without throwing, pass `throwOnExhausted: false`:
+
+```ts
+const result = await exponential.run(
+  async () => {
+    const response = await $fetch("https://api.example.com/users", {
+      throwOnFetchError: true,
+    });
+    return await response.json();
+  },
+  { throwOnExhausted: false },
+);
+
+if (!result.ok) {
+  console.error("Retries exhausted:", result.attempts);
+  console.error("Last error:", result.error.lastError);
+} else {
+  console.log(result.value);
+}
+```
+
 ## Choosing The Right Policy
 
 Use `ExponentialBackoff` for transient network instability and shared upstream services.
@@ -84,6 +105,7 @@ All policy types are generic:
 - `RetryPolicy<TError, TData>`
 - `RetryDecisionInput<TError, TData>`
 - `RetryExhaustedInput<TError, TData>`
+- `RetryRunResult<T>`
 
 `BaseRetryPolicy` adds orchestration via `run(execute, options)`.
 
@@ -111,6 +133,7 @@ All policy types are generic:
 `RetryRunOptions` includes:
 
 - `sleep` optional delay implementation override used by `BaseRetryPolicy.run(...)` (useful for tests)
+- `throwOnExhausted` when `false`, returns a result object instead of throwing
 
 ## RetryError
 
