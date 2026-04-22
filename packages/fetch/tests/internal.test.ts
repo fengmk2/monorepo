@@ -48,7 +48,10 @@ describe("fetchInternal", () => {
   });
 
   it("throws FetchError for non-ok responses by default", async () => {
-    const response = new Response("Nope", { status: 500, statusText: "Server Error" });
+    const response = new Response("Nope", {
+      status: 500,
+      statusText: "Server Error",
+    });
     fetchMock.mockResolvedValue(response);
 
     await expect(fetchInternal("users", undefined, undefined, DEFAULTS)).rejects.toThrow(
@@ -57,7 +60,10 @@ describe("fetchInternal", () => {
   });
 
   it("can return non-ok responses when fetch errors are disabled", async () => {
-    const response = new Response("Nope", { status: 404, statusText: "Not Found" });
+    const response = new Response("Nope", {
+      status: 404,
+      statusText: "Not Found",
+    });
     fetchMock.mockResolvedValue(response);
 
     await expect(
@@ -148,6 +154,7 @@ describe("fetchInternal", () => {
   });
 
   it("throws when json and body are both provided at runtime", async () => {
+    // @ts-expect-error
     const options = {
       body: "raw",
       json: { name: "Zap" },
