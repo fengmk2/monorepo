@@ -1,15 +1,17 @@
 ---
 name: zap-retry-policies
 description: >
-  Implement retry policies with @zap-studio/retry module imports using
-  ExponentialBackoff and FixedDelay classes with a local RetryPolicy shape
-  for transport-agnostic retry orchestration.
+  Implement retry orchestration with @zap-studio/retry using BaseRetryPolicy.run(),
+  ExponentialBackoff and FixedDelay policy classes, and generic contracts
+  from @zap-studio/retry/types.
 type: core
 library: "@zap-studio/retry"
 library_version: "0.1.0"
 sources:
   - "zap-studio/monorepo:packages/retry/README.md"
+  - "zap-studio/monorepo:packages/retry/src/index.ts"
   - "zap-studio/monorepo:packages/retry/src/error.ts"
+  - "zap-studio/monorepo:packages/retry/src/types.ts"
   - "zap-studio/monorepo:packages/retry/src/exponential-backoff.ts"
   - "zap-studio/monorepo:packages/retry/src/fixed-delay.ts"
 ---
@@ -21,9 +23,13 @@ sources:
 ```ts
 import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
 import { FixedDelay } from "@zap-studio/retry/fixed-delay";
-import type { RetryDecisionInput, RetryDecision, RetryPolicy } from "@zap-studio/retry";
+import type {
+  RetryDecisionInput,
+  RetryDecision,
+  RetryExhaustedInput,
+} from "@zap-studio/retry/types";
 
-const policy: RetryPolicy = new ExponentialBackoff({
+const policy = new ExponentialBackoff({
   maxAttempts: 5,
   baseDelayMs: 100,
   maxDelayMs: 2_000,
@@ -39,21 +45,25 @@ const sampleDecision: RetryDecision = {
   delayMs: 100,
   reason: "retry",
 };
+
+const exhausted: RetryExhaustedInput = {
+  attempts: 5,
+  error: new Error("network"),
+};
 ```
 
 ## Core Patterns
 
-### Use policies as pure decision engines
+### Use `policy.run()` to run policies
 
 ```ts
-const decision = policy.next({
-  attempt: 2,
-  error: new Error("network"),
+const data = await policy.run(async () => {
+  const result = await fetch("https://api.example.com/users");
+  if (!result.ok) {
+    throw new Error(`HTTP ${result.status}`);
+  }
+  return await result.json();
 });
-
-if (decision.shouldRetry) {
-  await new Promise((resolve) => setTimeout(resolve, decision.delayMs));
-}
 ```
 
 ### Choose exponential backoff for unstable networks
@@ -124,28 +134,32 @@ Always branch on `shouldRetry`; terminal decisions return `delayMs: 0`.
 
 Source: zap-studio/monorepo:packages/retry/src/fixed-delay.ts
 
-### MEDIUM Throwing generic errors when retries are exhausted
+### MEDIUM Skipping `policy.run()` and duplicating orchestration boilerplate
 
 Wrong:
 
 ```ts
-throw new Error("request failed");
+let attempt = 1;
+while (true) {
+  try {
+    return await execute();
+  } catch (error) {
+    const decision = policy.next({ attempt, error });
+    if (!decision.shouldRetry) throw policy.onExhausted({ attempts: attempt, error });
+    await sleep(decision.delayMs);
+    attempt += 1;
+  }
+}
 ```
 
 Correct:
 
 ```ts
-import { RetryError } from "@zap-studio/retry/error";
-
-throw new RetryError("Retry policy exhausted all attempts.", {
-  attempts: attempt,
-  lastError: error,
-  lastResponse: response,
-});
+return await policy.run(execute);
 ```
 
-Use `RetryError` to preserve structured context from the last retry attempt.
+Use `policy.run()` as the default orchestration API and reserve low-level `next()` usage for custom runners.
 
-Source: zap-studio/monorepo:packages/retry/src/error.ts
+Source: zap-studio/monorepo:packages/retry/src/index.ts
 
 See also: zap-fetch-typed-http/SKILL.md — fetch integration patterns with request options.
