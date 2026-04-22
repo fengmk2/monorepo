@@ -9,6 +9,7 @@ library: "@zap-studio/retry"
 library_version: "0.1.0"
 sources:
   - "zap-studio/monorepo:packages/retry/README.md"
+  - "zap-studio/monorepo:packages/retry/src/error.ts"
   - "zap-studio/monorepo:packages/retry/src/exponential-backoff.ts"
   - "zap-studio/monorepo:packages/retry/src/fixed-delay.ts"
 ---
@@ -32,6 +33,12 @@ const fallback = new FixedDelay({
   maxAttempts: 3,
   delayMs: 250,
 });
+
+const sampleDecision: RetryDecision = {
+  shouldRetry: true,
+  delayMs: 100,
+  reason: "retry",
+};
 ```
 
 ## Core Patterns
@@ -116,5 +123,29 @@ await sleep(decision.delayMs);
 Always branch on `shouldRetry`; terminal decisions return `delayMs: 0`.
 
 Source: zap-studio/monorepo:packages/retry/src/fixed-delay.ts
+
+### MEDIUM Throwing generic errors when retries are exhausted
+
+Wrong:
+
+```ts
+throw new Error("request failed");
+```
+
+Correct:
+
+```ts
+import { RetryError } from "@zap-studio/retry/error";
+
+throw new RetryError("Retry policy exhausted all attempts.", {
+  attempts: attempt,
+  lastError: error,
+  lastResponse: response,
+});
+```
+
+Use `RetryError` to preserve structured context from the last retry attempt.
+
+Source: zap-studio/monorepo:packages/retry/src/error.ts
 
 See also: zap-fetch-typed-http/SKILL.md — fetch integration patterns with request options.
