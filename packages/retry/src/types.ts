@@ -1,11 +1,4 @@
-export interface RetryDecisionInput {
-  readonly attempt: number;
-  readonly maxAttempts?: number | undefined;
-  readonly method?: string | undefined;
-  readonly url?: string | undefined;
-  readonly error?: unknown;
-  readonly response?: unknown;
-}
+import type { RetryError } from "./error";
 
 export interface RetryDecision {
   readonly shouldRetry: boolean;
@@ -13,13 +6,24 @@ export interface RetryDecision {
   readonly reason?: "retry" | "max-attempts-reached" | "policy-declined";
 }
 
-export interface RetryExhaustedInput {
-  readonly attempts: number;
-  readonly error?: unknown;
-  readonly response?: unknown;
+export interface RetryDecisionInput<TError = unknown, TData = unknown> {
+  readonly attempt: number;
+  readonly maxAttempts?: number | undefined;
+  readonly error?: TError;
+  readonly data?: TData;
 }
 
-export interface RetryPolicy {
-  next(input: RetryDecisionInput): RetryDecision;
-  onExhausted?(input: RetryExhaustedInput): Error;
+export interface RetryExhaustedInput<TError = unknown, TData = unknown> {
+  readonly attempts: number;
+  readonly error?: TError;
+  readonly data?: TData;
+}
+
+export interface RetryPolicy<TError = unknown, TData = unknown> {
+  next(input: RetryDecisionInput<TError, TData>): RetryDecision;
+  onExhausted(input: RetryExhaustedInput<TError, TData>): RetryError;
+}
+
+export interface RetryRunOptions {
+  readonly sleep?: ((delayMs: number) => Promise<void>) | undefined;
 }
