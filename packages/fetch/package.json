@@ -14,7 +14,6 @@
     "runtime validation",
     "schema",
     "standard schema",
-    "tanstack-intent",
     "type-safe",
     "typescript",
     "valibot",
@@ -28,17 +27,11 @@
     "url": "git+https://github.com/zap-studio/monorepo.git",
     "directory": "packages/fetch"
   },
-  "bin": {
-    "intent": "./bin/intent.js"
-  },
   "files": [
     "dist",
     "CHANGELOG.md",
     "LICENSE",
-    "README.md",
-    "skills",
-    "bin",
-    "!skills/_artifacts"
+    "README.md"
   ],
   "type": "module",
   "sideEffects": false,
@@ -68,7 +61,6 @@
     "@zap-studio/validation": "workspace:*"
   },
   "devDependencies": {
-    "@tanstack/intent": "catalog:",
     "@zap-studio/typescript": "workspace:*",
     "arktype": "catalog:",
     "typescript": "catalog:",

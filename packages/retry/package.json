@@ -10,7 +10,6 @@
     "http",
     "resilience",
     "retry",
-    "tanstack-intent",
     "typescript"
   ],
   "homepage": "https://www.zapstudio.dev/packages/retry",
@@ -20,17 +19,11 @@
     "url": "git+https://github.com/zap-studio/monorepo.git",
     "directory": "packages/retry"
   },
-  "bin": {
-    "intent": "./bin/intent.js"
-  },
   "files": [
     "dist",
     "CHANGELOG.md",
     "LICENSE",
-    "README.md",
-    "skills",
-    "bin",
-    "!skills/_artifacts"
+    "README.md"
   ],
   "type": "module",
   "sideEffects": false,
@@ -53,7 +46,6 @@
     "test:watch": "vp test watch"
   },
   "devDependencies": {
-    "@tanstack/intent": "catalog:",
     "@zap-studio/typescript": "workspace:*",
     "typescript": "catalog:",
     "vite-plus": "catalog:"

@@ -12,7 +12,6 @@
     "@changesets/cli": "catalog:",
     "@commitlint/cli": "catalog:",
     "@commitlint/config-conventional": "catalog:",
-    "@tanstack/intent": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "jsr": "catalog:",
     "publint": "catalog:",
