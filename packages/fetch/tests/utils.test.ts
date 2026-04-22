@@ -1,9 +1,11 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
+import { mergeHeaders } from "../src/headers.js";
 import type { $fetch } from "../src/index.js";
+import { fetchInternal } from "../src/internal.js";
+import { createMethod } from "../src/methods.js";
 import type { ExtendedRequestInit } from "../src/types.js";
-import { createMethod, fetchInternal, mergeHeaders } from "../src/utils.js";
 
 const RE_HTTP_500 = /HTTP 500: Server Error/;
 const RE_HTTP_400 = /HTTP 400: Bad Request/;
@@ -174,6 +176,78 @@ describe("fetchInternal", () => {
         throwOnValidationError: true,
       });
       expect(fetchMock).toHaveBeenCalledWith("/absolute", expect.any(Object));
+    });
+
+    it("should support Request resources", async () => {
+      fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true }), { status: 200 }));
+      const request = new Request("https://api.example.com/endpoint", {
+        headers: { A: "1" },
+        method: "POST",
+      });
+
+      await fetchInternal(request, undefined, undefined, {
+        baseURL: "https://ignored.example.com",
+        headers: undefined,
+        throwOnFetchError: true,
+        throwOnValidationError: true,
+      });
+
+      const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/endpoint",
+        expect.any(Object),
+      );
+      expect(init.method).toBe("POST");
+      expect(new Headers(init.headers).get("A")).toBe("1");
+    });
+
+    it("should let options override Request resource init", async () => {
+      fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true }), { status: 200 }));
+      const request = new Request("https://api.example.com/endpoint", {
+        headers: { A: "1" },
+        method: "POST",
+      });
+
+      await fetchInternal(
+        request,
+        undefined,
+        { headers: { A: "2" }, method: "PATCH" },
+        {
+          baseURL: "https://ignored.example.com",
+          headers: undefined,
+          throwOnFetchError: true,
+          throwOnValidationError: true,
+        },
+      );
+
+      const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
+      expect(init.method).toBe("PATCH");
+      expect(new Headers(init.headers).get("A")).toBe("2");
+    });
+
+    it("should merge Request headers with option headers", async () => {
+      fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true }), { status: 200 }));
+      const request = new Request("https://api.example.com/endpoint", {
+        headers: { A: "1" },
+      });
+
+      await fetchInternal(
+        request,
+        undefined,
+        { headers: { B: "2" } },
+        {
+          baseURL: "https://ignored.example.com",
+          headers: { C: "3" },
+          throwOnFetchError: true,
+          throwOnValidationError: true,
+        },
+      );
+
+      const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
+      const headers = new Headers(init.headers);
+      expect(headers.get("A")).toBe("1");
+      expect(headers.get("B")).toBe("2");
+      expect(headers.get("C")).toBe("3");
     });
   });
 
