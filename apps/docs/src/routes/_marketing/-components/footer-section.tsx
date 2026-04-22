@@ -23,6 +23,7 @@ const footerColumns: FooterColumn[] = [
     links: [
       { label: "fetch", href: "/docs/packages/fetch" },
       { label: "permit", href: "/docs/packages/permit" },
+      { label: "retry", href: "/docs/packages/retry" },
       { label: "validation", href: "/docs/packages/validation" },
       { label: "webhooks", href: "/docs/packages/webhooks" },
     ],
