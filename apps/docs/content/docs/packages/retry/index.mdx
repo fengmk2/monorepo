@@ -1,0 +1,58 @@
+---
+title: Overview
+description: A composable retry package with policy classes, a built-in runner, and structured terminal errors.
+---
+
+`retry` gives you reusable retry policies and a built-in runner so you can add resilient retries without rewriting orchestration loops.
+
+## Why retry?
+
+Most retry implementations end up duplicating the same logic:
+
+- track attempts
+- catch errors
+- calculate delay
+- sleep
+- throw a final terminal error
+
+`@zap-studio/retry` centralizes that flow in policy classes like `ExponentialBackoff` and `FixedDelay`.
+
+## Core Concepts
+
+- **Policy** decides _if_ and _when_ to retry (`next`)
+- **Runner** executes retries (`policy.run(...)`)
+- **Terminal error** is shaped consistently (`onExhausted` + `RetryError`)
+
+## Installation
+
+```bash
+npm install @zap-studio/retry
+```
+
+## Quick Start
+
+```ts
+import { ExponentialBackoff } from "@zap-studio/retry/exponential-backoff";
+import { $fetch } from "@zap-studio/fetch";
+
+const policy = new ExponentialBackoff({
+  maxAttempts: 5,
+  baseDelayMs: 100,
+  maxDelayMs: 2_000,
+});
+
+const result = await policy.run(async () => {
+  const response = await $fetch("https://api.example.com/users", {
+    throwOnFetchError: true,
+  });
+  return await response.json();
+});
+```
+
+## What to Read Next
+
+- **Types** for generic contracts and extension points
+- **FixedDelay** for constant retry intervals
+- **ExponentialBackoff** for scalable backoff behavior
+- **RetryError** for terminal failure handling
+- **Running Policies** for orchestration options

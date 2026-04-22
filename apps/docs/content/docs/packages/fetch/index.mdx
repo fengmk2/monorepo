@@ -97,3 +97,17 @@ try {
   }
 }
 ```
+
+## 4. Retry Integration
+
+`fetch` composes well with `@zap-studio/retry`.
+
+Use `throwOnFetchError: true` so HTTP failures throw, then run calls inside a retry policy runner:
+
+```typescript
+const response = await policy.run(async () => {
+  return await $fetch("/users/1", {
+    throwOnFetchError: true,
+  });
+});
+```

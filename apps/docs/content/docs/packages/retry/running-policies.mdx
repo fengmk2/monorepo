@@ -1,0 +1,53 @@
+---
+title: Running Policies
+description: Use BaseRetryPolicy.run for built-in orchestration with optional custom sleep behavior.
+---
+
+`BaseRetryPolicy.run(...)` is the built-in orchestration layer for retry execution.
+
+## Basic Usage
+
+```ts
+const policy = new ExponentialBackoff({
+  maxAttempts: 5,
+  baseDelayMs: 100,
+  maxDelayMs: 2_000,
+});
+
+const result = await policy.run(async () => {
+  return await doWork();
+});
+```
+
+## Custom Sleep
+
+Use `RetryRunOptions.sleep` to inject a custom delay implementation.
+This is useful for testing and deterministic timing.
+
+```ts
+const result = await policy.run(
+  async () => {
+    return await doWork();
+  },
+  {
+    sleep: async (_ms) => {
+      // no delay in tests
+    },
+  },
+);
+```
+
+## Attempt Awareness
+
+The execute callback receives the current attempt number.
+
+```ts
+const result = await policy.run(async (attempt) => {
+  console.log("Attempt:", attempt);
+  return await doWork();
+});
+```
+
+## Failure Flow
+
+When `next(...)` returns `shouldRetry: false`, `run(...)` throws the error returned by `onExhausted(...)`.

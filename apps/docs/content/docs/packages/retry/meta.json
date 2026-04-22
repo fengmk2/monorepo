@@ -1,0 +1,13 @@
+{
+  "title": "retry",
+  "icon": "RotateCcw",
+  "root": true,
+  "pages": [
+    "index",
+    "types",
+    "fixed-delay",
+    "exponential-backoff",
+    "retry-error",
+    "running-policies"
+  ]
+}

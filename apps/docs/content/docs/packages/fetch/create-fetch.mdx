@@ -232,6 +232,24 @@ const user = await api.get("/users/1", UserSchema, {
 });
 ```
 
+## Retry Composition
+
+For automatic retries, compose `$fetch` with `@zap-studio/retry`:
+
+```typescript
+const policy = new ExponentialBackoff({
+  maxAttempts: 5,
+  baseDelayMs: 100,
+  maxDelayMs: 2_000,
+});
+
+const response = await policy.run(async () => {
+  return await $fetch("/users/1", {
+    throwOnFetchError: true,
+  });
+});
+```
+
 ## Return Type
 
 `createFetch` returns an object with both `$fetch` and `api`:
