@@ -1,5 +1,29 @@
 # @zap-studio/fetch
 
+## 0.5.0
+
+### Changed
+
+- Simplified the request API around web platform types.
+  - `resource` now follows the native `fetch` shape with `RequestInfo`.
+  - `ExtendedRequestInit` now extends native `RequestInit` directly instead of redefining request options.
+  - `searchParams` now accepts the same input shape as `new URLSearchParams(...)`.
+- Replaced automatic object body serialization with an explicit `json` option.
+  - Use `json: value` when you want JSON stringification and `Content-Type: application/json`.
+  - Use native `body` when you want standard `fetch` behavior.
+  - `body` and `json` are mutually exclusive in TypeScript and guarded at runtime.
+- Reworked URL handling to use the platform `URL` and `URLSearchParams` APIs while preserving relative URL output when no `baseURL` is configured.
+- Simplified the internal module structure and removed the old `utils` module.
+
+### Fixed
+
+- Fixed absolute URL handling when no `baseURL` is configured.
+
+### Tests
+
+- Reworked tests to mirror the `src` module structure.
+- Added full package coverage across statements, branches, functions, and lines.
+
 ## 0.4.7
 
 ### Patch Changes
