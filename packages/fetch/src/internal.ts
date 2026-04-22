@@ -47,7 +47,6 @@ function prepareRequestInit(
 ): {
   init: RequestInit;
   searchParams: ExtendedRequestInit["searchParams"] | undefined;
-  retry: FetchDefaults["retry"];
   throwOnFetchError: boolean;
   throwOnValidationError: boolean;
 } {
@@ -55,7 +54,6 @@ function prepareRequestInit(
     headers,
     json,
     searchParams,
-    retry,
     throwOnFetchError = defaults.throwOnFetchError,
     throwOnValidationError = defaults.throwOnValidationError,
     ...rest
@@ -82,7 +80,6 @@ function prepareRequestInit(
   return {
     init,
     searchParams,
-    retry: retry ?? defaults.retry,
     throwOnFetchError,
     throwOnValidationError,
   };
