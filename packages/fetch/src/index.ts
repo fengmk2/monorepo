@@ -1,3 +1,14 @@
+/**
+ * Public entrypoint for the fetch package.
+ *
+ * Exposes:
+ * - `$fetch` low-level typed fetch function
+ * - `api` method shortcuts
+ * - `createFetch` instance factory
+ *
+ * @module
+ */
+
 import { isStandardSchema, type StandardSchemaV1 } from "@zap-studio/validation";
 
 import { GLOBAL_DEFAULTS } from "./constants.js";

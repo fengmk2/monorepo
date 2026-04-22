@@ -1,12 +1,24 @@
+/**
+ * Request normalization helpers for RequestInfo-compatible inputs.
+ *
+ * @module
+ */
+
 import { mergeHeaders } from "./headers.js";
 import type { ExtendedRequestInit } from "./types.js";
 
+/**
+ * Normalized representation used by internal request execution.
+ */
 export interface NormalizedRequest {
   url: string;
   request?: Request;
   options: ExtendedRequestInit;
 }
 
+/**
+ * Normalizes RequestInfo and request-level options into a consistent internal shape.
+ */
 export function normalizeRequest(
   resource: RequestInfo,
   options?: ExtendedRequestInit,

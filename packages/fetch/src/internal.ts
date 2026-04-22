@@ -1,3 +1,9 @@
+/**
+ * Internal request execution and option preparation utilities.
+ *
+ * @module
+ */
+
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { standardValidate } from "@zap-studio/validation";
 
@@ -41,6 +47,9 @@ export async function fetchInternal(
   return standardValidate(schema, raw, { throwOnError: false });
 }
 
+/**
+ * Normalizes request-level options into a final RequestInit payload and runtime flags.
+ */
 function prepareRequestInit(
   options: ExtendedRequestInit,
   defaults: FetchDefaults,

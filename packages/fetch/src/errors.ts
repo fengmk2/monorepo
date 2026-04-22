@@ -1,4 +1,10 @@
 /**
+ * Custom error types used by the fetch package.
+ *
+ * @module
+ */
+
+/**
  * Error thrown for HTTP errors (non-2xx responses)
  */
 export class FetchError extends Error {

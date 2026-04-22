@@ -1,3 +1,9 @@
+/**
+ * Shared defaults and constants for fetch behavior.
+ *
+ * @module
+ */
+
 import type { FetchDefaults } from "./types.js";
 
 /**

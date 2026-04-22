@@ -1,5 +1,14 @@
+/**
+ * URL resolution and query merging utilities.
+ *
+ * @module
+ */
+
 import type { ExtendedRequestInit, FetchDefaults } from "./types.js";
 
+/**
+ * Resolves final request URL by applying baseURL and layered search params.
+ */
 export function resolveRequestUrl(
   resourceUrl: string,
   defaults: FetchDefaults,
@@ -12,6 +21,9 @@ export function resolveRequestUrl(
   return resolveSearchParams(url, defaults.searchParams, searchParams);
 }
 
+/**
+ * Resolves search params by applying default params, URL params, then request params.
+ */
 function resolveSearchParams(
   url: string,
   defaultSearchParams: FetchDefaults["searchParams"] | undefined,
@@ -34,10 +46,16 @@ function resolveSearchParams(
   return `${pathname}?${resolvedSearch}${hash ? `#${hash}` : ""}`;
 }
 
+/**
+ * Ensures a URL has a trailing slash for relative URL resolution.
+ */
 function ensureTrailingSlash(url: string): string {
   return url.endsWith("/") ? url : `${url}/`;
 }
 
+/**
+ * Copies search params into target, overriding duplicate keys.
+ */
 function mergeSearchParams(
   target: URLSearchParams,
   source: ExtendedRequestInit["searchParams"] | undefined,

@@ -1,4 +1,10 @@
 /**
+ * Header utility helpers for request normalization and merging.
+ *
+ * @module
+ */
+
+/**
  * Merges two HeadersInit objects, with the second one taking precedence.
  */
 export function mergeHeaders(base?: HeadersInit, override?: HeadersInit): Headers | undefined {
