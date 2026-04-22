@@ -115,6 +115,9 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
   }
 }
 
+/**
+ * Default delay implementation used by `run(...)` when no custom sleep function is provided.
+ */
 async function defaultSleep(delayMs: number): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, delayMs));
 }

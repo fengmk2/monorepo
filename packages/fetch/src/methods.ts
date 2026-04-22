@@ -41,6 +41,11 @@ export function createMethod<TFetch extends $Fetch>(fetchFn: TFetch, method: str
 
   function methodFetch(resource: RequestInfo, options?: ExtendedRequestInit): Promise<Response>;
 
+  /**
+   * Method-bound `$Fetch` implementation.
+   *
+   * Resolves schema/option overloads and injects the configured HTTP method.
+   */
   function methodFetch(
     resource: RequestInfo,
     schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
