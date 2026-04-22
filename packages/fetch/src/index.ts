@@ -131,6 +131,7 @@ export function createFetch(factoryOptions: Partial<FetchDefaults> = {}): {
     baseURL: factoryOptions.baseURL ?? "",
     headers: factoryOptions.headers,
     searchParams: factoryOptions.searchParams,
+    retry: factoryOptions.retry,
     throwOnFetchError: factoryOptions.throwOnFetchError ?? true,
     throwOnValidationError: factoryOptions.throwOnValidationError ?? true,
   };
