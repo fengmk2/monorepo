@@ -62,7 +62,7 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
    */
   public async run<T>(
     execute: (attempt: number) => Promise<T>,
-    options?: RetryRunOptions & { throwOnExhausted?: true | undefined },
+    options?: RetryRunOptions & { throwOnExhausted?: true },
   ): Promise<T>;
 
   /**

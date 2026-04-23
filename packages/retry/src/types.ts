@@ -36,7 +36,7 @@ export interface RetryPolicy<TError = unknown, TData = unknown> {
 export interface RetryDecision {
   readonly shouldRetry: boolean;
   readonly delayMs: number;
-  readonly reason?: "retry" | "max-attempts-reached" | "policy-declined" | undefined;
+  readonly reason?: "retry" | "max-attempts-reached" | "policy-declined";
 }
 
 /**
@@ -44,9 +44,9 @@ export interface RetryDecision {
  */
 export interface RetryDecisionInput<TError = unknown, TData = unknown> {
   readonly attempt: number;
-  readonly maxAttempts?: number | undefined;
-  readonly error?: TError | undefined;
-  readonly data?: TData | undefined;
+  readonly maxAttempts?: number;
+  readonly error?: TError;
+  readonly data?: TData;
 }
 
 /**
@@ -54,8 +54,8 @@ export interface RetryDecisionInput<TError = unknown, TData = unknown> {
  */
 export interface RetryExhaustedInput<TError = unknown, TData = unknown> {
   readonly attempts: number;
-  readonly error?: TError | undefined;
-  readonly data?: TData | undefined;
+  readonly error?: TError;
+  readonly data?: TData;
 }
 
 /**
@@ -67,8 +67,8 @@ export interface RetryRunOptions {
    *
    * @throws Any error thrown or rejected by the custom delay implementation.
    */
-  readonly sleep?: ((delayMs: number) => Promise<void>) | undefined;
-  readonly throwOnExhausted?: boolean | undefined;
+  readonly sleep?: (delayMs: number) => Promise<void>;
+  readonly throwOnExhausted?: boolean;
 }
 
 /**
