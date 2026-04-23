@@ -17,6 +17,12 @@
   ],
   "overrides": [
     {
+      "files": ["apps/docs/src/lib/content/source.ts", "apps/docs/src/routes/docs/$.tsx"],
+      "rules": {
+        "unresolved-imports": "off"
+      }
+    },
+    {
       "files": ["apps/docs/src/styles/**/*.css"],
       "rules": {
         "unresolved-imports": "off"
