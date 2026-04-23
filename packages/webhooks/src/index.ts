@@ -96,39 +96,9 @@ export class WebhookRouter<TMap = unknown> {
     handlerOrOptions: WebhookHandler<unknown> | RegisterOptions<unknown>,
   ): WebhookRouter<TMap> {
     if (typeof handlerOrOptions === "function") {
-      this.handlers[path] = {
-        handler: handlerOrOptions,
-      };
+      this.handlers[path] = { handler: handlerOrOptions };
     } else {
-      let beforeHooks: BeforeHook[] | undefined;
-      if (handlerOrOptions.before) {
-        beforeHooks = Array.isArray(handlerOrOptions.before)
-          ? handlerOrOptions.before
-          : [handlerOrOptions.before];
-      }
-
-      let afterHooks: AfterHook[] | undefined;
-      if (handlerOrOptions.after) {
-        afterHooks = Array.isArray(handlerOrOptions.after)
-          ? handlerOrOptions.after
-          : [handlerOrOptions.after];
-      }
-
-      const entry: HandlerEntry<unknown> = {
-        handler: handlerOrOptions.handler,
-      };
-
-      if (handlerOrOptions.schema !== undefined) {
-        entry.schema = handlerOrOptions.schema;
-      }
-      if (beforeHooks !== undefined) {
-        entry.before = beforeHooks;
-      }
-      if (afterHooks !== undefined) {
-        entry.after = afterHooks;
-      }
-
-      this.handlers[path] = entry;
+      this.handlers[path] = this.createHandlerEntry(handlerOrOptions);
     }
 
     return this;
@@ -207,6 +177,31 @@ export class WebhookRouter<TMap = unknown> {
   private async runGlobalBeforeHooks(req: NormalizedRequest): Promise<void> {
     for (const hook of this.globalBeforeHooks) {
       await hook(req);
+    }
+  }
+
+  private createHandlerEntry(options: RegisterOptions<unknown>): HandlerEntry<unknown> {
+    const entry: HandlerEntry<unknown> = {
+      handler: options.handler,
+    };
+
+    if (options.schema !== undefined) {
+      entry.schema = options.schema;
+    }
+
+    this.assignHooks(entry, "before", options.before);
+    this.assignHooks(entry, "after", options.after);
+
+    return entry;
+  }
+
+  private assignHooks(
+    entry: HandlerEntry<unknown>,
+    key: "after" | "before",
+    hooks: AfterHook | AfterHook[] | BeforeHook | BeforeHook[] | undefined,
+  ): void {
+    if (hooks !== undefined) {
+      entry[key] = Array.isArray(hooks) ? hooks : [hooks];
     }
   }
 

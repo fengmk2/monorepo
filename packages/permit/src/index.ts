@@ -430,23 +430,7 @@ export function mergePolicies<
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
 >(...policies: Policy<TContext, TResources, TActions>[]): Policy<TContext, TResources, TActions> {
-  return {
-    async can<K extends keyof TResources & keyof TActions>(
-      context: TContext,
-      permission: `${K & string}:${InferAction<TActions, K> & string}`,
-      resource: InferResource<TResources, K>,
-    ): Promise<boolean> {
-      if (!policies.length) {
-        return false;
-      }
-      for (const policy of policies) {
-        if (!(await policy.can(context, permission, resource))) {
-          return false;
-        }
-      }
-      return true;
-    },
-  };
+  return mergePoliciesWithStrategy(policies, "deny-overrides");
 }
 
 /**
@@ -467,6 +451,17 @@ export function mergePoliciesAny<
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
 >(...policies: Policy<TContext, TResources, TActions>[]): Policy<TContext, TResources, TActions> {
+  return mergePoliciesWithStrategy(policies, "allow-overrides");
+}
+
+function mergePoliciesWithStrategy<
+  TContext extends Context,
+  TResources extends Resources = Resources,
+  TActions extends Actions<TResources> = Actions<TResources>,
+>(
+  policies: Policy<TContext, TResources, TActions>[],
+  strategy: "allow-overrides" | "deny-overrides",
+): Policy<TContext, TResources, TActions> {
   return {
     async can<K extends keyof TResources & keyof TActions>(
       context: TContext,
@@ -477,11 +472,16 @@ export function mergePoliciesAny<
         return false;
       }
       for (const policy of policies) {
-        if (await policy.can(context, permission, resource)) {
+        const allowed = await policy.can(context, permission, resource);
+
+        if (strategy === "allow-overrides" && allowed) {
           return true;
         }
+        if (strategy === "deny-overrides" && !allowed) {
+          return false;
+        }
       }
-      return false;
+      return strategy === "deny-overrides";
     },
   };
 }
