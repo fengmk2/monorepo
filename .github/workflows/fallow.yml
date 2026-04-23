@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
   security-events: write
 
 concurrency:
@@ -29,4 +30,6 @@ jobs:
       - name: Run Fallow
         uses: fallow-rs/fallow@v2
         with:
+          annotations: "true"
           auto-changed-since: "false"
+          comment: "true"
