@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/fallow.schema.json",
+  "duplicates": {
+    "ignore": ["**/tests/**"]
+  },
+  "dynamicallyLoaded": ["apps/docs/content/docs/**/*.mdx"],
+  "ignoreDependencies": ["stripe"],
+  "ignoreExports": [
+    {
+      "file": "apps/docs/source.config.ts",
+      "exports": ["docs", "default"]
+    },
+    {
+      "file": "apps/docs/src/components/mdx.tsx",
+      "exports": ["useMDXComponents"]
+    }
+  ],
+  "overrides": [
+    {
+      "files": ["apps/docs/src/styles/**/*.css"],
+      "rules": {
+        "unresolved-imports": "off"
+      }
+    }
+  ]
+}
