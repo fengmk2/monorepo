@@ -100,4 +100,27 @@ describe("resolveRequestUrl", () => {
       "https://api.example.com/users?q=zap#",
     );
   });
+
+  it("keeps a non-empty fragment when there is no query string to merge", () => {
+    expect(resolveRequestUrl("/docs/guide#intro", DEFAULTS, undefined)).toBe("/docs/guide#intro");
+    expect(
+      resolveRequestUrl(
+        "guide#intro",
+        { ...DEFAULTS, baseURL: "https://api.example.com/docs/" },
+        undefined,
+      ),
+    ).toBe("https://api.example.com/docs/guide#intro");
+  });
+
+  it("merges search params before a fragment when the path already has a query", () => {
+    expect(
+      resolveRequestUrl(
+        "items?sort=name#results",
+        { ...DEFAULTS, baseURL: "https://api.example.com/" },
+        {
+          page: "2",
+        },
+      ),
+    ).toBe("https://api.example.com/items?sort=name&page=2#results");
+  });
 });

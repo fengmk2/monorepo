@@ -47,7 +47,7 @@ function resolveSearchParams(
   searchParams: ExtendedRequestInit["searchParams"] | undefined,
 ): string {
   const hasFragment = url.includes("#");
-  const [urlWithoutHash = "", hash] = url.split("#", 2);
+  const [urlWithoutHash = "", hash = ""] = url.split("#", 2);
   const [pathname = "", urlSearchParams] = urlWithoutHash.split("?", 2);
   const resolvedSearchParams = new URLSearchParams();
 
@@ -56,7 +56,7 @@ function resolveSearchParams(
   mergeSearchParams(resolvedSearchParams, searchParams);
 
   const resolvedSearch = resolvedSearchParams.toString();
-  const fragmentSuffix = hasFragment ? `#${hash ?? ""}` : "";
+  const fragmentSuffix = hasFragment ? `#${hash}` : "";
 
   if (!resolvedSearch) {
     return `${pathname}${fragmentSuffix}`;
