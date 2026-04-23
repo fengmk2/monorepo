@@ -189,20 +189,15 @@ export class WebhookRouter<TMap = unknown> {
       entry.schema = options.schema;
     }
 
-    this.assignHooks(entry, "before", options.before);
-    this.assignHooks(entry, "after", options.after);
+    if (options.before !== undefined) {
+      entry.before = Array.isArray(options.before) ? options.before : [options.before];
+    }
+
+    if (options.after !== undefined) {
+      entry.after = Array.isArray(options.after) ? options.after : [options.after];
+    }
 
     return entry;
-  }
-
-  private assignHooks(
-    entry: HandlerEntry<unknown>,
-    key: "after" | "before",
-    hooks: AfterHook | AfterHook[] | BeforeHook | BeforeHook[] | undefined,
-  ): void {
-    if (hooks !== undefined) {
-      entry[key] = Array.isArray(hooks) ? hooks : [hooks];
-    }
   }
 
   private async runRouteBeforeHooks(req: NormalizedRequest, before?: BeforeHook[]): Promise<void> {
