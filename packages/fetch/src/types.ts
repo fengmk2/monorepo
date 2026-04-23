@@ -10,9 +10,7 @@ export type FetchInput = Parameters<typeof fetch>[0];
 
 type URLSearchParamsInput = ConstructorParameters<typeof URLSearchParams>[0];
 
-type RequestBodyInit = RequestInit & {
-  json?: never;
-};
+type RequestBodyInit = RequestInit & Partial<Record<"json", never>>;
 
 type JsonBodyInit = Omit<RequestInit, "body"> & {
   /**
@@ -20,26 +18,13 @@ type JsonBodyInit = Omit<RequestInit, "body"> & {
    * @default undefined
    */
   json: unknown;
-  body?: never;
-};
+} & Partial<Record<"body", never | undefined>>;
 
-type CustomRequestInit = {
-  /**
-   * Per-request query/search params
-   * @default undefined
-   */
-  searchParams?: URLSearchParamsInput | undefined;
-  /**
-   * Whether to throw a FetchError on HTTP errors (non-2xx responses)
-   * @default true
-   */
-  throwOnFetchError?: boolean | undefined;
-  /**
-   * Whether to throw a ValidationError on validation errors
-   * @default true
-   */
-  throwOnValidationError?: boolean | undefined;
-};
+type CustomRequestInit = Partial<
+  Record<"searchParams", URLSearchParamsInput | undefined> &
+    Record<"throwOnFetchError", boolean | undefined> &
+    Record<"throwOnValidationError", boolean | undefined>
+>;
 
 /**
  * Extended RequestInit type to include custom fetch options
@@ -63,7 +48,7 @@ export type ExtendedRequestInit = (RequestBodyInit | JsonBodyInit) & CustomReque
  *   throwOnValidationError: true,
  * };
  */
-export interface FetchDefaults {
+export type FetchDefaults = {
   /**
    * Base URL to prepend to all requests
    * @default ""
@@ -73,12 +58,12 @@ export interface FetchDefaults {
    * Default headers to include in all requests (can be overridden per request)
    * @default undefined
    */
-  headers?: HeadersInit | undefined;
+  headers: HeadersInit | undefined;
   /**
    * Default query/search params applied to every request (can be overridden per request)
    * @default undefined
    */
-  searchParams?: URLSearchParamsInput | undefined;
+  searchParams: URLSearchParamsInput | undefined;
   /**
    * Whether to throw a `FetchError` on HTTP errors (non-2xx responses)
    * @default true
@@ -89,7 +74,7 @@ export interface FetchDefaults {
    * @default true
    */
   throwOnValidationError: boolean;
-}
+};
 
 /**
  * Type-safe fetch function with Standard Schema validation support
@@ -135,9 +120,9 @@ export interface $Fetch {
   <TSchema extends StandardSchemaV1>(
     input: FetchInput,
     schema: TSchema,
-    options?: ExtendedRequestInit & {
-      throwOnValidationError?: true | undefined;
-    },
+    ...args:
+      | []
+      | [options: ExtendedRequestInit & Partial<Record<"throwOnValidationError", true | undefined>>]
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
   /**
@@ -151,7 +136,7 @@ export interface $Fetch {
    * @throws {DOMException} When native `fetch` rejects an aborted request as an
    *   `AbortError` DOMException.
    */
-  (input: FetchInput, options?: ExtendedRequestInit): Promise<Response>;
+  (input: FetchInput, ...args: [] | [options: ExtendedRequestInit]): Promise<Response>;
 }
 
 /**

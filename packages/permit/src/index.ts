@@ -254,7 +254,11 @@ export function hasRole<
   TContext extends { role: Role | Role[] },
   TAction extends string = string,
   TResource = unknown,
->(role: Role, hierarchy?: RoleHierarchy<Role>): ConditionFn<TContext, TAction, TResource> {
+>(
+  role: Role,
+  ...args: [] | [hierarchy: RoleHierarchy<Role> | undefined]
+): ConditionFn<TContext, TAction, TResource> {
+  const [hierarchy] = args;
   return (context) => {
     const userRoles = Array.isArray(context.role) ? context.role : [context.role];
 

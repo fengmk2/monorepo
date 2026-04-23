@@ -50,8 +50,7 @@ export function createHmacVerifier({
 }: {
   headerName: string;
   secret: string;
-  algo?: HmacAlgorithm | undefined;
-}): VerifyFn {
+} & Partial<Record<"algo", HmacAlgorithm | undefined>>): VerifyFn {
   const subtle = globalThis.crypto?.subtle;
   if (!subtle) {
     throw new VerificationError("Web Crypto API is unavailable in this runtime");

@@ -18,11 +18,17 @@ const clientSiteUrl = import.meta.env.VITE_SITE_URL;
 
 export const siteUrl = serverSiteUrl ?? clientSiteUrl ?? "https://www.zapstudio.dev";
 
-function pageTitle(title?: string) {
+function pageTitle(...args: [] | [title: string | undefined]) {
+  const [title] = args;
   return title ? `${title} | ${siteName}` : siteTitle;
 }
 
-export function pageMeta(title: string | undefined, description: string, image?: string) {
+export function pageMeta(
+  title: string | undefined,
+  description: string,
+  ...args: [] | [image: string | undefined]
+) {
+  const [image] = args;
   return [
     { title: pageTitle(title) },
     { name: "description", content: description },

@@ -127,9 +127,9 @@ export type ActionPolicyMap<
   TContext extends Context,
   TAction extends string = string,
   TResource = unknown,
-> = {
-  [A in TAction]?: PolicyFn<TContext, A, TResource>;
-};
+> = Partial<{
+  [A in TAction]: PolicyFn<TContext, A, TResource> | undefined;
+}>;
 
 /**
  * Defines the rules for each resource and action combination.

@@ -364,7 +364,7 @@ describe("WebhookRouter", () => {
           version: 1,
           vendor: "custom",
           validate: (data: unknown) => {
-            const obj = data as { value?: unknown };
+            const obj = data as Partial<Record<"value", unknown | undefined>>;
             if (typeof obj.value !== "number" || obj.value < 1 || obj.value > 100) {
               return {
                 issues: [
@@ -415,7 +415,7 @@ describe("WebhookRouter", () => {
           version: 1,
           vendor: "custom",
           validate: async (data: unknown) => {
-            const obj = data as { id?: unknown };
+            const obj = data as Partial<Record<"id", unknown | undefined>>;
 
             // Simulate async operation
             await new Promise((resolve) => setTimeout(resolve, 10));
@@ -668,7 +668,7 @@ describe("WebhookRouter", () => {
 
     it("should handle empty request body", async () => {
       interface WebhookMap {
-        empty: { data?: string };
+        empty: Partial<Record<"data", string | undefined>>;
       }
 
       const router = new WebhookRouter<WebhookMap>();
@@ -754,17 +754,20 @@ describe("WebhookRouter", () => {
 
         const router = new WebhookRouter<WebhookMap>({
           before: (req) => {
-            (req as { metadata?: { timestamp: number } }).metadata = {
+            (req as Partial<Record<"metadata", { timestamp: number } | undefined>>).metadata = {
               timestamp: Date.now(),
             };
           },
         });
 
         router.register("test", ({ req, ack }) => {
-          expect((req as { metadata?: { timestamp: number } }).metadata).toBeDefined();
-          expect(typeof (req as { metadata?: { timestamp: number } }).metadata?.timestamp).toBe(
-            "number",
-          );
+          expect(
+            (req as Partial<Record<"metadata", { timestamp: number } | undefined>>).metadata,
+          ).toBeDefined();
+          expect(
+            typeof (req as Partial<Record<"metadata", { timestamp: number } | undefined>>).metadata
+              ?.timestamp,
+          ).toBe("number");
           return ack({ status: 200 });
         });
 

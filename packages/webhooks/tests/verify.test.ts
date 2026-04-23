@@ -11,14 +11,19 @@ type HmacAlgorithm = "sha1" | "sha256" | "sha384" | "sha512";
 describe("createHmacVerifier", () => {
   const createMockRequest = (
     body: string | Uint8Array,
-    signature?: string,
-    headerName = "x-hub-signature-256",
-  ): NormalizedRequest => ({
-    method: "POST",
-    path: "/webhook",
-    headers: new Headers(signature ? { [headerName]: signature } : {}),
-    rawBody: typeof body === "string" ? encoder.encode(body) : body,
-  });
+    ...args:
+      | []
+      | [signature: string | undefined]
+      | [signature: string | undefined, headerName: string]
+  ): NormalizedRequest => {
+    const [signature, headerName = "x-hub-signature-256"] = args;
+    return {
+      method: "POST",
+      path: "/webhook",
+      headers: new Headers(signature ? { [headerName]: signature } : {}),
+      rawBody: typeof body === "string" ? encoder.encode(body) : body,
+    };
+  };
 
   const generateValidSignature = async (
     body: string | Uint8Array,

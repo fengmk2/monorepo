@@ -33,43 +33,41 @@ export interface RetryPolicy<TError = unknown, TData = unknown> {
 /**
  * Decision returned by a retry policy for a specific attempt.
  */
-export interface RetryDecision {
+export type RetryDecision = {
   readonly shouldRetry: boolean;
   readonly delayMs: number;
-  readonly reason?: "retry" | "max-attempts-reached" | "policy-declined" | undefined;
-}
+} & Partial<Record<"reason", "retry" | "max-attempts-reached" | "policy-declined" | undefined>>;
 
 /**
  * Input passed to `RetryPolicy.next(...)` for each failed attempt.
  */
-export interface RetryDecisionInput<TError = unknown, TData = unknown> {
+export type RetryDecisionInput<TError = unknown, TData = unknown> = {
   readonly attempt: number;
-  readonly maxAttempts?: number | undefined;
-  readonly error?: TError | undefined;
-  readonly data?: TData | undefined;
-}
+} & Partial<
+  Record<"maxAttempts", number | undefined> &
+    Record<"error", TError | undefined> &
+    Record<"data", TData | undefined>
+>;
 
 /**
  * Input passed to `RetryPolicy.onExhausted(...)` when retries stop.
  */
-export interface RetryExhaustedInput<TError = unknown, TData = unknown> {
+export type RetryExhaustedInput<TError = unknown, TData = unknown> = {
   readonly attempts: number;
-  readonly error?: TError | undefined;
-  readonly data?: TData | undefined;
-}
+} & Partial<Record<"error", TError | undefined> & Record<"data", TData | undefined>>;
 
 /**
  * Options for `BaseRetryPolicy.run(...)`.
  */
-export interface RetryRunOptions {
+export type RetryRunOptions = Partial<
   /**
    * Delay function used between retry attempts.
    *
    * @throws Any error thrown or rejected by the custom delay implementation.
    */
-  readonly sleep?: ((delayMs: number) => Promise<void>) | undefined;
-  readonly throwOnExhausted?: boolean | undefined;
-}
+  Record<"sleep", ((delayMs: number) => Promise<void>) | undefined> &
+    Record<"throwOnExhausted", boolean | undefined>
+>;
 
 /**
  * Result union returned by non-throw runner mode.

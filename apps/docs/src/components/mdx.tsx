@@ -4,7 +4,8 @@ import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
 import { getExternalLinkProps } from "@/lib/utils/links";
 
-export function getMDXComponents(components?: MDXComponents) {
+export function getMDXComponents(...args: [] | [components: MDXComponents | undefined]) {
+  const [components] = args;
   const DefaultLink = defaultMdxComponents.a ?? "a";
 
   return {

@@ -6,11 +6,10 @@ import { getExternalLinkProps } from "@/lib/utils/links";
 import { FadeIn } from "./animated";
 import { DiscordIcon, GitHubIcon } from "./icons";
 
-interface FooterLink {
-  external?: boolean;
+type FooterLink = {
   href: string;
   label: string;
-}
+} & Partial<Record<"external", boolean | undefined>>;
 
 interface FooterColumn {
   heading: string;

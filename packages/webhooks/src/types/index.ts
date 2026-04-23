@@ -1,46 +1,43 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
 /** Framework-agnostic request shape consumed by the webhook router. */
-export interface NormalizedRequest {
+export type NormalizedRequest = {
   /** The headers of the request (e.g. { "Authorization": "Bearer token" }) */
   headers: Headers;
-  /** The parsed JSON body of the request if applicable */
-  json?: unknown;
   /** The HTTP method of the request */
   method: Request["method"];
-  /** The route parameters of the request */
-  params?: Record<string, string>;
   /** The path of the request you registered in the router (e.g. "payment", "subscription") */
   path: string;
-  /** The query parameters of the request */
-  query?: Record<string, string | string[]>;
   /** The raw body of the request (for signature) */
   rawBody: Uint8Array<ArrayBufferLike>;
-  /** The parsed text body of the request if applicable */
-  text?: string;
-}
+} & Partial<
+  Record<"json", unknown | undefined> &
+    Record<"params", Record<string, string> | undefined> &
+    Record<"query", Record<string, string | string[]> | undefined> &
+    Record<"text", string | undefined>
+>;
 
 /** Framework-agnostic response shape returned by the webhook router. */
-export interface NormalizedResponse<TBody = unknown> {
-  /** The body of the response */
-  body?: TBody;
-  /** The headers of the response */
-  headers?: Headers;
+export type NormalizedResponse<TBody = unknown> = {
   /** The HTTP status code of the response */
   status: number;
-}
+} & Partial<
+  /** The body of the response */
+  Record<"body", TBody | undefined> & Record<"headers", Headers | undefined>
+>;
 
 /** Route registration options for a webhook handler. */
-export interface RegisterOptions<T> {
-  /** Hooks that run after successful processing (before global after hooks) */
-  after?: AfterHook | AfterHook[] | undefined;
-  /** Hooks that run before request processing (after global before hooks) */
-  before?: BeforeHook | BeforeHook[] | undefined;
+export type RegisterOptions<T> = {
   /** The handler function to process the webhook */
   handler: WebhookHandler<T>;
-  /** Optional Standard Schema validator to validate the webhook payload */
-  schema?: StandardSchemaV1<unknown, T> | undefined;
-}
+} & Partial<
+  /** Hooks that run after successful processing (before global after hooks) */
+  Record<"after", AfterHook | AfterHook[] | undefined> &
+    /** Hooks that run before request processing (after global before hooks) */
+    Record<"before", BeforeHook | BeforeHook[] | undefined> &
+    /** Optional Standard Schema validator to validate the webhook payload */
+    Record<"schema", StandardSchemaV1<unknown, T> | undefined>
+>;
 
 /**
  * Infers the output type from a Standard Schema instance.
@@ -62,12 +59,13 @@ export type SchemaRouteOptions<TSchema extends StandardSchemaV1<unknown, unknown
   schema: TSchema;
 };
 
-interface RouteLike {
-  after?: AfterHook | AfterHook[] | undefined;
-  before?: BeforeHook | BeforeHook[] | undefined;
+type RouteLike = Partial<
+  Record<"after", AfterHook | AfterHook[] | undefined> &
+    Record<"before", BeforeHook | BeforeHook[] | undefined>
+> & {
   handler: WebhookHandler<unknown>;
   schema: StandardSchemaV1<unknown, unknown>;
-}
+};
 
 /**
  * Applies schema-driven payload inference to each route entry.
@@ -82,7 +80,9 @@ export type SchemaRoutes<TRoutes extends Record<string, RouteLike>> = {
 export type WebhookHandler<TPayload = unknown> = (ctx: {
   req: NormalizedRequest;
   payload: TPayload;
-  ack: (res?: Partial<NormalizedResponse>) => Promise<NormalizedResponse>;
+  ack: (
+    ...args: [] | [res: Partial<NormalizedResponse> | undefined]
+  ) => Promise<NormalizedResponse>;
 }) => Promise<NormalizedResponse | undefined> | NormalizedResponse | undefined;
 
 /** Maps route keys to their payload-specific webhook handlers. */

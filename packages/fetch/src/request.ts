@@ -14,11 +14,10 @@ import type { ExtendedRequestInit, FetchInput } from "./types.js";
  * - `request`: original Request clone when input is a Request
  * - `options`: normalized request options merged with Request headers
  */
-export interface NormalizedRequest {
+export type NormalizedRequest = {
   url: string;
-  request?: Request;
   options: ExtendedRequestInit;
-}
+} & Partial<Record<"request", Request | undefined>>;
 
 /**
  * Normalizes fetch `input` and request-level options into a consistent internal shape.
@@ -34,8 +33,9 @@ export interface NormalizedRequest {
  */
 export function normalizeRequest(
   input: FetchInput,
-  options?: ExtendedRequestInit,
+  ...args: [] | [options: ExtendedRequestInit | undefined]
 ): NormalizedRequest {
+  const [options] = args;
   if (!(input instanceof Request)) {
     const url = input instanceof URL ? input.href : input;
     return {

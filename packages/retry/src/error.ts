@@ -7,11 +7,9 @@
 /**
  * Context payload attached to `RetryError`.
  */
-export interface RetryErrorContext {
+export type RetryErrorContext = {
   readonly attempts: number;
-  readonly lastError?: unknown;
-  readonly lastData?: unknown;
-}
+} & Partial<Record<"lastError", unknown> & Record<"lastData", unknown>>;
 
 /**
  * Error thrown when retries are exhausted.
@@ -30,11 +28,11 @@ export class RetryError extends Error {
   /**
    * Last captured error from execution.
    */
-  public readonly lastError?: unknown;
+  public readonly lastError: unknown;
   /**
    * Last captured data value, when available.
    */
-  public readonly lastData?: unknown;
+  public readonly lastData: unknown;
 
   /**
    * Creates a RetryError with structured terminal context.

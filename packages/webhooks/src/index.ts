@@ -18,27 +18,23 @@ import type {
  *
  * @template TMap - Internal route payload map built incrementally via `register`.
  */
-interface HandlerEntry<TPayload = unknown> {
-  after?: AfterHook[];
-  before?: BeforeHook[];
+type HandlerEntry<TPayload = unknown> = {
   handler: WebhookHandler<TPayload>;
-  schema?: StandardSchemaV1<unknown, TPayload>;
-}
+} & Partial<
+  Record<"after", AfterHook[] | undefined> &
+    Record<"before", BeforeHook[] | undefined> &
+    Record<"schema", StandardSchemaV1<unknown, TPayload> | undefined>
+>;
 
 type HandlerStore = Record<string, HandlerEntry<unknown>>;
 
-export interface WebhookRouterOptions {
-  /** Global hooks executed after successful route handler completion. */
-  after?: AfterHook | AfterHook[] | undefined;
-  /** Global hooks executed before route-level hooks and verification. */
-  before?: BeforeHook | BeforeHook[] | undefined;
-  /** Global error hook used to override the default `500` response. */
-  onError?: ErrorHook | undefined;
-  /** Required path prefix for all webhook routes. Defaults to `"/webhooks/"`. */
-  prefix?: string | undefined;
-  /** Optional request verification function (for signature checks, auth, etc.). */
-  verify?: ((req: NormalizedRequest) => Promise<void> | void) | undefined;
-}
+export type WebhookRouterOptions = Partial<
+  Record<"after", AfterHook | AfterHook[] | undefined> &
+    Record<"before", BeforeHook | BeforeHook[] | undefined> &
+    Record<"onError", ErrorHook | undefined> &
+    Record<"prefix", string | undefined> &
+    Record<"verify", ((req: NormalizedRequest) => Promise<void> | void) | undefined>
+>;
 
 function toArray<T>(value: T | T[] | undefined): T[] {
   if (value === undefined) {
@@ -199,7 +195,10 @@ export class WebhookRouter<TMap = unknown> {
     return entry;
   }
 
-  private async runRouteBeforeHooks(req: NormalizedRequest, before?: BeforeHook[]): Promise<void> {
+  private async runRouteBeforeHooks(
+    req: NormalizedRequest,
+    before: BeforeHook[] | undefined,
+  ): Promise<void> {
     if (before) {
       for (const hook of before) {
         await hook(req);
@@ -228,7 +227,7 @@ export class WebhookRouter<TMap = unknown> {
 
   private async validatePayload<TPayload>(
     parsedJson: unknown,
-    schema?: StandardSchemaV1<unknown, TPayload>,
+    schema: StandardSchemaV1<unknown, TPayload> | undefined,
   ): Promise<TPayload | NormalizedResponse> {
     if (!schema) {
       return parsedJson as TPayload;
@@ -264,7 +263,8 @@ export class WebhookRouter<TMap = unknown> {
     const responded = await handler({
       req,
       payload: validatedPayload,
-      ack: async (r?: Partial<NormalizedResponse>) => {
+      ack: async (...args: [] | [r: Partial<NormalizedResponse> | undefined]) => {
+        const [r] = args;
         const response: NormalizedResponse = {
           status: r?.status ?? 200,
           body: r?.body ?? "ok",
@@ -284,7 +284,7 @@ export class WebhookRouter<TMap = unknown> {
   private async runRouteAfterHooks(
     req: NormalizedRequest,
     response: NormalizedResponse,
-    after?: AfterHook[],
+    after: AfterHook[] | undefined,
   ): Promise<void> {
     if (after) {
       for (const hook of after) {
@@ -328,6 +328,9 @@ export class WebhookRouter<TMap = unknown> {
  * @param opts - Optional global router options.
  * @returns A new webhook router.
  */
-export function createWebhookRouter(opts?: WebhookRouterOptions): WebhookRouter {
+export function createWebhookRouter(
+  ...args: [] | [opts: WebhookRouterOptions | undefined]
+): WebhookRouter {
+  const [opts] = args;
   return new WebhookRouter(opts);
 }

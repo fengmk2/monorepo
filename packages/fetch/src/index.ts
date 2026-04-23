@@ -77,16 +77,27 @@ export async function $fetch<TSchema extends StandardSchemaV1>(
 export async function $fetch<TSchema extends StandardSchemaV1>(
   input: FetchInput,
   schema: TSchema,
-  options?: ExtendedRequestInit & { throwOnValidationError?: true | undefined },
+  ...args:
+    | []
+    | [options: ExtendedRequestInit & Partial<Record<"throwOnValidationError", true | undefined>>]
 ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
-
-export async function $fetch(input: FetchInput, options?: ExtendedRequestInit): Promise<Response>;
 
 export async function $fetch(
   input: FetchInput,
-  schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
-  optionsOrUndefined?: ExtendedRequestInit,
+  ...args: [] | [options: ExtendedRequestInit]
+): Promise<Response>;
+
+export async function $fetch(
+  input: FetchInput,
+  ...args:
+    | []
+    | [schemaOrOptions: StandardSchemaV1 | ExtendedRequestInit | undefined]
+    | [
+        schemaOrOptions: StandardSchemaV1 | ExtendedRequestInit | undefined,
+        optionsOrUndefined: ExtendedRequestInit | undefined,
+      ]
 ): Promise<unknown> {
+  const [schemaOrOptions, optionsOrUndefined] = args;
   const [schema, options] = isStandardSchema(schemaOrOptions)
     ? [schemaOrOptions, optionsOrUndefined]
     : [undefined, schemaOrOptions];
@@ -173,18 +184,27 @@ export function createFetch(factoryOptions: Partial<FetchDefaults> = {}): {
   async function customFetch<TSchema extends StandardSchemaV1>(
     input: FetchInput,
     schema: TSchema,
-    options?: ExtendedRequestInit & {
-      throwOnValidationError?: true | undefined;
-    },
+    ...args:
+      | []
+      | [options: ExtendedRequestInit & Partial<Record<"throwOnValidationError", true | undefined>>]
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
-
-  async function customFetch(input: FetchInput, options?: ExtendedRequestInit): Promise<Response>;
 
   async function customFetch(
     input: FetchInput,
-    schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
-    optionsOrUndefined?: ExtendedRequestInit,
+    ...args: [] | [options: ExtendedRequestInit]
+  ): Promise<Response>;
+
+  async function customFetch(
+    input: FetchInput,
+    ...args:
+      | []
+      | [schemaOrOptions: StandardSchemaV1 | ExtendedRequestInit | undefined]
+      | [
+          schemaOrOptions: StandardSchemaV1 | ExtendedRequestInit | undefined,
+          optionsOrUndefined: ExtendedRequestInit | undefined,
+        ]
   ): Promise<unknown> {
+    const [schemaOrOptions, optionsOrUndefined] = args;
     const [schema, options] = isStandardSchema(schemaOrOptions)
       ? [schemaOrOptions, optionsOrUndefined]
       : [undefined, schemaOrOptions];
