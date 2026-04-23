@@ -604,6 +604,27 @@ describe("createFetch", () => {
   });
 
   describe("default options", () => {
+    it("should include default searchParams from factory options", async () => {
+      const mockResponse = new Response(JSON.stringify({ data: "test" }), {
+        status: 200,
+      });
+      fetchMock.mockResolvedValue(mockResponse);
+
+      const { $fetch: customFetch } = createFetch({
+        searchParams: {
+          locale: "en",
+          page: "2",
+        },
+      });
+
+      await customFetch("https://api.example.com/users");
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://api.example.com/users?locale=en&page=2",
+        expect.any(Object),
+      );
+    });
+
     it("should use throwOnFetchError default from factory options", async () => {
       const mockResponse = new Response(JSON.stringify({ error: "Not Found" }), {
         status: 404,

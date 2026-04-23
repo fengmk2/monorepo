@@ -1,5 +1,5 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
-import { describe, expect, it } from "vite-plus/test";
+import { describe, expect, it, vi } from "vite-plus/test";
 
 import { PolicyError } from "../src/errors.js";
 import {
@@ -1048,6 +1048,49 @@ describe("createPolicy", () => {
     await expect(policy.can(ctx, "post:read", post)).resolves.toBe(false);
   });
 
+  it("should deny and warn when resource validation throws", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    const throwingResources = {
+      post: {
+        "~standard": {
+          version: 1,
+          vendor: "test",
+          validate: () => {
+            throw new Error("validator exploded");
+          },
+        },
+      } as StandardSchemaV1,
+    } satisfies Resources<"post">;
+
+    const throwingActions = {
+      post: ["read"],
+    } as const satisfies Actions<typeof throwingResources>;
+
+    const policy = createPolicy<TestContext, typeof throwingResources, typeof throwingActions>({
+      resources: throwingResources,
+      actions: throwingActions,
+      rules: {
+        post: {
+          read: allow(),
+        },
+      },
+    });
+
+    const ctx: TestContext = { user: { id: "user-1", role: "user" } };
+    const post: Post = {
+      id: "1",
+      authorId: "user-1",
+      visibility: "public",
+      status: "published",
+    };
+
+    await expect(policy.can(ctx, "post:read", post)).resolves.toBe(false);
+    expect(warnSpy).toHaveBeenCalledWith(
+      "Resource validation failed for post: Error: validator exploded",
+    );
+  });
+
   it("should throw PolicyError when a resource schema is missing", async () => {
     await Promise.resolve();
     const brokenResources = {
@@ -1106,6 +1149,46 @@ describe("createPolicy", () => {
     });
 
     await expect(policy.can(ctx, "post:read", post)).resolves.toBe(true);
+  });
+
+  it("should deny when an allowed action has no validator entry at runtime", async () => {
+    const runtimeResources = {
+      post: createSchema<Post>(),
+    } as unknown as typeof resources;
+
+    const runtimeActions = {
+      ...actions,
+      profile: ["read"],
+    } as unknown as typeof actions;
+
+    const policy = createPolicy<TestContext, typeof resources, typeof actions>({
+      resources: runtimeResources,
+      actions: runtimeActions,
+      rules: {
+        ...({
+          post: {
+            read: allow(),
+            write: deny(),
+            delete: deny(),
+            publish: deny(),
+          },
+          comment: {
+            read: deny(),
+            write: deny(),
+            delete: deny(),
+          },
+          profile: {
+            read: allow(),
+          },
+        } as const),
+      } as never,
+    });
+
+    const ctx: TestContext = { user: { id: "user-1", role: "user" } };
+
+    await expect(policy.can(ctx, "profile:read" as never, { id: "1" } as never)).resolves.toBe(
+      false,
+    );
   });
 
   it("should deny when a policy function throws", async () => {
