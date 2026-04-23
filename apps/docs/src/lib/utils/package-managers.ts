@@ -2,27 +2,25 @@ const WHITESPACE_REGEX = /\s+/;
 
 type InstallPackageManager = "yarn" | "pnpm" | "bun";
 
+const installCommands = {
+  bun: "bun add",
+  pnpm: "pnpm add",
+  yarn: "yarn add",
+} satisfies Record<InstallPackageManager, string>;
+
+const executeCommands = {
+  bun: "bunx",
+  pnpm: "pnpm dlx",
+  yarn: "yarn dlx",
+} satisfies Record<InstallPackageManager, string>;
+
 function convertInstallCommand(command: string, pm: InstallPackageManager): string | undefined {
   if (command.startsWith("npm install ")) {
-    const pkg = command.slice("npm install ".length);
-    if (pm === "yarn") {
-      return `yarn add ${pkg}`;
-    }
-    if (pm === "pnpm") {
-      return `pnpm add ${pkg}`;
-    }
-    return `bun add ${pkg}`;
+    return `${installCommands[pm]} ${command.slice("npm install ".length)}`;
   }
 
   if (command.startsWith("npx ")) {
-    const pkg = command.slice("npx ".length);
-    if (pm === "yarn") {
-      return `yarn dlx ${pkg}`;
-    }
-    if (pm === "pnpm") {
-      return `pnpm dlx ${pkg}`;
-    }
-    return `bunx ${pkg}`;
+    return `${executeCommands[pm]} ${command.slice("npx ".length)}`;
   }
 
   return undefined;

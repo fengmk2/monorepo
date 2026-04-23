@@ -50,7 +50,7 @@ export function createHmacVerifier({
 }: {
   headerName: string;
   secret: string;
-  algo?: HmacAlgorithm;
+  algo?: HmacAlgorithm | undefined;
 }): VerifyFn {
   const subtle = globalThis.crypto?.subtle;
   if (!subtle) {

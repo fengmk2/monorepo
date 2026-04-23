@@ -33,13 +33,13 @@ export interface NormalizedResponse<TBody = unknown> {
 /** Route registration options for a webhook handler. */
 export interface RegisterOptions<T> {
   /** Hooks that run after successful processing (before global after hooks) */
-  after?: AfterHook | AfterHook[];
+  after?: AfterHook | AfterHook[] | undefined;
   /** Hooks that run before request processing (after global before hooks) */
-  before?: BeforeHook | BeforeHook[];
+  before?: BeforeHook | BeforeHook[] | undefined;
   /** The handler function to process the webhook */
   handler: WebhookHandler<T>;
   /** Optional Standard Schema validator to validate the webhook payload */
-  schema?: StandardSchemaV1<unknown, T>;
+  schema?: StandardSchemaV1<unknown, T> | undefined;
 }
 
 /**
@@ -63,8 +63,8 @@ export type SchemaRouteOptions<TSchema extends StandardSchemaV1<unknown, unknown
 };
 
 interface RouteLike {
-  after?: AfterHook | AfterHook[];
-  before?: BeforeHook | BeforeHook[];
+  after?: AfterHook | AfterHook[] | undefined;
+  before?: BeforeHook | BeforeHook[] | undefined;
   handler: WebhookHandler<unknown>;
   schema: StandardSchemaV1<unknown, unknown>;
 }

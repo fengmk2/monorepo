@@ -9,15 +9,6 @@ export const source = loader({
   source: docs.toFumadocsSource(),
 });
 
-export function getPageImage(page: InferPageType<typeof source>) {
-  const segments = [...page.slugs, "image.webp"];
-
-  return {
-    segments,
-    url: `/og/docs/${segments.join("/")}`,
-  };
-}
-
 export function getMarkdownUrl(page: InferPageType<typeof source>) {
   return `/llms.mdx${page.url}`;
 }

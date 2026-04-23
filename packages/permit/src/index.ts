@@ -353,6 +353,46 @@ export function createPolicy<
     }
   };
 
+  const parsePermission = <K extends keyof TResources & keyof TActions>(
+    permission: `${K & string}:${InferAction<TActions, K> & string}`,
+  ): { action: InferAction<TActions, K>; resourceType: K } | null => {
+    const [resourceTypeValue, actionValue, ...rest] = permission.split(":");
+    if (!resourceTypeValue || !actionValue || rest.length > 0) {
+      return null;
+    }
+
+    return {
+      action: actionValue as InferAction<TActions, K>,
+      resourceType: resourceTypeValue as K,
+    };
+  };
+
+  const hasAllowedAction = <K extends keyof TResources & keyof TActions>(
+    resourceType: K,
+    action: InferAction<TActions, K>,
+  ): boolean => actions[resourceType]?.includes(action) ?? false;
+
+  const evaluatePolicy = <K extends keyof TResources & keyof TActions>(
+    context: TContext,
+    resourceType: K,
+    action: InferAction<TActions, K>,
+    resource: InferResource<TResources, K>,
+  ): boolean => {
+    const policyFn = rules[resourceType]?.[action];
+    if (!policyFn) {
+      return false;
+    }
+
+    try {
+      return policyFn(context, action, resource) === "allow";
+    } catch (error) {
+      console.warn(
+        `Policy evaluation error for ${String(resourceType)}.${String(action)}: ${String(error)}`,
+      );
+      return false;
+    }
+  };
+
   for (const key of Object.keys(resources) as Array<keyof TResources>) {
     const schema = resources[key];
     if (!schema) {
@@ -368,19 +408,13 @@ export function createPolicy<
       permission: `${K & string}:${InferAction<TActions, K> & string}`,
       resource: InferResource<TResources, K>,
     ): Promise<boolean> {
-      const [resourceTypeValue, actionValue, ...rest] = permission.split(":");
-      if (!resourceTypeValue || !actionValue || rest.length > 0) {
+      const parsedPermission = parsePermission(permission);
+      if (!parsedPermission) {
         return false;
       }
 
-      const resourceType = resourceTypeValue as K;
-      const action = actionValue as InferAction<TActions, K>;
-
-      const allowedActions = actions[resourceType];
-      if (!allowedActions) {
-        return false;
-      }
-      if (!allowedActions.includes(action)) {
+      const { action, resourceType } = parsedPermission;
+      if (!hasAllowedAction(resourceType, action)) {
         return false;
       }
 
@@ -389,25 +423,7 @@ export function createPolicy<
         return false;
       }
 
-      const resourceRules = rules[resourceType];
-      if (!resourceRules) {
-        return false;
-      }
-
-      const policyFn = resourceRules[action];
-
-      if (!policyFn) {
-        return false;
-      }
-
-      try {
-        return policyFn(context, action, validatedResource) === "allow";
-      } catch (error) {
-        console.warn(
-          `Policy evaluation error for ${String(resourceType)}.${String(action)}: ${String(error)}`,
-        );
-        return false;
-      }
+      return evaluatePolicy(context, resourceType, action, validatedResource);
     },
   };
 }
@@ -430,23 +446,7 @@ export function mergePolicies<
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
 >(...policies: Policy<TContext, TResources, TActions>[]): Policy<TContext, TResources, TActions> {
-  return {
-    async can<K extends keyof TResources & keyof TActions>(
-      context: TContext,
-      permission: `${K & string}:${InferAction<TActions, K> & string}`,
-      resource: InferResource<TResources, K>,
-    ): Promise<boolean> {
-      if (!policies.length) {
-        return false;
-      }
-      for (const policy of policies) {
-        if (!(await policy.can(context, permission, resource))) {
-          return false;
-        }
-      }
-      return true;
-    },
-  };
+  return mergePoliciesWithStrategy(policies, "deny-overrides");
 }
 
 /**
@@ -467,6 +467,17 @@ export function mergePoliciesAny<
   TResources extends Resources = Resources,
   TActions extends Actions<TResources> = Actions<TResources>,
 >(...policies: Policy<TContext, TResources, TActions>[]): Policy<TContext, TResources, TActions> {
+  return mergePoliciesWithStrategy(policies, "allow-overrides");
+}
+
+function mergePoliciesWithStrategy<
+  TContext extends Context,
+  TResources extends Resources = Resources,
+  TActions extends Actions<TResources> = Actions<TResources>,
+>(
+  policies: Policy<TContext, TResources, TActions>[],
+  strategy: "allow-overrides" | "deny-overrides",
+): Policy<TContext, TResources, TActions> {
   return {
     async can<K extends keyof TResources & keyof TActions>(
       context: TContext,
@@ -477,11 +488,16 @@ export function mergePoliciesAny<
         return false;
       }
       for (const policy of policies) {
-        if (await policy.can(context, permission, resource)) {
+        const allowed = await policy.can(context, permission, resource);
+
+        if (strategy === "allow-overrides" && allowed) {
           return true;
         }
+        if (strategy === "deny-overrides" && !allowed) {
+          return false;
+        }
       }
-      return false;
+      return strategy === "deny-overrides";
     },
   };
 }

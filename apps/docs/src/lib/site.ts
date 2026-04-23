@@ -1,4 +1,4 @@
-export const siteName = "Zap Studio";
+const siteName = "Zap Studio";
 export const siteTitle = "Zap Studio – The higher layer for modern apps";
 export const siteDescription =
   "Framework-agnostic TypeScript packages for the features every app needs. Type-safe, tested, zero lock-in.";
@@ -18,7 +18,7 @@ const clientSiteUrl = import.meta.env.VITE_SITE_URL;
 
 export const siteUrl = serverSiteUrl ?? clientSiteUrl ?? "https://www.zapstudio.dev";
 
-export function pageTitle(title?: string) {
+function pageTitle(title?: string) {
   return title ? `${title} | ${siteName}` : siteTitle;
 }
 

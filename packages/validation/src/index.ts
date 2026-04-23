@@ -37,7 +37,7 @@ export interface StandardValidateOptions {
    *
    * When `false` or omitted, the raw validation result is returned.
    */
-  throwOnError?: boolean;
+  throwOnError?: boolean | undefined;
 }
 
 /**

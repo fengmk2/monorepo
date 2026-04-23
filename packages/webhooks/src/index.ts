@@ -29,15 +29,23 @@ type HandlerStore = Record<string, HandlerEntry<unknown>>;
 
 export interface WebhookRouterOptions {
   /** Global hooks executed after successful route handler completion. */
-  after?: AfterHook | AfterHook[];
+  after?: AfterHook | AfterHook[] | undefined;
   /** Global hooks executed before route-level hooks and verification. */
-  before?: BeforeHook | BeforeHook[];
+  before?: BeforeHook | BeforeHook[] | undefined;
   /** Global error hook used to override the default `500` response. */
-  onError?: ErrorHook;
+  onError?: ErrorHook | undefined;
   /** Required path prefix for all webhook routes. Defaults to `"/webhooks/"`. */
-  prefix?: string;
+  prefix?: string | undefined;
   /** Optional request verification function (for signature checks, auth, etc.). */
-  verify?: (req: NormalizedRequest) => Promise<void> | void;
+  verify?: ((req: NormalizedRequest) => Promise<void> | void) | undefined;
+}
+
+function toArray<T>(value: T | T[] | undefined): T[] {
+  if (value === undefined) {
+    return [];
+  }
+
+  return Array.isArray(value) ? value : [value];
 }
 
 /**
@@ -47,27 +55,18 @@ export interface WebhookRouterOptions {
  */
 export class WebhookRouter<TMap = unknown> {
   private readonly handlers: HandlerStore = {};
-  private readonly verify?: (req: NormalizedRequest) => Promise<void> | void;
+  private readonly verify: ((req: NormalizedRequest) => Promise<void> | void) | undefined;
   private readonly globalBeforeHooks: BeforeHook[] = [];
   private readonly globalAfterHooks: AfterHook[] = [];
-  private readonly globalErrorHook?: ErrorHook;
+  private readonly globalErrorHook: ErrorHook | undefined;
   private readonly prefix: string;
 
-  constructor(opts?: WebhookRouterOptions) {
-    this.prefix = opts?.prefix ?? "/webhooks/";
-
-    if (opts?.verify) {
-      this.verify = opts.verify;
-    }
-    if (opts?.before) {
-      this.globalBeforeHooks = Array.isArray(opts.before) ? opts.before : [opts.before];
-    }
-    if (opts?.after) {
-      this.globalAfterHooks = Array.isArray(opts.after) ? opts.after : [opts.after];
-    }
-    if (opts?.onError) {
-      this.globalErrorHook = opts.onError;
-    }
+  constructor(opts: WebhookRouterOptions = {}) {
+    this.prefix = opts.prefix ?? "/webhooks/";
+    this.verify = opts.verify;
+    this.globalBeforeHooks = toArray(opts.before);
+    this.globalAfterHooks = toArray(opts.after);
+    this.globalErrorHook = opts.onError;
   }
 
   /**
@@ -96,39 +95,9 @@ export class WebhookRouter<TMap = unknown> {
     handlerOrOptions: WebhookHandler<unknown> | RegisterOptions<unknown>,
   ): WebhookRouter<TMap> {
     if (typeof handlerOrOptions === "function") {
-      this.handlers[path] = {
-        handler: handlerOrOptions,
-      };
+      this.handlers[path] = { handler: handlerOrOptions };
     } else {
-      let beforeHooks: BeforeHook[] | undefined;
-      if (handlerOrOptions.before) {
-        beforeHooks = Array.isArray(handlerOrOptions.before)
-          ? handlerOrOptions.before
-          : [handlerOrOptions.before];
-      }
-
-      let afterHooks: AfterHook[] | undefined;
-      if (handlerOrOptions.after) {
-        afterHooks = Array.isArray(handlerOrOptions.after)
-          ? handlerOrOptions.after
-          : [handlerOrOptions.after];
-      }
-
-      const entry: HandlerEntry<unknown> = {
-        handler: handlerOrOptions.handler,
-      };
-
-      if (handlerOrOptions.schema !== undefined) {
-        entry.schema = handlerOrOptions.schema;
-      }
-      if (beforeHooks !== undefined) {
-        entry.before = beforeHooks;
-      }
-      if (afterHooks !== undefined) {
-        entry.after = afterHooks;
-      }
-
-      this.handlers[path] = entry;
+      this.handlers[path] = this.createHandlerEntry(handlerOrOptions);
     }
 
     return this;
@@ -208,6 +177,26 @@ export class WebhookRouter<TMap = unknown> {
     for (const hook of this.globalBeforeHooks) {
       await hook(req);
     }
+  }
+
+  private createHandlerEntry(options: RegisterOptions<unknown>): HandlerEntry<unknown> {
+    const entry: HandlerEntry<unknown> = {
+      handler: options.handler,
+    };
+
+    if (options.schema !== undefined) {
+      entry.schema = options.schema;
+    }
+
+    if (options.before !== undefined) {
+      entry.before = Array.isArray(options.before) ? options.before : [options.before];
+    }
+
+    if (options.after !== undefined) {
+      entry.after = Array.isArray(options.after) ? options.after : [options.after];
+    }
+
+    return entry;
   }
 
   private async runRouteBeforeHooks(req: NormalizedRequest, before?: BeforeHook[]): Promise<void> {
