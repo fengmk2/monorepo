@@ -32,7 +32,9 @@ function createChildEnv() {
 }
 
 function shouldKeepEnvironmentKey(key) {
-  return key !== "INIT_CWD" && !environmentPrefixesToRemove.some((prefix) => key.startsWith(prefix));
+  return (
+    key !== "INIT_CWD" && !environmentPrefixesToRemove.some((prefix) => key.startsWith(prefix))
+  );
 }
 
 function getCatalogVersion(workspaceYaml, dependencyName) {
