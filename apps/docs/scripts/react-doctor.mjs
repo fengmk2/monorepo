@@ -10,23 +10,29 @@ const repoRoot = path.resolve(scanPath, "../..");
 const reportDir = path.join(repoRoot, ".react-doctor", "docs");
 const latestReportPath = path.join(reportDir, "latest.txt");
 const vitePlusBin = path.join(process.env.HOME ?? "", ".vite-plus", "bin", "vp");
+const environmentPrefixesToRemove = ["npm_", "PNPM_", "VITE_PLUS_"];
+const catalogDependencyNames = ["react", "react-dom"];
+const dependencyFields = [
+  "dependencies",
+  "devDependencies",
+  "peerDependencies",
+  "optionalDependencies",
+];
 
 await mkdir(reportDir, { recursive: true });
 
 const outputChunks = [];
 
 function createChildEnv() {
-  const childEnv = { ...process.env };
-
-  for (const key of Object.keys(childEnv)) {
-    if (key.startsWith("npm_") || key.startsWith("PNPM_") || key.startsWith("VITE_PLUS_")) {
-      delete childEnv[key];
-    }
-  }
-
-  delete childEnv.INIT_CWD;
+  const childEnv = Object.fromEntries(
+    Object.entries(process.env).filter(([key]) => shouldKeepEnvironmentKey(key)),
+  );
 
   return childEnv;
+}
+
+function shouldKeepEnvironmentKey(key) {
+  return key !== "INIT_CWD" && !environmentPrefixesToRemove.some((prefix) => key.startsWith(prefix));
 }
 
 function getCatalogVersion(workspaceYaml, dependencyName) {
@@ -46,32 +52,10 @@ async function prepareScanPackageJson() {
 
   const workspaceYaml = await readFile(path.join(repoRoot, "pnpm-workspace.yaml"), "utf8");
   const packageJson = JSON.parse(originalPackageJson);
-  const catalogVersions = {
-    react: getCatalogVersion(workspaceYaml, "react"),
-    "react-dom": getCatalogVersion(workspaceYaml, "react-dom"),
-  };
-
-  let modified = false;
-
-  for (const field of [
-    "dependencies",
-    "devDependencies",
-    "peerDependencies",
-    "optionalDependencies",
-  ]) {
-    const dependencies = packageJson[field];
-
-    if (!dependencies || typeof dependencies !== "object") {
-      continue;
-    }
-
-    for (const [dependencyName, version] of Object.entries(catalogVersions)) {
-      if (dependencies[dependencyName] === "catalog:" && version) {
-        dependencies[dependencyName] = version;
-        modified = true;
-      }
-    }
-  }
+  const catalogVersions = Object.fromEntries(
+    catalogDependencyNames.map((name) => [name, getCatalogVersion(workspaceYaml, name)]),
+  );
+  const modified = replaceCatalogVersions(packageJson, catalogVersions);
 
   if (!modified) {
     return async () => {};
@@ -82,6 +66,30 @@ async function prepareScanPackageJson() {
   return async () => {
     await writeFile(packageJsonPath, originalPackageJson, "utf8");
   };
+}
+
+function replaceCatalogVersions(packageJson, catalogVersions) {
+  const replacements = getCatalogReplacements(packageJson, catalogVersions);
+
+  for (const { dependencies, dependencyName, version } of replacements) {
+    dependencies[dependencyName] = version;
+  }
+
+  return replacements.length > 0;
+}
+
+function getCatalogReplacements(packageJson, catalogVersions) {
+  return getDependencySections(packageJson).flatMap((dependencies) =>
+    Object.entries(catalogVersions)
+      .filter(([dependencyName, version]) => dependencies[dependencyName] === "catalog:" && version)
+      .map(([dependencyName, version]) => ({ dependencies, dependencyName, version })),
+  );
+}
+
+function getDependencySections(packageJson) {
+  return dependencyFields
+    .map((field) => packageJson[field])
+    .filter((dependencies) => dependencies && typeof dependencies === "object");
 }
 
 const restorePackageJson = await prepareScanPackageJson();
