@@ -1,5 +1,22 @@
 # @zap-studio/permit
 
+## 0.3.1
+
+### Fixed
+
+- d10d8c4: Removed the TanStack Intent-specific authoring helper from the package surface.
+- d9ba7d1: Reworked the packaged permit skill content.
+
+### Changed
+
+- 5fa58b1: Reduced policy evaluation complexity by extracting permission parsing and merge strategy helpers without changing the `policy.can(...)` API.
+- abfda4b: Cleaned up public option typings by removing redundant `| undefined` unions from package types.
+- 9f31f87: Switched the package build to ESNext-aligned output and updated package tooling and publish metadata.
+
+### Dependencies
+
+- Updated dependency `@zap-studio/validation` to `0.3.3`.
+
 ## 0.3.0
 
 ### Minor Changes

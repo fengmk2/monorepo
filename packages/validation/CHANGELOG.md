@@ -1,5 +1,17 @@
 # @zap-studio/validation
 
+## 0.3.3
+
+### Fixed
+
+- 7004e9f: Allow explicit `undefined` in validator option handling while preserving typed throwing and non-throwing overload behavior.
+
+### Changed
+
+- 2a1787f: Removed redundant `| undefined` unions from public option types and overloads.
+- 9f31f87: Switched the package build to ESNext-aligned output and updated package tooling and publish metadata.
+- 367d588: Expanded TSDoc coverage for validator error behavior and reusable validator helpers.
+
 ## 0.3.2
 
 ### Patch Changes

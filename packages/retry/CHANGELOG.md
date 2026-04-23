@@ -1,5 +1,15 @@
 # @zap-studio/retry
 
+## 0.1.1
+
+### Fixed
+
+- 7004e9f: Allow explicit `undefined` in retry runner options and policy configuration typing.
+
+### Changed
+
+- e9903c5: Removed redundant `| undefined` unions from public retry option and decision types.
+
 ## 0.1.0
 
 ### Added

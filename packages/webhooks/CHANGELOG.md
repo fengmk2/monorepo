@@ -1,5 +1,21 @@
 # @zap-studio/webhooks
 
+## 0.2.1
+
+### Fixed
+
+- 3a950dc: Preserve registered hook assignment types while keeping the schema-first router API unchanged.
+
+### Changed
+
+- 5fa58b1: Reduced webhook router complexity by consolidating hook normalization and handler entry creation.
+- 7004e9f: Allow explicit `undefined` in option handling, then follow with d707800 to remove redundant `| undefined` unions from public types.
+- 9f31f87: Switched the package build to ESNext-aligned output and updated package tooling and publish metadata.
+
+### Dependencies
+
+- Updated dependency `@zap-studio/validation` to `0.3.3`.
+
 ## 0.2.0
 
 ### Minor Changes

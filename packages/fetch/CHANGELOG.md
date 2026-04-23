@@ -1,5 +1,19 @@
 # @zap-studio/fetch
 
+## 0.5.1
+
+### Fixed
+
+- d92f2c2: Preserve explicit `throwOnValidationError: true` overrides in `$fetch` method helpers and factory-created fetch clients.
+
+### Changed
+
+- 2ea1a70: Cleaned up public option typings by removing redundant `| undefined` unions from fetch configuration types and overloads.
+
+### Dependencies
+
+- Updated dependency `@zap-studio/validation` to `0.3.3`.
+
 ## 0.5.0
 
 ### Breaking
