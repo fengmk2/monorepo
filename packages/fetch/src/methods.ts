@@ -37,7 +37,7 @@ export function createMethod<TFetch extends $Fetch>(fetchFn: TFetch, method: str
     input: FetchInput,
     schema: TSchema,
     options?: ExtendedRequestInit & {
-      throwOnValidationError?: true | undefined;
+      throwOnValidationError?: true;
     },
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
@@ -62,10 +62,11 @@ export function createMethod<TFetch extends $Fetch>(fetchFn: TFetch, method: str
         });
       }
 
+      const { throwOnValidationError: _ignored, ...restOptions } = optionsOrUndefined ?? {};
+
       return fetchFn(input, schemaOrOptions, {
-        ...optionsOrUndefined,
+        ...restOptions,
         method,
-        throwOnValidationError: optionsOrUndefined?.throwOnValidationError,
       });
     }
 

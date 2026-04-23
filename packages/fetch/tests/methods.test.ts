@@ -36,7 +36,6 @@ describe("createMethod", () => {
     expect(call?.[2]).toEqual({
       headers: { A: "1" },
       method: "GET",
-      throwOnValidationError: undefined,
     });
   });
 

@@ -28,17 +28,17 @@ type CustomRequestInit = {
    * Per-request query/search params
    * @default undefined
    */
-  searchParams?: URLSearchParamsInput | undefined;
+  searchParams?: URLSearchParamsInput;
   /**
    * Whether to throw a FetchError on HTTP errors (non-2xx responses)
    * @default true
    */
-  throwOnFetchError?: boolean | undefined;
+  throwOnFetchError?: boolean;
   /**
    * Whether to throw a ValidationError on validation errors
    * @default true
    */
-  throwOnValidationError?: boolean | undefined;
+  throwOnValidationError?: boolean;
 };
 
 /**
@@ -73,12 +73,12 @@ export interface FetchDefaults {
    * Default headers to include in all requests (can be overridden per request)
    * @default undefined
    */
-  headers?: HeadersInit | undefined;
+  headers?: HeadersInit;
   /**
    * Default query/search params applied to every request (can be overridden per request)
    * @default undefined
    */
-  searchParams?: URLSearchParamsInput | undefined;
+  searchParams?: URLSearchParamsInput;
   /**
    * Whether to throw a `FetchError` on HTTP errors (non-2xx responses)
    * @default true
@@ -136,7 +136,7 @@ export interface $Fetch {
     input: FetchInput,
     schema: TSchema,
     options?: ExtendedRequestInit & {
-      throwOnValidationError?: true | undefined;
+      throwOnValidationError?: true;
     },
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 

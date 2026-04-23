@@ -77,7 +77,7 @@ export async function $fetch<TSchema extends StandardSchemaV1>(
 export async function $fetch<TSchema extends StandardSchemaV1>(
   input: FetchInput,
   schema: TSchema,
-  options?: ExtendedRequestInit & { throwOnValidationError?: true | undefined },
+  options?: ExtendedRequestInit & { throwOnValidationError?: true },
 ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
 export async function $fetch(input: FetchInput, options?: ExtendedRequestInit): Promise<Response>;
@@ -158,11 +158,17 @@ export function createFetch(factoryOptions: Partial<FetchDefaults> = {}): {
 } {
   const defaults: FetchDefaults = {
     baseURL: factoryOptions.baseURL ?? "",
-    headers: factoryOptions.headers,
-    searchParams: factoryOptions.searchParams,
     throwOnFetchError: factoryOptions.throwOnFetchError ?? true,
     throwOnValidationError: factoryOptions.throwOnValidationError ?? true,
   };
+
+  if (factoryOptions.headers !== undefined) {
+    defaults.headers = factoryOptions.headers;
+  }
+
+  if (factoryOptions.searchParams !== undefined) {
+    defaults.searchParams = factoryOptions.searchParams;
+  }
 
   async function customFetch<TSchema extends StandardSchemaV1>(
     input: FetchInput,
@@ -174,7 +180,7 @@ export function createFetch(factoryOptions: Partial<FetchDefaults> = {}): {
     input: FetchInput,
     schema: TSchema,
     options?: ExtendedRequestInit & {
-      throwOnValidationError?: true | undefined;
+      throwOnValidationError?: true;
     },
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
