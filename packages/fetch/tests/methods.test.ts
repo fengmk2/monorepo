@@ -36,7 +36,6 @@ describe("createMethod", () => {
     expect(call?.[2]).toEqual({
       headers: { A: "1" },
       method: "GET",
-      throwOnValidationError: undefined,
     });
   });
 
@@ -51,6 +50,19 @@ describe("createMethod", () => {
       json: { name: "Zap" },
       method: "POST",
       throwOnValidationError: false,
+    });
+  });
+
+  it("preserves throwOnValidationError: true when explicitly provided", async () => {
+    const fetchMock = createFetchMock();
+    const put = createMethod(fetchMock, "PUT");
+
+    await put("/users/1", schema, { throwOnValidationError: true });
+    const call = fetchMock.mock.calls[0];
+
+    expect(call?.[2]).toEqual({
+      method: "PUT",
+      throwOnValidationError: true,
     });
   });
 

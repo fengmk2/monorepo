@@ -29,15 +29,15 @@ type HandlerStore = Record<string, HandlerEntry<unknown>>;
 
 export interface WebhookRouterOptions {
   /** Global hooks executed after successful route handler completion. */
-  after?: AfterHook | AfterHook[] | undefined;
+  after?: AfterHook | AfterHook[];
   /** Global hooks executed before route-level hooks and verification. */
-  before?: BeforeHook | BeforeHook[] | undefined;
+  before?: BeforeHook | BeforeHook[];
   /** Global error hook used to override the default `500` response. */
-  onError?: ErrorHook | undefined;
+  onError?: ErrorHook;
   /** Required path prefix for all webhook routes. Defaults to `"/webhooks/"`. */
-  prefix?: string | undefined;
+  prefix?: string;
   /** Optional request verification function (for signature checks, auth, etc.). */
-  verify?: ((req: NormalizedRequest) => Promise<void> | void) | undefined;
+  verify?: (req: NormalizedRequest) => Promise<void> | void;
 }
 
 function toArray<T>(value: T | T[] | undefined): T[] {
