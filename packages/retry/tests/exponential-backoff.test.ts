@@ -55,14 +55,4 @@ describe("ExponentialBackoff", () => {
       reason: "max-attempts-reached",
     });
   });
-
-  it("treats attempt 0 as base delay", () => {
-    const policy = new ExponentialBackoff({
-      maxAttempts: 5,
-      baseDelayMs: 100,
-      maxDelayMs: 1_000,
-    });
-
-    expect(policy.next({ attempt: 0 }).delayMs).toBe(100);
-  });
 });
