@@ -1,5 +1,43 @@
 # @zap-studio/fetch
 
+## 0.5.0
+
+### Breaking
+
+- Request bodies are no longer auto-serialized from plain objects; use the explicit `json` option (or set `body` yourself). `body` and `json` are mutually exclusive at the type level and enforced at runtime.
+
+### Changed
+
+- Simplified the request API around web platform types.
+  - The first argument is named `input` and typed as `FetchInput` (`Parameters<typeof fetch>[0]` from `lib.dom`), exported from `@zap-studio/fetch/types`, so allowed inputs track global `fetch` when DOM typings change.
+  - Non-`Request` values (including `URL`) are normalized to a string URL before query merge.
+  - `ExtendedRequestInit` now extends native `RequestInit` directly instead of redefining request options.
+  - `searchParams` now accepts the same input shape as `new URLSearchParams(...)`.
+- Replaced automatic object body serialization with an explicit `json` option.
+  - Use `json: value` when you want JSON stringification and `Content-Type: application/json`.
+  - Use native `body` when you want standard `fetch` behavior.
+  - `body` and `json` are mutually exclusive in TypeScript and guarded at runtime.
+- Reworked URL handling to use the platform `URL` and `URLSearchParams` APIs while preserving relative URL output when no `baseURL` is configured.
+- Simplified the internal module structure and removed the old `utils` module.
+
+### Fixed
+
+- Fixed absolute URL handling when no `baseURL` is configured.
+- `resolveSearchParams` keeps a trailing `#` when the input URL had an empty fragment (for example `.../path#`), matching typical `URL` serialization instead of dropping the delimiter.
+
+### Tests
+
+- Reworked tests to mirror the `src` module structure.
+- Added full package coverage across statements, branches, functions, and lines.
+
+### Documentation
+
+- Documented the throwable error surface for `$fetch`, `createFetch`, and internal request execution with explicit `@throws` tags (for example `FetchError`, `ValidationError`, `TypeError`, `DOMException`, `SyntaxError`, and validator-thrown errors).
+
+### Dependencies
+
+- JSR dependency mapping now pins `@zap-studio/validation` to `0.3.2`.
+
 ## 0.4.7
 
 ### Patch Changes

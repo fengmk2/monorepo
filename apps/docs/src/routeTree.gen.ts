@@ -13,7 +13,9 @@ import { Route as LlmsDottxtRouteImport } from './routes/llms[.]txt'
 import { Route as LlmsFullDottxtRouteImport } from './routes/llms-full[.]txt'
 import { Route as MarketingRouteRouteImport } from './routes/_marketing/route'
 import { Route as MarketingIndexRouteImport } from './routes/_marketing/index'
+import { Route as PackagesWebhooksRouteImport } from './routes/packages/webhooks'
 import { Route as PackagesValidationRouteImport } from './routes/packages/validation'
+import { Route as PackagesRetryRouteImport } from './routes/packages/retry'
 import { Route as PackagesPermitRouteImport } from './routes/packages/permit'
 import { Route as PackagesFetchRouteImport } from './routes/packages/fetch'
 import { Route as DocsSplatRouteImport } from './routes/docs/$'
@@ -40,9 +42,19 @@ const MarketingIndexRoute = MarketingIndexRouteImport.update({
   path: '/',
   getParentRoute: () => MarketingRouteRoute,
 } as any)
+const PackagesWebhooksRoute = PackagesWebhooksRouteImport.update({
+  id: '/packages/webhooks',
+  path: '/packages/webhooks',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PackagesValidationRoute = PackagesValidationRouteImport.update({
   id: '/packages/validation',
   path: '/packages/validation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PackagesRetryRoute = PackagesRetryRouteImport.update({
+  id: '/packages/retry',
+  path: '/packages/retry',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PackagesPermitRoute = PackagesPermitRouteImport.update({
@@ -84,7 +96,9 @@ export interface FileRoutesByFullPath {
   '/docs/$': typeof DocsSplatRoute
   '/packages/fetch': typeof PackagesFetchRoute
   '/packages/permit': typeof PackagesPermitRoute
+  '/packages/retry': typeof PackagesRetryRoute
   '/packages/validation': typeof PackagesValidationRoute
+  '/packages/webhooks': typeof PackagesWebhooksRoute
   '/llms.mdx/docs/$': typeof LlmsDotmdxDocsSplatRoute
   '/og/docs/$': typeof OgDocsSplatRoute
 }
@@ -95,7 +109,9 @@ export interface FileRoutesByTo {
   '/docs/$': typeof DocsSplatRoute
   '/packages/fetch': typeof PackagesFetchRoute
   '/packages/permit': typeof PackagesPermitRoute
+  '/packages/retry': typeof PackagesRetryRoute
   '/packages/validation': typeof PackagesValidationRoute
+  '/packages/webhooks': typeof PackagesWebhooksRoute
   '/': typeof MarketingIndexRoute
   '/llms.mdx/docs/$': typeof LlmsDotmdxDocsSplatRoute
   '/og/docs/$': typeof OgDocsSplatRoute
@@ -109,7 +125,9 @@ export interface FileRoutesById {
   '/docs/$': typeof DocsSplatRoute
   '/packages/fetch': typeof PackagesFetchRoute
   '/packages/permit': typeof PackagesPermitRoute
+  '/packages/retry': typeof PackagesRetryRoute
   '/packages/validation': typeof PackagesValidationRoute
+  '/packages/webhooks': typeof PackagesWebhooksRoute
   '/_marketing/': typeof MarketingIndexRoute
   '/llms.mdx/docs/$': typeof LlmsDotmdxDocsSplatRoute
   '/og/docs/$': typeof OgDocsSplatRoute
@@ -124,7 +142,9 @@ export interface FileRouteTypes {
     | '/docs/$'
     | '/packages/fetch'
     | '/packages/permit'
+    | '/packages/retry'
     | '/packages/validation'
+    | '/packages/webhooks'
     | '/llms.mdx/docs/$'
     | '/og/docs/$'
   fileRoutesByTo: FileRoutesByTo
@@ -135,7 +155,9 @@ export interface FileRouteTypes {
     | '/docs/$'
     | '/packages/fetch'
     | '/packages/permit'
+    | '/packages/retry'
     | '/packages/validation'
+    | '/packages/webhooks'
     | '/'
     | '/llms.mdx/docs/$'
     | '/og/docs/$'
@@ -148,7 +170,9 @@ export interface FileRouteTypes {
     | '/docs/$'
     | '/packages/fetch'
     | '/packages/permit'
+    | '/packages/retry'
     | '/packages/validation'
+    | '/packages/webhooks'
     | '/_marketing/'
     | '/llms.mdx/docs/$'
     | '/og/docs/$'
@@ -162,7 +186,9 @@ export interface RootRouteChildren {
   DocsSplatRoute: typeof DocsSplatRoute
   PackagesFetchRoute: typeof PackagesFetchRoute
   PackagesPermitRoute: typeof PackagesPermitRoute
+  PackagesRetryRoute: typeof PackagesRetryRoute
   PackagesValidationRoute: typeof PackagesValidationRoute
+  PackagesWebhooksRoute: typeof PackagesWebhooksRoute
   LlmsDotmdxDocsSplatRoute: typeof LlmsDotmdxDocsSplatRoute
   OgDocsSplatRoute: typeof OgDocsSplatRoute
 }
@@ -197,11 +223,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MarketingIndexRouteImport
       parentRoute: typeof MarketingRouteRoute
     }
+    '/packages/webhooks': {
+      id: '/packages/webhooks'
+      path: '/packages/webhooks'
+      fullPath: '/packages/webhooks'
+      preLoaderRoute: typeof PackagesWebhooksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/packages/validation': {
       id: '/packages/validation'
       path: '/packages/validation'
       fullPath: '/packages/validation'
       preLoaderRoute: typeof PackagesValidationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/packages/retry': {
+      id: '/packages/retry'
+      path: '/packages/retry'
+      fullPath: '/packages/retry'
+      preLoaderRoute: typeof PackagesRetryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/packages/permit': {
@@ -269,7 +309,9 @@ const rootRouteChildren: RootRouteChildren = {
   DocsSplatRoute: DocsSplatRoute,
   PackagesFetchRoute: PackagesFetchRoute,
   PackagesPermitRoute: PackagesPermitRoute,
+  PackagesRetryRoute: PackagesRetryRoute,
   PackagesValidationRoute: PackagesValidationRoute,
+  PackagesWebhooksRoute: PackagesWebhooksRoute,
   LlmsDotmdxDocsSplatRoute: LlmsDotmdxDocsSplatRoute,
   OgDocsSplatRoute: OgDocsSplatRoute,
 }

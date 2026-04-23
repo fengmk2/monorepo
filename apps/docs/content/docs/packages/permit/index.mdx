@@ -3,6 +3,8 @@ title: Overview
 description: A type-safe, declarative authorization library with Standard Schema support and composable conditions.
 ---
 
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+
 Authorization logic often ends up scattered across your codebase — buried in route handlers, middleware, and components.
 
 This makes it hard to maintain, test, and audit. Every application needs to answer one question: **"Can this user do this action on this resource?"**
@@ -77,9 +79,43 @@ app.delete("/posts/:id", async (req, res) => {
 
 ## Installation
 
-```npm
+<Tabs items={["npm", "yarn", "pnpm", "bun", "deno"]}>
+  <Tab value="npm">
+
+```bash
 npm install @zap-studio/permit
 ```
+
+  </Tab>
+  <Tab value="yarn">
+
+```bash
+yarn add @zap-studio/permit
+```
+
+  </Tab>
+  <Tab value="pnpm">
+
+```bash
+pnpm add @zap-studio/permit
+```
+
+  </Tab>
+  <Tab value="bun">
+
+```bash
+bun add @zap-studio/permit
+```
+
+  </Tab>
+  <Tab value="deno">
+
+```bash
+deno add jsr:@zap-studio/permit
+```
+
+  </Tab>
+</Tabs>
 
 ## Quick Start
 

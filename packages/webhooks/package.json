@@ -10,7 +10,6 @@
     "schema",
     "signature verification",
     "standard schema",
-    "tanstack-intent",
     "type-safe",
     "typescript",
     "valibot",
@@ -26,17 +25,11 @@
     "url": "git+https://github.com/zap-studio/monorepo.git",
     "directory": "packages/webhooks"
   },
-  "bin": {
-    "intent": "./bin/intent.js"
-  },
   "files": [
     "dist",
     "CHANGELOG.md",
     "LICENSE",
-    "README.md",
-    "skills",
-    "bin",
-    "!skills/_artifacts"
+    "README.md"
   ],
   "type": "module",
   "sideEffects": false,
@@ -55,7 +48,7 @@
   },
   "scripts": {
     "build": "vp pack",
-    "prepublishOnly": "vp exec publint --strict && vp exec attw --profile esm-only --pack .",
+    "prepublishOnly": "vpx publint --strict && vpx -p @arethetypeswrong/cli attw --profile esm-only --pack .",
     "test": "vp test run",
     "test:watch": "vp test watch"
   },

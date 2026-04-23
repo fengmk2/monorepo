@@ -1,0 +1,56 @@
+{
+  "name": "@zap-studio/retry",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Composable retry policies for resilient async operations.",
+  "keywords": [
+    "backoff",
+    "exponential backoff",
+    "fetch",
+    "http",
+    "resilience",
+    "retry",
+    "typescript"
+  ],
+  "homepage": "https://www.zapstudio.dev/packages/retry",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zap-studio/monorepo.git",
+    "directory": "packages/retry"
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./error": "./dist/error.mjs",
+    "./exponential-backoff": "./dist/exponential-backoff.mjs",
+    "./fixed-delay": "./dist/fixed-delay.mjs",
+    "./types": "./dist/types.mjs",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "vp pack",
+    "prepublishOnly": "vpx publint --strict && vpx -p @arethetypeswrong/cli attw --profile esm-only --pack .",
+    "test": "vp test run",
+    "test:watch": "vp test watch"
+  },
+  "devDependencies": {
+    "@zap-studio/typescript": "workspace:*",
+    "typescript": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

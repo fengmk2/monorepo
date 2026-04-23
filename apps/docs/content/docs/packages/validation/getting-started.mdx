@@ -3,13 +3,49 @@ title: Getting Started
 description: Install validation and validate your first payload in a few lines.
 ---
 
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+
 This page is a quick recap to install `validation` and get started as fast as possible. For deeper details and advanced usage, check the other pages in this section.
 
 ## Install
 
-```npm
+<Tabs items={["npm", "yarn", "pnpm", "bun", "deno"]}>
+  <Tab value="npm">
+
+```bash
 npm install @zap-studio/validation
 ```
+
+  </Tab>
+  <Tab value="yarn">
+
+```bash
+yarn add @zap-studio/validation
+```
+
+  </Tab>
+  <Tab value="pnpm">
+
+```bash
+pnpm add @zap-studio/validation
+```
+
+  </Tab>
+  <Tab value="bun">
+
+```bash
+bun add @zap-studio/validation
+```
+
+  </Tab>
+  <Tab value="deno">
+
+```bash
+deno add jsr:@zap-studio/validation
+```
+
+  </Tab>
+</Tabs>
 
 ## Quick Start
 

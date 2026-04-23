@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/fetch",
-  "version": "0.4.7",
+  "version": "0.5.0",
   "private": false,
   "description": "A type-safe fetch wrapper for HTTP requests with runtime schema validation.",
   "keywords": [
@@ -14,7 +14,6 @@
     "runtime validation",
     "schema",
     "standard schema",
-    "tanstack-intent",
     "type-safe",
     "typescript",
     "valibot",
@@ -28,17 +27,11 @@
     "url": "git+https://github.com/zap-studio/monorepo.git",
     "directory": "packages/fetch"
   },
-  "bin": {
-    "intent": "./bin/intent.js"
-  },
   "files": [
     "dist",
     "CHANGELOG.md",
     "LICENSE",
-    "README.md",
-    "skills",
-    "bin",
-    "!skills/_artifacts"
+    "README.md"
   ],
   "type": "module",
   "sideEffects": false,
@@ -47,8 +40,12 @@
     ".": "./dist/index.mjs",
     "./constants": "./dist/constants.mjs",
     "./errors": "./dist/errors.mjs",
+    "./headers": "./dist/headers.mjs",
+    "./internal": "./dist/internal.mjs",
+    "./methods": "./dist/methods.mjs",
+    "./request": "./dist/request.mjs",
     "./types": "./dist/types.mjs",
-    "./utils": "./dist/utils.mjs",
+    "./url": "./dist/url.mjs",
     "./package.json": "./package.json"
   },
   "publishConfig": {
@@ -56,7 +53,7 @@
   },
   "scripts": {
     "build": "vp pack",
-    "prepublishOnly": "vp exec publint --strict && vp exec attw --profile esm-only --pack .",
+    "prepublishOnly": "vpx publint --strict && vpx -p @arethetypeswrong/cli attw --profile esm-only --pack .",
     "test": "vp test run",
     "test:watch": "vp test watch"
   },

@@ -17,7 +17,7 @@ Why:
 
 ## HMAC helper
 
-The package exports `createHmacVerifier` from `@zap-studio/webhooks/verify`. It is runtime-agnostic: the helper uses the Web Crypto API rather than Node `crypto`, so it works anywhere `globalThis.crypto.subtle` is available.
+[`@zap-studio/webhooks`](/docs/packages/webhooks) exports `createHmacVerifier` from `@zap-studio/webhooks/verify`. It is runtime-agnostic: the helper uses the Web Crypto API rather than Node `crypto`, so it works anywhere `globalThis.crypto.subtle` is available.
 
 ```ts
 import { createWebhookRouter } from "@zap-studio/webhooks";

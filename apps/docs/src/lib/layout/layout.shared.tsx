@@ -11,6 +11,7 @@ import {
   GlobeIcon,
   LockIcon,
   PackageIcon,
+  RefreshCcwIcon,
   WebhookIcon,
 } from "lucide-react";
 import type { ReactNode } from "react";
@@ -99,6 +100,13 @@ export function homeLinks(): BaseLayoutProps["links"] {
                 description="Declarative authorization library with composable conditions."
                 icon={<LockIcon className="size-4" />}
                 text="permit"
+              />
+            </NavbarMenuLink>
+            <NavbarMenuLink href="/docs/packages/retry">
+              <NavbarMenuItemContent
+                description="Composable retry policies with fixed and exponential backoff."
+                icon={<RefreshCcwIcon className="size-4" />}
+                text="retry"
               />
             </NavbarMenuLink>
             <NavbarMenuLink href="/docs/packages/validation">

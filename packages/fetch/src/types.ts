@@ -1,64 +1,67 @@
+/**
+ * Public and internal type contracts for the fetch package.
+ *
+ * @module
+ */
+
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
-/**
- * Type representing various formats for search parameters
- * that can be used in requests.
- * Can be a URLSearchParams object, a record of string pairs,
- * a query string, or an array of tuples.
- */
-export type SearchParams = URLSearchParams | Record<string, string> | string | [string, string][];
+export type FetchInput = Parameters<typeof fetch>[0];
 
-/**
- * JSON-serializable value used for request bodies.
- */
-export type JsonValue =
-  | string
-  | number
-  | boolean
-  | null
-  | JsonValue[]
-  | { [key: string]: JsonValue };
+type URLSearchParamsInput = ConstructorParameters<typeof URLSearchParams>[0];
 
-/**
- * Request body type accepted by the fetch wrapper.
- */
-export type RequestBody = BodyInit | JsonValue;
+type RequestBodyInit = RequestInit & {
+  json?: never;
+};
 
-/**
- * Base extended request options without throwOnValidationError
- */
-type BaseExtendedRequestInit = Omit<RequestInit, "body"> & {
+type JsonBodyInit = Omit<RequestInit, "body"> & {
   /**
-   * Request body - can be a BodyInit value or an object that will be JSON-stringified
+   * JSON body convenience. When provided, this is JSON-stringified into `body`.
+   * @default undefined
    */
-  body?: RequestBody | undefined;
+  json: unknown;
+  body?: never;
+};
+
+type CustomRequestInit = {
   /**
    * Per-request query/search params
    * @default undefined
    */
-  searchParams?: SearchParams | undefined;
+  searchParams?: URLSearchParamsInput | undefined;
   /**
    * Whether to throw a FetchError on HTTP errors (non-2xx responses)
    * @default true
    */
   throwOnFetchError?: boolean | undefined;
-};
-
-/**
- * Extended RequestInit type to include custom fetch options
- */
-export type ExtendedRequestInit<
-  TThrowOnValidationError extends boolean | undefined = boolean | undefined,
-> = BaseExtendedRequestInit & {
   /**
    * Whether to throw a ValidationError on validation errors
    * @default true
    */
-  throwOnValidationError?: TThrowOnValidationError | undefined;
+  throwOnValidationError?: boolean | undefined;
 };
 
 /**
+ * Extended RequestInit type to include custom fetch options
+ *
+ * @example
+ * const options: ExtendedRequestInit = {
+ *   method: "POST",
+ *   json: { name: "Ada" },
+ *   throwOnFetchError: true,
+ * };
+ */
+export type ExtendedRequestInit = (RequestBodyInit | JsonBodyInit) & CustomRequestInit;
+
+/**
  * Internal defaults used by fetchInternal
+ *
+ * @example
+ * const defaults: FetchDefaults = {
+ *   baseURL: "https://api.example.com",
+ *   throwOnFetchError: true,
+ *   throwOnValidationError: true,
+ * };
  */
 export interface FetchDefaults {
   /**
@@ -75,7 +78,7 @@ export interface FetchDefaults {
    * Default query/search params applied to every request (can be overridden per request)
    * @default undefined
    */
-  searchParams?: SearchParams | undefined;
+  searchParams?: URLSearchParamsInput | undefined;
   /**
    * Whether to throw a `FetchError` on HTTP errors (non-2xx responses)
    * @default true
@@ -89,51 +92,73 @@ export interface FetchDefaults {
 }
 
 /**
- * Options for creating a custom fetch instance with `createFetch`
- */
-export type CreateFetchOptions = Partial<FetchDefaults>;
-
-/**
  * Type-safe fetch function with Standard Schema validation support
  */
 export interface $Fetch {
   /**
    * Fetch with schema validation and throwOnValidationError: false
-   * @param resource - URL or path to fetch
+   * @param input - URL or path to fetch
    * @param schema - Standard Schema for response validation
    * @param options - Extended request options with throwOnValidationError: false
    * @returns Standard Schema Result object with value or issues
+   * @throws {FetchError} When `throwOnFetchError` is `true` and the response is not ok.
+   * @throws {TypeError} When request construction, JSON request serialization, headers,
+   *   search params, native `fetch`, or `response.json()` body reading fail with a
+   *   `TypeError`.
+   * @throws {DOMException} When native `fetch` or `response.json()` rejects an aborted
+   *   request/body read as an `AbortError` DOMException.
+   * @throws {SyntaxError} When `response.json()` cannot parse the response body.
+   * @throws Any error thrown or rejected by the provided Standard Schema validator.
    */
   <TSchema extends StandardSchemaV1>(
-    resource: string,
+    input: FetchInput,
     schema: TSchema,
-    options: ExtendedRequestInit<false>,
+    options: ExtendedRequestInit & { throwOnValidationError: false },
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
   /**
    * Fetch with schema validation and throwOnValidationError: true or undefined (default)
-   * @param resource - URL or path to fetch
+   * @param input - URL or path to fetch
    * @param schema - Standard Schema for response validation
    * @param options - Extended request options
    * @returns Validated data of type TSchema
+   * @throws {FetchError} When `throwOnFetchError` is `true` and the response is not ok.
+   * @throws {ValidationError} When validation returns issues.
+   * @throws {TypeError} When request construction, JSON request serialization, headers,
+   *   search params, native `fetch`, or `response.json()` body reading fail with a
+   *   `TypeError`.
+   * @throws {DOMException} When native `fetch` or `response.json()` rejects an aborted
+   *   request/body read as an `AbortError` DOMException.
+   * @throws {SyntaxError} When `response.json()` cannot parse the response body.
+   * @throws Any error thrown or rejected by the provided Standard Schema validator.
    */
   <TSchema extends StandardSchemaV1>(
-    resource: string,
+    input: FetchInput,
     schema: TSchema,
-    options?: ExtendedRequestInit<true | undefined>,
+    options?: ExtendedRequestInit & {
+      throwOnValidationError?: true | undefined;
+    },
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
   /**
    * Fetch without schema validation
-   * @param resource - URL or path to fetch
+   * @param input - URL or path to fetch
    * @param options - Extended request options
    * @returns Raw Response object
+   * @throws {FetchError} When `throwOnFetchError` is `true` and the response is not ok.
+   * @throws {TypeError} When request construction, JSON request serialization, headers,
+   *   search params, or native `fetch` fail with a `TypeError`.
+   * @throws {DOMException} When native `fetch` rejects an aborted request as an
+   *   `AbortError` DOMException.
    */
-  (resource: string, options?: ExtendedRequestInit): Promise<Response>;
+  (input: FetchInput, options?: ExtendedRequestInit): Promise<Response>;
 }
 
 /**
  * API HTTP method-specific fetch functions
+ *
+ * @example
+ * const user = await api.get("/users/1", UserSchema);
  */
 export interface ApiMethods {
   /**

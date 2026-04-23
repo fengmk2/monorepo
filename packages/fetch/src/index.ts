@@ -1,14 +1,26 @@
+/**
+ * Public entrypoint for the fetch package.
+ *
+ * Exposes:
+ * - `$fetch` low-level typed fetch function
+ * - `api` method shortcuts
+ * - `createFetch` instance factory
+ *
+ * @module
+ */
+
 import { isStandardSchema, type StandardSchemaV1 } from "@zap-studio/validation";
 
 import { GLOBAL_DEFAULTS } from "./constants.js";
+import { fetchInternal } from "./internal.js";
+import { createMethod } from "./methods.js";
 import type {
   $Fetch,
   ApiMethods,
-  CreateFetchOptions,
   ExtendedRequestInit,
   FetchDefaults,
+  FetchInput,
 } from "./types.js";
-import { createMethod, fetchInternal } from "./utils.js";
 
 /**
  * Type-safe fetch wrapper with Standard Schema validation.
@@ -19,8 +31,18 @@ import { createMethod, fetchInternal } from "./utils.js";
  *
  * If no schema is provided, returns the raw `Response` object.
  *
- * @throws {FetchError} When `throwOnFetchError: true` and response is not ok
- * @throws {ValidationError} When `throwOnValidationError: true` and validation fails
+ * @throws {FetchError} When `throwOnFetchError` is `true` and the response is not ok.
+ * @throws {ValidationError} When a schema is provided, validation returns issues, and
+ *   `throwOnValidationError` is `true`.
+ * @throws {TypeError} When both `body` and `json` are provided, when JSON request
+ *   serialization fails, when request construction fails, when headers/search params are
+ *   invalid, when `response.json()` cannot read the body, or when the runtime `fetch`
+ *   implementation rejects network-level failures as `TypeError`.
+ * @throws {DOMException} When the runtime rejects an aborted request or response body read
+ *   as an `AbortError` DOMException.
+ * @throws {SyntaxError} When a schema is provided and `response.json()` cannot parse the
+ *   response body.
+ * @throws Any error thrown or rejected by the provided Standard Schema validator.
  *
  * @example
  * import { z } from "zod";
@@ -47,21 +69,21 @@ import { createMethod, fetchInternal } from "./utils.js";
  * }
  */
 export async function $fetch<TSchema extends StandardSchemaV1>(
-  resource: string,
+  input: FetchInput,
   schema: TSchema,
-  options: ExtendedRequestInit<false>,
+  options: ExtendedRequestInit & { throwOnValidationError: false },
 ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
 export async function $fetch<TSchema extends StandardSchemaV1>(
-  resource: string,
+  input: FetchInput,
   schema: TSchema,
-  options?: ExtendedRequestInit<true | undefined>,
+  options?: ExtendedRequestInit & { throwOnValidationError?: true | undefined },
 ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
-export async function $fetch(resource: string, options?: ExtendedRequestInit): Promise<Response>;
+export async function $fetch(input: FetchInput, options?: ExtendedRequestInit): Promise<Response>;
 
 export async function $fetch(
-  resource: string,
+  input: FetchInput,
   schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
   optionsOrUndefined?: ExtendedRequestInit,
 ): Promise<unknown> {
@@ -69,7 +91,7 @@ export async function $fetch(
     ? [schemaOrOptions, optionsOrUndefined]
     : [undefined, schemaOrOptions];
 
-  return await fetchInternal(resource, schema, options, GLOBAL_DEFAULTS);
+  return await fetchInternal(input, schema, options, GLOBAL_DEFAULTS);
 }
 
 /**
@@ -77,6 +99,8 @@ export async function $fetch(
  *
  * These methods always require a schema for validation.
  * For raw responses without validation, use `$fetch` directly.
+ *
+ * Each method has the same throw behavior as {@link $fetch}.
  *
  * @example
  * import { z } from "zod";
@@ -107,6 +131,9 @@ export const api: ApiMethods = {
  * Use this factory to create API clients with a base URL, default headers,
  * and other shared configuration. Each instance is independent.
  *
+ * The returned `$fetch` and `api` methods have the same throw behavior as the
+ * top-level {@link $fetch} export.
+ *
  * @example
  * import { z } from "zod";
  * import { createFetch } from "@zap-studio/fetch";
@@ -123,36 +150,38 @@ export const api: ApiMethods = {
  * const user = await api.get("/users/1", UserSchema);
  *
  * // Or use $fetch directly
- * const response = await $fetch("/users", UserSchema, { method: "POST", body: { name: "John" } });
+ * const response = await $fetch("/users", UserSchema, { method: "POST", json: { name: "John" } });
  */
-export function createFetch(factoryOptions: CreateFetchOptions = {}): {
+export function createFetch(factoryOptions: Partial<FetchDefaults> = {}): {
   $fetch: $Fetch;
   api: ApiMethods;
 } {
   const defaults: FetchDefaults = {
     baseURL: factoryOptions.baseURL ?? "",
-    throwOnFetchError: factoryOptions.throwOnFetchError ?? true,
-    throwOnValidationError: factoryOptions.throwOnValidationError ?? true,
     headers: factoryOptions.headers,
     searchParams: factoryOptions.searchParams,
+    throwOnFetchError: factoryOptions.throwOnFetchError ?? true,
+    throwOnValidationError: factoryOptions.throwOnValidationError ?? true,
   };
 
   async function customFetch<TSchema extends StandardSchemaV1>(
-    resource: string,
+    input: FetchInput,
     schema: TSchema,
-    options: ExtendedRequestInit<false>,
+    options: ExtendedRequestInit & { throwOnValidationError: false },
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
   async function customFetch<TSchema extends StandardSchemaV1>(
-    resource: string,
+    input: FetchInput,
     schema: TSchema,
-    options?: ExtendedRequestInit<true | undefined>,
+    options?: ExtendedRequestInit & {
+      throwOnValidationError?: true | undefined;
+    },
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
-  async function customFetch(resource: string, options?: ExtendedRequestInit): Promise<Response>;
+  async function customFetch(input: FetchInput, options?: ExtendedRequestInit): Promise<Response>;
 
   async function customFetch(
-    resource: string,
+    input: FetchInput,
     schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
     optionsOrUndefined?: ExtendedRequestInit,
   ): Promise<unknown> {
@@ -160,7 +189,7 @@ export function createFetch(factoryOptions: CreateFetchOptions = {}): {
       ? [schemaOrOptions, optionsOrUndefined]
       : [undefined, schemaOrOptions];
 
-    return await fetchInternal(resource, schema, options, defaults);
+    return await fetchInternal(input, schema, options, defaults);
   }
 
   const customApi = {

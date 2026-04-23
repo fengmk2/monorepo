@@ -68,6 +68,12 @@ export function isStandardSchema(value: unknown): value is StandardSchemaV1 {
  * @template TSchema - The Standard Schema type.
  * @param schema - The schema to validate against.
  * @returns An async validator function.
+ * @throws {ValidationError} When the returned validator is called with
+ *   `throwOnError: true` and validation returns issues.
+ * @throws {TypeError} When the returned validator is called and the provided value does not
+ *   expose a callable Standard Schema `~standard.validate` implementation at runtime.
+ * @throws Any error thrown or rejected by the schema's Standard Schema
+ *   `validate` function when the returned validator is called.
  *
  * @example
  * ```ts
@@ -140,7 +146,14 @@ export function createStandardValidator<TSchema extends StandardSchemaV1>(
  * @template TSchema - The Standard Schema type.
  * @param schema - The schema to validate against.
  * @returns A synchronous validator function.
- * @throws {Error} If the schema performs asynchronous validation.
+ * @throws {Error} When the returned validator receives a schema result Promise.
+ *   The message is `Async schemas are not supported by createSyncStandardValidator`.
+ * @throws {ValidationError} When the returned validator is called with
+ *   `throwOnError: true` and validation returns issues.
+ * @throws {TypeError} When the returned validator is called and the provided value does not
+ *   expose a callable Standard Schema `~standard.validate` implementation at runtime.
+ * @throws Any error thrown by the schema's Standard Schema `validate` function
+ *   when the returned validator is called.
  *
  * @example
  * ```ts
@@ -231,6 +244,10 @@ export function createSyncStandardValidator<TSchema extends StandardSchemaV1>(
  * @param options - Options for validation behavior.
  * @returns The parsed value or the raw validation result.
  * @throws {ValidationError} If validation fails and `throwOnError` is `true`.
+ * @throws {TypeError} If the provided value does not expose a callable Standard Schema
+ *   `~standard.validate` implementation at runtime.
+ * @throws Any error thrown or rejected by the schema's Standard Schema
+ *   `validate` function.
  *
  * @example
  * ```ts
@@ -302,8 +319,12 @@ export async function standardValidate<TSchema extends StandardSchemaV1>(
  * @param input - The value to validate.
  * @param options - Options for validation behavior.
  * @returns The parsed value or the raw validation result.
- * @throws {Error} If the schema performs asynchronous validation.
+ * @throws {Error} If the schema performs asynchronous validation. The message is
+ *   `Async schemas are not supported by standardValidateSync`.
  * @throws {ValidationError} If validation fails and `throwOnError` is `true`.
+ * @throws {TypeError} If the provided value does not expose a callable Standard Schema
+ *   `~standard.validate` implementation at runtime.
+ * @throws Any error thrown by the schema's Standard Schema `validate` function.
  *
  * @example
  * ```ts
