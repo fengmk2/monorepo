@@ -40,6 +40,14 @@ export interface WebhookRouterOptions {
   verify?: (req: NormalizedRequest) => Promise<void> | void;
 }
 
+function toArray<T>(value: T | T[] | undefined): T[] {
+  if (value === undefined) {
+    return [];
+  }
+
+  return Array.isArray(value) ? value : [value];
+}
+
 /**
  * Main webhook router class.
  *
@@ -47,27 +55,18 @@ export interface WebhookRouterOptions {
  */
 export class WebhookRouter<TMap = unknown> {
   private readonly handlers: HandlerStore = {};
-  private readonly verify?: (req: NormalizedRequest) => Promise<void> | void;
+  private readonly verify: ((req: NormalizedRequest) => Promise<void> | void) | undefined;
   private readonly globalBeforeHooks: BeforeHook[] = [];
   private readonly globalAfterHooks: AfterHook[] = [];
-  private readonly globalErrorHook?: ErrorHook;
+  private readonly globalErrorHook: ErrorHook | undefined;
   private readonly prefix: string;
 
-  constructor(opts?: WebhookRouterOptions) {
-    this.prefix = opts?.prefix ?? "/webhooks/";
-
-    if (opts?.verify) {
-      this.verify = opts.verify;
-    }
-    if (opts?.before) {
-      this.globalBeforeHooks = Array.isArray(opts.before) ? opts.before : [opts.before];
-    }
-    if (opts?.after) {
-      this.globalAfterHooks = Array.isArray(opts.after) ? opts.after : [opts.after];
-    }
-    if (opts?.onError) {
-      this.globalErrorHook = opts.onError;
-    }
+  constructor(opts: WebhookRouterOptions = {}) {
+    this.prefix = opts.prefix ?? "/webhooks/";
+    this.verify = opts.verify;
+    this.globalBeforeHooks = toArray(opts.before);
+    this.globalAfterHooks = toArray(opts.after);
+    this.globalErrorHook = opts.onError;
   }
 
   /**
