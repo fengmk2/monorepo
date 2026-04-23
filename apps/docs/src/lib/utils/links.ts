@@ -2,8 +2,7 @@ export function isExternalHref(href: string): boolean {
   return /^(?:[a-z]+:)?\/\//i.test(href);
 }
 
-export function getExternalLinkProps(...args: [] | [href: string | undefined]) {
-  const [href] = args;
+export function getExternalLinkProps(href?: string) {
   if (!href || !isExternalHref(href)) {
     return {};
   }

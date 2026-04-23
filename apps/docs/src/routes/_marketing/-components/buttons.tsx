@@ -23,10 +23,12 @@ type ButtonLinkProps = Omit<ComponentPropsWithoutRef<"a">, "href"> & {
   href: string;
 };
 
-type PrimaryButtonProps = ButtonLinkProps & {
+interface PrimaryButtonProps extends ButtonLinkProps {
   children: ReactNode;
   href: string;
-} & Partial<Record<"size", Size | undefined> & Record<"withArrow", boolean | undefined>>;
+  size?: Size;
+  withArrow?: boolean;
+}
 
 export function PrimaryButton({
   children,
@@ -61,10 +63,11 @@ export function PrimaryButton({
   );
 }
 
-type SecondaryButtonProps = ButtonLinkProps & {
+interface SecondaryButtonProps extends ButtonLinkProps {
   children: ReactNode;
   href: string;
-} & Partial<Record<"size", Size | undefined>>;
+  size?: Size;
+}
 
 export function SecondaryButton({
   children,
@@ -94,9 +97,10 @@ export function SecondaryButton({
   );
 }
 
-type ButtonGroupProps = {
+interface ButtonGroupProps {
   children: ReactNode;
-} & Partial<Record<"className", string | undefined>>;
+  className?: string;
+}
 
 export function ButtonGroup({ children, className = "" }: ButtonGroupProps): ReactNode {
   return (

@@ -2,9 +2,10 @@ import "@tanstack/react-start/server-only";
 import { ImageResponse } from "@takumi-rs/image-response";
 import { generate as DefaultImage } from "fumadocs-ui/og/takumi";
 
-type DocsOgImageOptions = {
+interface DocsOgImageOptions {
+  description?: string;
   title: string;
-} & Partial<Record<"description", string | undefined>>;
+}
 
 export function createDocsOgImageResponse({
   description,

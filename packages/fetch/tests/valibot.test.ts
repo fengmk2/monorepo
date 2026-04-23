@@ -92,9 +92,7 @@ describe("$fetch with Valibot schemas", () => {
     });
 
     expect(result).toHaveProperty("issues");
-    expect(Array.isArray((result as Partial<Record<"issues", unknown | undefined>>).issues)).toBe(
-      true,
-    );
+    expect(Array.isArray((result as { issues?: unknown }).issues)).toBe(true);
   });
 
   it("should return successful validation result when data is valid and throwOnValidationError is false", async () => {
@@ -118,8 +116,8 @@ describe("$fetch with Valibot schemas", () => {
     });
 
     expect(result).toHaveProperty("value");
-    expect((result as Partial<Record<"value", unknown | undefined>>).value).toEqual(validData);
-    expect((result as Partial<Record<"issues", unknown | undefined>>).issues).toBeUndefined();
+    expect((result as { value?: unknown }).value).toEqual(validData);
+    expect((result as { issues?: unknown }).issues).toBeUndefined();
   });
 
   it("should work with Valibot array schemas", async () => {

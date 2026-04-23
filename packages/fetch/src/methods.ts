@@ -36,15 +36,12 @@ export function createMethod<TFetch extends $Fetch>(fetchFn: TFetch, method: str
   function methodFetch<TSchema extends StandardSchemaV1>(
     input: FetchInput,
     schema: TSchema,
-    ...args:
-      | []
-      | [options: ExtendedRequestInit & Partial<Record<"throwOnValidationError", true | undefined>>]
+    options?: ExtendedRequestInit & {
+      throwOnValidationError?: true | undefined;
+    },
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
-  function methodFetch(
-    input: FetchInput,
-    ...args: [] | [options: ExtendedRequestInit]
-  ): Promise<Response>;
+  function methodFetch(input: FetchInput, options?: ExtendedRequestInit): Promise<Response>;
 
   /**
    * Method-bound `$Fetch` implementation.
@@ -53,15 +50,9 @@ export function createMethod<TFetch extends $Fetch>(fetchFn: TFetch, method: str
    */
   function methodFetch(
     input: FetchInput,
-    ...args:
-      | []
-      | [schemaOrOptions: StandardSchemaV1 | ExtendedRequestInit | undefined]
-      | [
-          schemaOrOptions: StandardSchemaV1 | ExtendedRequestInit | undefined,
-          optionsOrUndefined: ExtendedRequestInit | undefined,
-        ]
+    schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
+    optionsOrUndefined?: ExtendedRequestInit,
   ): Promise<unknown> {
-    const [schemaOrOptions, optionsOrUndefined] = args;
     if (isStandardSchema(schemaOrOptions)) {
       if (optionsOrUndefined?.throwOnValidationError === false) {
         return fetchFn(input, schemaOrOptions, {

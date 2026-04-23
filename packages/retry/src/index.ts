@@ -62,7 +62,7 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
    */
   public async run<T>(
     execute: (attempt: number) => Promise<T>,
-    ...args: [] | [options: RetryRunOptions & Partial<Record<"throwOnExhausted", true | undefined>>]
+    options?: RetryRunOptions & { throwOnExhausted?: true | undefined },
   ): Promise<T>;
 
   /**
@@ -83,9 +83,8 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
    */
   public async run<T>(
     execute: (attempt: number) => Promise<T>,
-    ...args: [] | [options: RetryRunOptions]
+    options: RetryRunOptions = {},
   ): Promise<T | RetryRunResult<T>> {
-    const [options = {} as RetryRunOptions] = args;
     const sleep = options.sleep ?? defaultSleep;
     let attempt = 1;
     let lastError: TError | undefined;

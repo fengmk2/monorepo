@@ -1,14 +1,13 @@
 import { domAnimation, LazyMotion, m, useReducedMotion } from "motion/react";
 import type { ReactNode } from "react";
 
-type FadeInProps = {
+interface FadeInProps {
   children: ReactNode;
-} & Partial<
-  Record<"className", string | undefined> &
-    Record<"delay", number | undefined> &
-    Record<"duration", number | undefined> &
-    Record<"y", number | undefined>
->;
+  className?: string;
+  delay?: number;
+  duration?: number;
+  y?: number;
+}
 
 export function FadeIn({
   children,
@@ -38,7 +37,9 @@ export function FadeIn({
   );
 }
 
-type PulseGlowProps = Partial<Record<"className", string | undefined>>;
+interface PulseGlowProps {
+  className?: string;
+}
 
 export function PulseGlow({ className }: PulseGlowProps): ReactNode {
   const reduceMotion = useReducedMotion();

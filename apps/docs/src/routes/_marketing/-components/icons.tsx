@@ -1,8 +1,6 @@
 import type { ReactNode } from "react";
 
-export function GitHubIcon({
-  className,
-}: Partial<Record<"className", string | undefined>>): ReactNode {
+export function GitHubIcon({ className }: { className?: string }): ReactNode {
   return (
     <svg className={className} fill="currentColor" role="img" viewBox="0 0 24 24">
       <title>GitHub</title>
@@ -11,9 +9,7 @@ export function GitHubIcon({
   );
 }
 
-export function DiscordIcon({
-  className,
-}: Partial<Record<"className", string | undefined>>): ReactNode {
+export function DiscordIcon({ className }: { className?: string }): ReactNode {
   return (
     <svg className={className} fill="currentColor" role="img" viewBox="0 0 24 24">
       <title>Discord</title>
