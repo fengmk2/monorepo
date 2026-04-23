@@ -62,7 +62,15 @@ export function createMethod<TFetch extends $Fetch>(fetchFn: TFetch, method: str
         });
       }
 
-      const { throwOnValidationError: _ignored, ...restOptions } = optionsOrUndefined ?? {};
+      const { throwOnValidationError, ...restOptions } = optionsOrUndefined ?? {};
+
+      if (throwOnValidationError === true) {
+        return fetchFn(input, schemaOrOptions, {
+          ...restOptions,
+          method,
+          throwOnValidationError: true,
+        });
+      }
 
       return fetchFn(input, schemaOrOptions, {
         ...restOptions,

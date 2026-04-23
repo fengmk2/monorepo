@@ -53,6 +53,19 @@ describe("createMethod", () => {
     });
   });
 
+  it("preserves throwOnValidationError: true when explicitly provided", async () => {
+    const fetchMock = createFetchMock();
+    const put = createMethod(fetchMock, "PUT");
+
+    await put("/users/1", schema, { throwOnValidationError: true });
+    const call = fetchMock.mock.calls[0];
+
+    expect(call?.[2]).toEqual({
+      method: "PUT",
+      throwOnValidationError: true,
+    });
+  });
+
   it("supports raw Response calls without a schema", async () => {
     const fetchMock = createFetchMock();
     const del = createMethod(fetchMock, "DELETE");
