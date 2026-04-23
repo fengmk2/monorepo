@@ -6,7 +6,7 @@
 
 import { isStandardSchema, type StandardSchemaV1 } from "@zap-studio/validation";
 
-import type { $Fetch, ExtendedRequestInit } from "./types.js";
+import type { $Fetch, ExtendedRequestInit, FetchInput } from "./types.js";
 
 /**
  * Creates an HTTP method helper bound to a fetch function.
@@ -26,7 +26,7 @@ import type { $Fetch, ExtendedRequestInit } from "./types.js";
  */
 export function createMethod<TFetch extends $Fetch>(fetchFn: TFetch, method: string): $Fetch {
   function methodFetch<TSchema extends StandardSchemaV1>(
-    resource: RequestInfo,
+    input: FetchInput,
     schema: TSchema,
     options: ExtendedRequestInit & {
       throwOnValidationError: false;
@@ -34,14 +34,14 @@ export function createMethod<TFetch extends $Fetch>(fetchFn: TFetch, method: str
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
   function methodFetch<TSchema extends StandardSchemaV1>(
-    resource: RequestInfo,
+    input: FetchInput,
     schema: TSchema,
     options?: ExtendedRequestInit & {
       throwOnValidationError?: true | undefined;
     },
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
-  function methodFetch(resource: RequestInfo, options?: ExtendedRequestInit): Promise<Response>;
+  function methodFetch(input: FetchInput, options?: ExtendedRequestInit): Promise<Response>;
 
   /**
    * Method-bound `$Fetch` implementation.
@@ -49,27 +49,27 @@ export function createMethod<TFetch extends $Fetch>(fetchFn: TFetch, method: str
    * Resolves schema/option overloads and injects the configured HTTP method.
    */
   function methodFetch(
-    resource: RequestInfo,
+    input: FetchInput,
     schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
     optionsOrUndefined?: ExtendedRequestInit,
   ): Promise<unknown> {
     if (isStandardSchema(schemaOrOptions)) {
       if (optionsOrUndefined?.throwOnValidationError === false) {
-        return fetchFn(resource, schemaOrOptions, {
+        return fetchFn(input, schemaOrOptions, {
           ...optionsOrUndefined,
           method,
           throwOnValidationError: false,
         });
       }
 
-      return fetchFn(resource, schemaOrOptions, {
+      return fetchFn(input, schemaOrOptions, {
         ...optionsOrUndefined,
         method,
         throwOnValidationError: optionsOrUndefined?.throwOnValidationError,
       });
     }
 
-    return fetchFn(resource, {
+    return fetchFn(input, {
       ...schemaOrOptions,
       method,
     });

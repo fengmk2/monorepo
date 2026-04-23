@@ -9,7 +9,8 @@
 ### Changed
 
 - Simplified the request API around web platform types.
-  - `resource` now follows the native `fetch` shape with `RequestInfo`.
+  - The first argument is named `input` and typed as `FetchInput` (`Parameters<typeof fetch>[0]` from `lib.dom`), exported from `@zap-studio/fetch/types`, so allowed inputs track global `fetch` when DOM typings change.
+  - Non-`Request` values (including `URL`) are normalized to a string URL before query merge.
   - `ExtendedRequestInit` now extends native `RequestInit` directly instead of redefining request options.
   - `searchParams` now accepts the same input shape as `new URLSearchParams(...)`.
 - Replaced automatic object body serialization with an explicit `json` option.

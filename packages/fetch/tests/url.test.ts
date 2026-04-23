@@ -50,7 +50,7 @@ describe("resolveRequestUrl", () => {
     expect(resolveRequestUrl("users", DEFAULTS, undefined)).toBe("users");
   });
 
-  it("merges default, resource, and request search params in that order", () => {
+  it("merges default, URL, and request search params in that order", () => {
     const url = resolveRequestUrl(
       "users?page=2&from=resource#team",
       {

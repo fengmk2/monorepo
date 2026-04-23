@@ -8,7 +8,7 @@ It behaves like native `fetch` when no schema is provided, and validates JSON re
 
 ## Raw Response Mode
 
-Call `$fetch(resource, options)` without a schema to receive the native `Response`.
+Call `$fetch(input, options)` without a schema to receive the native `Response`.
 
 ```ts
 import { $fetch } from "@zap-studio/fetch";
@@ -23,7 +23,7 @@ Use this mode for headers, status codes, streams, text, blobs, or any response t
 
 ## Validated Mode
 
-Call `$fetch(resource, schema, options)` to parse `response.json()` and validate the parsed value.
+Call `$fetch(input, schema, options)` to parse `response.json()` and validate the parsed value.
 
 ```ts
 import { $fetch } from "@zap-studio/fetch";
@@ -42,7 +42,13 @@ The schema validates the response body, not request `json` or `body` options.
 
 ## Request Inputs
 
-The `resource` argument follows native `fetch` and accepts `RequestInfo`.
+The `input` argument uses the same type as global `fetch`.
+
+```ts
+import type { FetchInput } from "@zap-studio/fetch/types";
+
+const input: FetchInput = new URL("https://api.example.com/users/1");
+```
 
 ```ts
 const request = new Request("https://api.example.com/users/1", {

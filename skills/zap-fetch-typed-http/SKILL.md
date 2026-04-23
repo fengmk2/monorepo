@@ -10,8 +10,8 @@ Use this skill when consuming `@zap-studio/fetch` in an application.
 ## Core Workflow
 
 1. Decide whether the call needs a raw `Response` or validated data.
-2. Use `$fetch(resource, options)` for raw responses.
-3. Use `$fetch(resource, schema, options)` or `api.*(resource, schema, options)` for validated JSON responses.
+2. Use `$fetch(input, options)` for raw responses.
+3. Use `$fetch(input, schema, options)` or `api.*(input, schema, options)` for validated JSON responses.
 4. Use `createFetch` for shared `baseURL`, headers, query params, or default throw modes.
 5. Catch `FetchError` and `ValidationError` explicitly when the caller needs structured handling.
 

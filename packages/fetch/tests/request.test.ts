@@ -3,7 +3,7 @@ import { describe, expect, it } from "vite-plus/test";
 import { normalizeRequest } from "../src/request.js";
 
 describe("normalizeRequest", () => {
-  it("keeps URL resources simple", () => {
+  it("keeps URL strings simple", () => {
     const options = { headers: { A: "1" }, method: "POST" };
 
     expect(normalizeRequest("https://api.example.com/users", options)).toEqual({
@@ -19,7 +19,15 @@ describe("normalizeRequest", () => {
     });
   });
 
-  it("clones Request resources and exposes their URL", () => {
+  it("serializes URL objects to a string url", () => {
+    const input = new URL("/users", "https://api.example.com");
+    expect(normalizeRequest(input)).toEqual({
+      url: "https://api.example.com/users",
+      options: {},
+    });
+  });
+
+  it("clones Request inputs and exposes their URL", () => {
     const request = new Request("https://api.example.com/users", {
       headers: { A: "1" },
       method: "POST",

@@ -454,7 +454,7 @@ describe("createFetch", () => {
       expect(fetchMock).toHaveBeenCalledWith("https://api.example.com/users", expect.any(Object));
     });
 
-    it("should handle resource with leading slash", async () => {
+    it("should handle input with leading slash", async () => {
       const mockResponse = new Response(JSON.stringify({ data: "test" }), {
         status: 200,
       });
@@ -469,7 +469,7 @@ describe("createFetch", () => {
       expect(fetchMock).toHaveBeenCalledWith("https://api.example.com/users", expect.any(Object));
     });
 
-    it("should handle both baseURL with trailing and resource with leading slash", async () => {
+    it("should handle both baseURL with trailing and input with leading slash", async () => {
       const mockResponse = new Response(JSON.stringify({ data: "test" }), {
         status: 200,
       });

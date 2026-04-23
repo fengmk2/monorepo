@@ -24,7 +24,7 @@ describe("createMethod", () => {
     expect(typeof createMethod(createFetchMock(), "GET")).toBe("function");
   });
 
-  it("passes resource, schema, and method options to the fetch function", async () => {
+  it("passes input, schema, and method options to the fetch function", async () => {
     const fetchMock = createFetchMock();
     const get = createMethod(fetchMock, "GET");
 

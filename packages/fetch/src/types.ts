@@ -6,6 +6,8 @@
 
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
+export type FetchInput = Parameters<typeof fetch>[0];
+
 type URLSearchParamsInput = ConstructorParameters<typeof URLSearchParams>[0];
 
 type RequestBodyInit = RequestInit & {
@@ -95,7 +97,7 @@ export interface FetchDefaults {
 export interface $Fetch {
   /**
    * Fetch with schema validation and throwOnValidationError: false
-   * @param resource - URL or path to fetch
+   * @param input - URL or path to fetch
    * @param schema - Standard Schema for response validation
    * @param options - Extended request options with throwOnValidationError: false
    * @returns Standard Schema Result object with value or issues
@@ -109,14 +111,14 @@ export interface $Fetch {
    * @throws Any error thrown or rejected by the provided Standard Schema validator.
    */
   <TSchema extends StandardSchemaV1>(
-    resource: RequestInfo,
+    input: FetchInput,
     schema: TSchema,
     options: ExtendedRequestInit & { throwOnValidationError: false },
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
   /**
    * Fetch with schema validation and throwOnValidationError: true or undefined (default)
-   * @param resource - URL or path to fetch
+   * @param input - URL or path to fetch
    * @param schema - Standard Schema for response validation
    * @param options - Extended request options
    * @returns Validated data of type TSchema
@@ -131,7 +133,7 @@ export interface $Fetch {
    * @throws Any error thrown or rejected by the provided Standard Schema validator.
    */
   <TSchema extends StandardSchemaV1>(
-    resource: RequestInfo,
+    input: FetchInput,
     schema: TSchema,
     options?: ExtendedRequestInit & {
       throwOnValidationError?: true | undefined;
@@ -140,7 +142,7 @@ export interface $Fetch {
 
   /**
    * Fetch without schema validation
-   * @param resource - URL or path to fetch
+   * @param input - URL or path to fetch
    * @param options - Extended request options
    * @returns Raw Response object
    * @throws {FetchError} When `throwOnFetchError` is `true` and the response is not ok.
@@ -149,7 +151,7 @@ export interface $Fetch {
    * @throws {DOMException} When native `fetch` rejects an aborted request as an
    *   `AbortError` DOMException.
    */
-  (resource: RequestInfo, options?: ExtendedRequestInit): Promise<Response>;
+  (input: FetchInput, options?: ExtendedRequestInit): Promise<Response>;
 }
 
 /**

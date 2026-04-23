@@ -165,7 +165,7 @@ describe("fetchInternal", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it("uses Request resources as Request inputs", async () => {
+  it("uses Request instances as fetch Request inputs", async () => {
     const request = new Request("https://api.example.com/users", {
       headers: { A: "1" },
       method: "POST",

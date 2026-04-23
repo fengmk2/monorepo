@@ -1,16 +1,16 @@
 /**
- * Request normalization helpers for RequestInfo-compatible inputs.
+ * Request normalization helpers for fetch `input` values.
  *
  * @module
  */
 
 import { mergeHeaders } from "./headers.js";
-import type { ExtendedRequestInit } from "./types.js";
+import type { ExtendedRequestInit, FetchInput } from "./types.js";
 
 /**
  * Normalized representation used by internal request execution.
  *
- * - `url`: resolved string URL from `RequestInfo`
+ * - `url`: resolved string URL from the input (string or `URL`; `Request` uses `request.url`)
  * - `request`: original Request clone when input is a Request
  * - `options`: normalized request options merged with Request headers
  */
@@ -21,9 +21,9 @@ export interface NormalizedRequest {
 }
 
 /**
- * Normalizes RequestInfo and request-level options into a consistent internal shape.
+ * Normalizes fetch `input` and request-level options into a consistent internal shape.
  *
- * @param resource - Request URL/path or Request instance.
+ * @param input - Request URL/path or Request instance.
  * @param options - Optional request options.
  * @returns A normalized request structure for internal processing.
  * @throws {TypeError} When cloning a `Request` fails or the merged headers are invalid.
@@ -33,17 +33,18 @@ export interface NormalizedRequest {
  * console.log(normalized.url); // "/users"
  */
 export function normalizeRequest(
-  resource: RequestInfo,
+  input: FetchInput,
   options?: ExtendedRequestInit,
 ): NormalizedRequest {
-  if (!(resource instanceof Request)) {
+  if (!(input instanceof Request)) {
+    const url = input instanceof URL ? input.href : input;
     return {
-      url: resource,
+      url,
       options: options ?? {},
     };
   }
 
-  const request = new Request(resource);
+  const request = new Request(input);
   const { headers, ...rest } = options || {};
   const mergedHeaders = mergeHeaders(request.headers, headers);
   const normalizedOptions = { ...rest } as ExtendedRequestInit;

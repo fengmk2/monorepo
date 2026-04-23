@@ -254,7 +254,7 @@ console.log(response.status);
 
 ## Request Objects
 
-The resource argument accepts `RequestInfo`, like native `fetch`.
+The first argument (`input`) uses the same type as global `fetch`.
 
 ```ts
 const request = new Request("https://api.example.com/users/1", {

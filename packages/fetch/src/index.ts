@@ -14,7 +14,13 @@ import { isStandardSchema, type StandardSchemaV1 } from "@zap-studio/validation"
 import { GLOBAL_DEFAULTS } from "./constants.js";
 import { fetchInternal } from "./internal.js";
 import { createMethod } from "./methods.js";
-import type { $Fetch, ApiMethods, ExtendedRequestInit, FetchDefaults } from "./types.js";
+import type {
+  $Fetch,
+  ApiMethods,
+  ExtendedRequestInit,
+  FetchDefaults,
+  FetchInput,
+} from "./types.js";
 
 /**
  * Type-safe fetch wrapper with Standard Schema validation.
@@ -63,24 +69,21 @@ import type { $Fetch, ApiMethods, ExtendedRequestInit, FetchDefaults } from "./t
  * }
  */
 export async function $fetch<TSchema extends StandardSchemaV1>(
-  resource: RequestInfo,
+  input: FetchInput,
   schema: TSchema,
   options: ExtendedRequestInit & { throwOnValidationError: false },
 ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
 export async function $fetch<TSchema extends StandardSchemaV1>(
-  resource: RequestInfo,
+  input: FetchInput,
   schema: TSchema,
   options?: ExtendedRequestInit & { throwOnValidationError?: true | undefined },
 ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
-export async function $fetch(
-  resource: RequestInfo,
-  options?: ExtendedRequestInit,
-): Promise<Response>;
+export async function $fetch(input: FetchInput, options?: ExtendedRequestInit): Promise<Response>;
 
 export async function $fetch(
-  resource: RequestInfo,
+  input: FetchInput,
   schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
   optionsOrUndefined?: ExtendedRequestInit,
 ): Promise<unknown> {
@@ -88,7 +91,7 @@ export async function $fetch(
     ? [schemaOrOptions, optionsOrUndefined]
     : [undefined, schemaOrOptions];
 
-  return await fetchInternal(resource, schema, options, GLOBAL_DEFAULTS);
+  return await fetchInternal(input, schema, options, GLOBAL_DEFAULTS);
 }
 
 /**
@@ -162,26 +165,23 @@ export function createFetch(factoryOptions: Partial<FetchDefaults> = {}): {
   };
 
   async function customFetch<TSchema extends StandardSchemaV1>(
-    resource: RequestInfo,
+    input: FetchInput,
     schema: TSchema,
     options: ExtendedRequestInit & { throwOnValidationError: false },
   ): Promise<StandardSchemaV1.Result<StandardSchemaV1.InferOutput<TSchema>>>;
 
   async function customFetch<TSchema extends StandardSchemaV1>(
-    resource: RequestInfo,
+    input: FetchInput,
     schema: TSchema,
     options?: ExtendedRequestInit & {
       throwOnValidationError?: true | undefined;
     },
   ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
-  async function customFetch(
-    resource: RequestInfo,
-    options?: ExtendedRequestInit,
-  ): Promise<Response>;
+  async function customFetch(input: FetchInput, options?: ExtendedRequestInit): Promise<Response>;
 
   async function customFetch(
-    resource: RequestInfo,
+    input: FetchInput,
     schemaOrOptions?: StandardSchemaV1 | ExtendedRequestInit,
     optionsOrUndefined?: ExtendedRequestInit,
   ): Promise<unknown> {
@@ -189,7 +189,7 @@ export function createFetch(factoryOptions: Partial<FetchDefaults> = {}): {
       ? [schemaOrOptions, optionsOrUndefined]
       : [undefined, schemaOrOptions];
 
-    return await fetchInternal(resource, schema, options, defaults);
+    return await fetchInternal(input, schema, options, defaults);
   }
 
   const customApi = {

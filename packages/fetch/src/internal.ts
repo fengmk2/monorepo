@@ -10,7 +10,7 @@ import { standardValidate } from "@zap-studio/validation";
 import { FetchError } from "./errors.js";
 import { mergeHeaders } from "./headers.js";
 import { normalizeRequest } from "./request.js";
-import type { ExtendedRequestInit, FetchDefaults } from "./types.js";
+import type { ExtendedRequestInit, FetchDefaults, FetchInput } from "./types.js";
 import { resolveRequestUrl } from "./url.js";
 
 /**
@@ -20,7 +20,7 @@ import { resolveRequestUrl } from "./url.js";
  * executes `fetch`, optionally throws `FetchError`, and optionally validates
  * JSON response payloads using Standard Schema.
  *
- * @param resource - Request URL, path, or Request object.
+ * @param input - Request URL, path, or Request object.
  * @param schema - Optional Standard Schema for response validation.
  * @param options - Optional request options and package-specific flags.
  * @param defaults - Effective client defaults.
@@ -39,12 +39,12 @@ import { resolveRequestUrl } from "./url.js";
  * @throws Any error thrown or rejected by the provided Standard Schema validator.
  */
 export async function fetchInternal(
-  resource: RequestInfo,
+  input: FetchInput,
   schema: StandardSchemaV1 | undefined,
   options: ExtendedRequestInit | undefined,
   defaults: FetchDefaults,
 ): Promise<unknown> {
-  const request = normalizeRequest(resource, options);
+  const request = normalizeRequest(input, options);
   const { init, searchParams, throwOnFetchError, throwOnValidationError } = prepareRequestInit(
     request.options,
     defaults,
