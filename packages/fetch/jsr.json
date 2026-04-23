@@ -15,7 +15,7 @@
     "./url": "./src/url.ts"
   },
   "imports": {
-    "@zap-studio/validation": "jsr:@zap-studio/validation@0.3.2"
+    "@zap-studio/validation": "jsr:@zap-studio/validation@0.3.3"
   },
   "publish": {
     "include": ["src", "CHANGELOG.md", "LICENSE", "README.md"]
