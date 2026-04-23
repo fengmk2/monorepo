@@ -101,8 +101,10 @@ const predictableIntervalPolicy = new FixedDelay({
 ## Custom Policies
 
 Extend `BaseRetryPolicy` when the built-in policies do not match your retry rules.
-You implement `next(...)`; the base class keeps the shared `run(...)` orchestration and
-default `RetryError` exhaustion behavior.
+
+You implement `next(...)` only; the base class supplies `onExhausted` with a default
+`RetryError` and keeps the shared `run(...)` orchestration (override `onExhausted` when
+you need a different terminal error).
 
 ```ts
 import { BaseRetryPolicy } from "@zap-studio/retry";

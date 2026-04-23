@@ -9,7 +9,7 @@ Use this skill when consuming `@zap-studio/retry`.
 
 ## Core Model
 
-- Policies implement `next(input)` and optionally `onExhausted(input)`.
+- The `RetryPolicy` interface requires both `next(input)` and `onExhausted(input)` (object literals must supply both). Extend `BaseRetryPolicy` to implement `next` only; the base class provides a default `onExhausted` you can override.
 - `BaseRetryPolicy.run(execute, options)` owns orchestration.
 - Attempts are one-based; the first call to `execute` receives `1`.
 - `FixedDelay` returns a constant delay until `maxAttempts`.

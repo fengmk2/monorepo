@@ -8,7 +8,10 @@ Create a custom policy when the built-in `FixedDelay` and `ExponentialBackoff` p
 ## Extend BaseRetryPolicy
 
 Extending `BaseRetryPolicy` is the recommended path for most custom policies.
-You only implement `next(...)`; the base class keeps the shared `run(...)` orchestration and default `RetryError` exhaustion behavior.
+
+You implement `next(...)` only; the base class provides `onExhausted` with a default
+`RetryError` return, keeps the shared `run(...)` orchestration, and lets you override
+`onExhausted` when needed.
 
 ```ts
 import { BaseRetryPolicy } from "@zap-studio/retry";
