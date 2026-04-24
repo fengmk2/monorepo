@@ -101,39 +101,79 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
     options: RetryRunOptions = {},
   ): Promise<T | RetryRunResult<T>> {
     const sleep = options.sleep ?? defaultSleep;
+    if (options.throwOnExhausted === false) {
+      return this.runResultMode(execute, sleep);
+    }
+
+    return this.runThrowMode(execute, sleep);
+  }
+
+  private async runThrowMode<T>(
+    execute: (attempt: number) => Promise<T>,
+    sleep: (delayMs: number) => Promise<void>,
+  ): Promise<T> {
     let attempt = 1;
-    let lastError: TError | undefined;
+
+    while (true) {
+      try {
+        return await execute(attempt);
+      } catch (error) {
+        const typedError = error as TError;
+        const decision = this.next({
+          attempt,
+          error: typedError,
+        });
+
+        if (!decision.shouldRetry) {
+          throw this.onExhausted({
+            attempts: attempt,
+            error: typedError,
+          });
+        }
+
+        if (decision.delayMs > 0) {
+          await sleep(decision.delayMs);
+        }
+
+        attempt += 1;
+      }
+    }
+  }
+
+  private async runResultMode<T>(
+    execute: (attempt: number) => Promise<T>,
+    sleep: (delayMs: number) => Promise<void>,
+  ): Promise<RetryRunResult<T>> {
+    let attempt = 1;
 
     while (true) {
       try {
         const value = await execute(attempt);
-        if (options.throwOnExhausted === false) {
-          return { ok: true, value };
-        }
-        return value;
+        return { ok: true, value };
       } catch (error) {
-        lastError = error as TError;
+        const typedError = error as TError;
         const decision = this.next({
           attempt,
-          error: error as TError,
+          error: typedError,
         });
 
         if (!decision.shouldRetry) {
           const terminalError = this.onExhausted({
             attempts: attempt,
-            error: lastError,
+            error: typedError,
           });
-          if (options.throwOnExhausted === false) {
-            return {
-              ok: false,
-              error: terminalError,
-              attempts: attempt,
-            };
-          }
-          throw terminalError;
+
+          return {
+            ok: false,
+            error: terminalError,
+            attempts: attempt,
+          };
         }
 
-        await sleep(decision.delayMs);
+        if (decision.delayMs > 0) {
+          await sleep(decision.delayMs);
+        }
+
         attempt += 1;
       }
     }
@@ -144,5 +184,9 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
  * Default delay implementation used by `run(...)` when no custom sleep function is provided.
  */
 async function defaultSleep(delayMs: number): Promise<void> {
+  if (delayMs <= 0) {
+    return;
+  }
+
   await new Promise((resolve) => setTimeout(resolve, delayMs));
 }
