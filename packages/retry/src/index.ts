@@ -222,7 +222,18 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
 
         if (decision.delayMs > 0) {
           if (signal) {
-            await sleepWithAbortSignal(sleep, decision.delayMs, signal);
+            try {
+              await sleepWithAbortSignal(sleep, decision.delayMs, signal);
+            } catch (error) {
+              if (signal.aborted) {
+                return {
+                  ok: false,
+                  error: toRetryError(signal.reason),
+                  attempts: attempt,
+                };
+              }
+              throw error;
+            }
           } else {
             await sleep(decision.delayMs);
           }
