@@ -395,4 +395,36 @@ describe("BaseRetryPolicy", () => {
       }),
     ).rejects.toThrow("sleep-fail");
   });
+
+  it("returns abort result from waitForDelay catch path in non-throw mode", async () => {
+    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 10, reason: "retry" }]);
+    const execute = vi
+      .fn<(attempt: number) => Promise<string>>()
+      .mockRejectedValue(new Error("fail"));
+    const sleep = vi.fn<(delayMs: number) => Promise<void>>().mockResolvedValue();
+
+    let readCount = 0;
+    const fakeSignal = {
+      get aborted() {
+        readCount += 1;
+        return readCount >= 3;
+      },
+      reason: "aborted-from-wait-catch",
+      addEventListener:
+        vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
+      removeEventListener:
+        vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
+    } as unknown as AbortSignal;
+
+    const result = await policy.run(execute, {
+      signal: fakeSignal,
+      sleep,
+      throwOnExhausted: false,
+    });
+
+    const failure = expectFailureResult(result);
+    expect(failure.attempts).toBe(1);
+    expect(failure.error.message).toBe("aborted-from-wait-catch");
+    expect(failure.error.attempts).toBe(1);
+  });
 });
