@@ -16,7 +16,7 @@
  * This module is designed to work with the `@standard-schema/spec` package and throws
  * `ValidationError` for validation failures when configured to do so.
  *
- * @module
+ * @module @zap-studio/validation
  */
 
 import type { StandardSchemaV1 } from "@standard-schema/spec";
@@ -274,6 +274,15 @@ export async function standardValidate<TSchema extends StandardSchemaV1>(
   options: StandardValidateOptions & { throwOnError: true },
 ): Promise<StandardSchemaV1.InferOutput<TSchema>>;
 
+/**
+ * Validates a value against a Standard Schema without throwing by default.
+ *
+ * @template TSchema - The Standard Schema type.
+ * @param schema - The schema to validate against.
+ * @param input - The value to validate.
+ * @param options - Validation options with non-throwing mode.
+ * @returns The raw Standard Schema result.
+ */
 export async function standardValidate<TSchema extends StandardSchemaV1>(
   schema: TSchema,
   input: unknown,
@@ -351,6 +360,15 @@ export function standardValidateSync<TSchema extends StandardSchemaV1>(
   options: StandardValidateOptions & { throwOnError: true },
 ): StandardSchemaV1.InferOutput<TSchema>;
 
+/**
+ * Synchronously validates a value against a Standard Schema without throwing by default.
+ *
+ * @template TSchema - The Standard Schema type.
+ * @param schema - The schema to validate against.
+ * @param input - The value to validate.
+ * @param options - Validation options with non-throwing mode.
+ * @returns The raw Standard Schema result.
+ */
 export function standardValidateSync<TSchema extends StandardSchemaV1>(
   schema: TSchema,
   input: unknown,
