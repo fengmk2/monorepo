@@ -320,4 +320,36 @@ describe("BaseRetryPolicy", () => {
   it("covers defaultSleep guard through internal test export", async () => {
     await expect(__internal.defaultSleep(0)).resolves.toBeUndefined();
   });
+
+  it("retries in non-throw mode with signal and zero delay", async () => {
+    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 0, reason: "retry" }]);
+    const controller = new AbortController();
+    const execute = vi.fn<(attempt: number) => Promise<string>>();
+    execute.mockRejectedValueOnce(new Error("fail"));
+    execute.mockResolvedValueOnce("ok");
+
+    const result = await policy.run(execute, {
+      signal: controller.signal,
+      throwOnExhausted: false,
+    });
+
+    expect(result).toEqual({ ok: true, value: "ok" });
+    expect(execute).toHaveBeenNthCalledWith(1, 1);
+    expect(execute).toHaveBeenNthCalledWith(2, 2);
+  });
+
+  it("handles sync sleep failure with signal before listener registration", async () => {
+    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 10, reason: "retry" }]);
+    const controller = new AbortController();
+    const execute = vi
+      .fn<(attempt: number) => Promise<string>>()
+      .mockRejectedValue(new Error("fail"));
+    const sleep = vi.fn<(delayMs: number) => Promise<void>>().mockImplementation(() => {
+      throw new Error("sleep-sync-fail");
+    });
+
+    await expect(policy.run(execute, { signal: controller.signal, sleep })).rejects.toThrow(
+      "sleep-sync-fail",
+    );
+  });
 });
