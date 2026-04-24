@@ -1,11 +1,14 @@
 /**
  * Public and internal type contracts for the fetch package.
  *
- * @module
+ * @module @zap-studio/fetch/types
  */
 
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
+/**
+ * Accepted `fetch` input type (`string`, `URL`, or `Request`).
+ */
 export type FetchInput = Parameters<typeof fetch>[0];
 
 type URLSearchParamsInput = ConstructorParameters<typeof URLSearchParams>[0];

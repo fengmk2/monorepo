@@ -1,7 +1,7 @@
 /**
  * Method helper factories used to build verb-specific fetch functions.
  *
- * @module
+ * @module @zap-studio/fetch/methods
  */
 
 import { isStandardSchema, type StandardSchemaV1 } from "@zap-studio/validation";

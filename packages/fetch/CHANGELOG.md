@@ -1,5 +1,15 @@
 # @zap-studio/fetch
 
+## 0.5.2
+
+### Changed
+
+- Expand TSDoc coverage across fetch modules and exported contracts for stronger JSR documentation completeness.
+
+### Dependencies
+
+- Updated dependency `@zap-studio/validation` to `0.3.4`.
+
 ## 0.5.1
 
 ### Fixed

@@ -9,7 +9,7 @@
  * This module is primarily used by the validation helpers in the `index.ts` file
  * to throw meaningful errors when validation fails.
  *
- * @module
+ * @module @zap-studio/validation/errors
  */
 
 import type { StandardSchemaV1 } from "@standard-schema/spec";
@@ -27,7 +27,7 @@ import type { StandardSchemaV1 } from "@standard-schema/spec";
  * @example
  * ```ts
  * try {
- *   const user = await standardValidate(schema, data, true);
+ *   const user = await standardValidate(schema, data, { throwOnError: true });
  *   console.log(user);
  * } catch (error) {
  *   if (error instanceof ValidationError) {
@@ -42,14 +42,14 @@ export class ValidationError extends Error {
   /**
    * The validation issues reported by the schema.
    */
-  issues: StandardSchemaV1.Issue[];
+  issues: readonly StandardSchemaV1.Issue[];
 
   /**
    * Creates a new `ValidationError`.
    *
    * @param issues - The validation issues returned by the schema.
    */
-  constructor(issues: StandardSchemaV1.Issue[]) {
+  constructor(issues: readonly StandardSchemaV1.Issue[]) {
     super(JSON.stringify(issues, null, 2));
     this.name = "ValidationError";
     this.issues = issues;

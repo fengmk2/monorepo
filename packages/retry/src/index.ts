@@ -1,7 +1,7 @@
 /**
  * Retry runner base class and shared orchestration implementation.
  *
- * @module
+ * @module @zap-studio/retry
  */
 
 import { RetryError } from "./error.js";
@@ -14,6 +14,13 @@ import type {
   RetryRunResult,
 } from "./types.js";
 
+/**
+ * Base class for implementing retry policies and running retry orchestration.
+ *
+ * Extend this class and implement {@link BaseRetryPolicy.next} to define retry
+ * behavior, then call {@link BaseRetryPolicy.run} to execute operations with that
+ * policy.
+ */
 export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> implements RetryPolicy<
   TError,
   TData
@@ -43,6 +50,14 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
     });
   }
 
+  /**
+   * Runs retry orchestration in non-throw mode.
+   *
+   * @param execute - Async function to execute per attempt.
+   * @param options - Runner settings with `throwOnExhausted: false`.
+   * @returns A discriminated result union containing success value or terminal error.
+   * @throws Any error thrown by `next`, `onExhausted`, or a custom `sleep`.
+   */
   public async run<T>(
     execute: (attempt: number) => Promise<T>,
     options: RetryRunOptions & { throwOnExhausted: false },

@@ -1,7 +1,7 @@
 /**
  * Internal request execution and option preparation utilities.
  *
- * @module
+ * @module @zap-studio/fetch/internal
  */
 
 import type { StandardSchemaV1 } from "@zap-studio/validation";

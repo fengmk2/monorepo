@@ -1,5 +1,11 @@
 # @zap-studio/webhooks
 
+## 0.2.2
+
+### Dependencies
+
+- Updated dependency `@zap-studio/validation` to `0.3.4`.
+
 ## 0.2.1
 
 ### Fixed

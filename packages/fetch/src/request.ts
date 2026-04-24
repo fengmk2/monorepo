@@ -1,7 +1,7 @@
 /**
  * Request normalization helpers for fetch `input` values.
  *
- * @module
+ * @module @zap-studio/fetch/request
  */
 
 import { mergeHeaders } from "./headers.js";

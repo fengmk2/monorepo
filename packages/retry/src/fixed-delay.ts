@@ -1,7 +1,7 @@
 /**
  * Fixed-delay retry strategy.
  *
- * @module
+ * @module @zap-studio/retry/fixed-delay
  */
 
 import { BaseRetryPolicy } from "./index.js";

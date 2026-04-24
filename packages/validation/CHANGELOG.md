@@ -1,5 +1,12 @@
 # @zap-studio/validation
 
+## 0.3.4
+
+### Changed
+
+- Improve hot-path performance with lower-overhead validator execution internals while preserving the existing public API.
+- Expand TSDoc coverage for overload signatures and module-level exports to strengthen JSR documentation quality.
+
 ## 0.3.3
 
 ### Fixed

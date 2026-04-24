@@ -111,6 +111,8 @@ If the schema performs async validation, this function will throw.
 ## Reusable Validators
 
 If you validate many values against the same schema, you can create reusable validators.
+In performance-sensitive code paths, prefer `createStandardValidator` and `createSyncStandardValidator`
+over calling `standardValidate` and `standardValidateSync` repeatedly.
 
 ### Async validator
 
@@ -133,6 +135,14 @@ const result = validateUser(input);
 
 const user = validateUser(input, { throwOnError: true });
 ```
+
+## Performance Notes
+
+For higher-throughput paths:
+
+- Prefer reusable validators (`createStandardValidator`, `createSyncStandardValidator`) whenever possible.
+- Prefer non-throwing mode (`throwOnError: false` or omitted) when validation failure is part of normal control flow.
+- Reserve throwing mode for boundaries where exceptions are expected behavior.
 
 ## Runtime Schema Guard
 
