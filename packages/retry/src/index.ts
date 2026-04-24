@@ -181,68 +181,151 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
     let attempt = 1;
 
     while (true) {
-      if (signal?.aborted) {
-        const attempts = Math.max(0, attempt - 1);
-        return {
-          ok: false,
-          error: toRetryError(signal.reason, attempts),
-          attempts,
-        };
+      const earlyAbortResult = this.abortResult(signal, Math.max(0, attempt - 1));
+      if (earlyAbortResult) return earlyAbortResult;
+
+      const execution = await this.runAttempt(execute, attempt);
+      if (execution.ok) {
+        return { ok: true, value: execution.value };
       }
 
-      try {
-        const value = await execute(attempt);
-        return { ok: true, value };
-      } catch (error) {
-        if (signal?.aborted) {
-          const attempts = Math.max(0, attempt - 1);
-          return {
-            ok: false,
-            error: toRetryError(signal.reason, attempts),
-            attempts,
-          };
-        }
+      const failure = await this.handleFailure({
+        attempt,
+        error: execution.error as TError,
+        sleep,
+        signal,
+      });
+      if (failure) return failure;
 
-        const typedError = error as TError;
-        const decision = this.next({
-          attempt,
-          error: typedError,
-        });
+      attempt += 1;
+    }
+  }
 
-        if (!decision.shouldRetry) {
-          const terminalError = this.onExhausted({
-            attempts: attempt,
-            error: typedError,
-          });
+  /**
+   * Runs a single attempt in non-throw mode and normalizes success/failure shape.
+   *
+   * @param execute - Async operation callback.
+   * @param attempt - Current attempt number.
+   * @returns Success payload or captured execution error.
+   */
+  private async runAttempt<T>(
+    execute: (attempt: number) => Promise<T>,
+    attempt: number,
+  ): Promise<{ ok: true; value: T } | { ok: false; error: unknown }> {
+    try {
+      return {
+        ok: true,
+        value: await execute(attempt),
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
 
-          return {
-            ok: false,
-            error: terminalError,
-            attempts: attempt,
-          };
-        }
+  /**
+   * Handles a failed attempt in non-throw mode.
+   *
+   * Applies abort handling, retry decision evaluation, terminal error conversion,
+   * and optional retry delay waiting.
+   *
+   * @param params - Failure handling context.
+   * @param params.attempt - Current attempt number.
+   * @param params.error - Execution failure from the attempt.
+   * @param params.sleep - Delay implementation used between retries.
+   * @param params.signal - Optional cancellation signal.
+   * @returns A terminal non-throw result when processing should stop, otherwise `undefined`.
+   */
+  private async handleFailure(params: {
+    attempt: number;
+    error: TError;
+    sleep: (delayMs: number) => Promise<void>;
+    signal: AbortSignal | undefined;
+  }): Promise<RetryRunResult<never> | undefined> {
+    const { attempt, error, sleep, signal } = params;
+    const postExecuteAbortResult = this.abortResult(signal, attempt);
+    if (postExecuteAbortResult) return postExecuteAbortResult;
 
-        if (decision.delayMs > 0) {
-          if (signal) {
-            try {
-              await sleepWithAbortSignal(sleep, decision.delayMs, signal);
-            } catch (error) {
-              if (signal.aborted) {
-                return {
-                  ok: false,
-                  error: toRetryError(signal.reason, attempt),
-                  attempts: attempt,
-                };
-              }
-              throw error;
-            }
-          } else {
-            await sleep(decision.delayMs);
-          }
-        }
+    const decision = this.next({
+      attempt,
+      error,
+    });
 
-        attempt += 1;
+    if (!decision.shouldRetry) {
+      const terminalError = this.onExhausted({
+        attempts: attempt,
+        error,
+      });
+
+      return {
+        ok: false,
+        error: terminalError,
+        attempts: attempt,
+      };
+    }
+
+    if (decision.delayMs > 0) {
+      const sleepAbortResult = await this.waitForDelay(sleep, decision.delayMs, signal, attempt);
+      if (sleepAbortResult) return sleepAbortResult;
+    }
+
+    return;
+  }
+
+  /**
+   * Builds a non-throw abort result when the signal is aborted.
+   *
+   * @param signal - Optional cancellation signal.
+   * @param attempts - Attempt count to report in terminal result.
+   * @returns Abort result payload or `undefined` when not aborted.
+   */
+  private abortResult(
+    signal: AbortSignal | undefined,
+    attempts: number,
+  ): RetryRunResult<never> | undefined {
+    if (!signal?.aborted) {
+      return;
+    }
+
+    return {
+      ok: false,
+      error: toRetryError(signal.reason, attempts),
+      attempts,
+    };
+  }
+
+  /**
+   * Waits for retry delay in non-throw mode and maps aborts to terminal results.
+   *
+   * @param sleep - Delay function implementation.
+   * @param delayMs - Delay duration in milliseconds.
+   * @param signal - Optional cancellation signal.
+   * @param attempts - Attempt count to report if aborted during wait.
+   * @returns Abort result when canceled during wait, otherwise `undefined`.
+   * @throws Any non-abort error thrown by delay execution.
+   */
+  private async waitForDelay(
+    sleep: (delayMs: number) => Promise<void>,
+    delayMs: number,
+    signal: AbortSignal | undefined,
+    attempts: number,
+  ): Promise<RetryRunResult<never> | undefined> {
+    if (!signal) {
+      await sleep(delayMs);
+      return;
+    }
+
+    try {
+      await sleepWithAbortSignal(sleep, delayMs, signal);
+      return;
+    } catch (error) {
+      const abortResult = this.abortResult(signal, attempts);
+      if (abortResult) {
+        return abortResult;
       }
+      throw error;
     }
   }
 }
