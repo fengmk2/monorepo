@@ -42,14 +42,14 @@ export class ValidationError extends Error {
   /**
    * The validation issues reported by the schema.
    */
-  issues: StandardSchemaV1.Issue[];
+  issues: readonly StandardSchemaV1.Issue[];
 
   /**
    * Creates a new `ValidationError`.
    *
    * @param issues - The validation issues returned by the schema.
    */
-  constructor(issues: StandardSchemaV1.Issue[]) {
+  constructor(issues: readonly StandardSchemaV1.Issue[]) {
     super(JSON.stringify(issues, null, 2));
     this.name = "ValidationError";
     this.issues = issues;

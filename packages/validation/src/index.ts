@@ -295,7 +295,7 @@ export async function standardValidate<TSchema extends StandardSchemaV1>(
 
   if (result.issues) {
     if (options.throwOnError) {
-      throw new ValidationError([...result.issues]);
+      throw new ValidationError(result.issues);
     }
     return result;
   }
@@ -372,7 +372,7 @@ export function standardValidateSync<TSchema extends StandardSchemaV1>(
 
   if (result.issues) {
     if (options.throwOnError) {
-      throw new ValidationError([...result.issues]);
+      throw new ValidationError(result.issues);
     }
     return result;
   }
