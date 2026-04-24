@@ -352,4 +352,44 @@ describe("BaseRetryPolicy", () => {
       "sleep-sync-fail",
     );
   });
+
+  it("returns non-throw failure result when signal aborts during backoff sleep", async () => {
+    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 50, reason: "retry" }]);
+    const controller = new AbortController();
+    const execute = vi
+      .fn<(attempt: number) => Promise<string>>()
+      .mockRejectedValue(new Error("fail"));
+
+    const runPromise = policy.run(execute, {
+      signal: controller.signal,
+      throwOnExhausted: false,
+    });
+
+    await Promise.resolve();
+    controller.abort("aborted-in-backoff");
+
+    const result = await runPromise;
+    const failure = expectFailureResult(result);
+    expect(failure.attempts).toBe(1);
+    expect(failure.error.message).toBe("aborted-in-backoff");
+  });
+
+  it("rethrows non-abort sleep errors in non-throw mode", async () => {
+    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 10, reason: "retry" }]);
+    const controller = new AbortController();
+    const execute = vi
+      .fn<(attempt: number) => Promise<string>>()
+      .mockRejectedValue(new Error("fail"));
+    const sleep = vi
+      .fn<(delayMs: number) => Promise<void>>()
+      .mockRejectedValue(new Error("sleep-fail"));
+
+    await expect(
+      policy.run(execute, {
+        signal: controller.signal,
+        sleep,
+        throwOnExhausted: false,
+      }),
+    ).rejects.toThrow("sleep-fail");
+  });
 });
