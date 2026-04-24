@@ -79,7 +79,7 @@ export interface RetryRunOptions {
    *
    * When `false`, the runner returns a `RetryRunResult` discriminated union.
    *
-   * @default false
+   * @default true
    */
   readonly throwOnExhausted?: boolean;
 }
