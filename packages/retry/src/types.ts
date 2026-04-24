@@ -4,7 +4,7 @@
  * @module @zap-studio/retry/types
  */
 
-import type { RetryError } from "./error.js";
+import type { AbortError, RetryError } from "./error.js";
 
 /**
  * Retry policy contract used by `BaseRetryPolicy`.
@@ -94,6 +94,6 @@ export type RetryRunResult<T> =
     }
   | {
       ok: false;
-      error: RetryError;
+      error: RetryError | AbortError;
       attempts: number;
     };

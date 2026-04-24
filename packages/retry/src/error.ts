@@ -14,6 +14,13 @@ export interface RetryErrorContext {
 }
 
 /**
+ * Context payload attached to `AbortError`.
+ */
+export interface AbortErrorContext {
+  readonly cause?: unknown;
+}
+
+/**
  * Error thrown when retries are exhausted.
  *
  * @example
@@ -45,5 +52,18 @@ export class RetryError extends Error {
     this.attempts = context.attempts;
     this.lastError = context.lastError;
     this.lastData = context.lastData;
+  }
+}
+
+/**
+ * Error thrown when retry orchestration is canceled through `AbortSignal`.
+ */
+export class AbortError extends Error {
+  public override readonly cause?: unknown;
+
+  constructor(message: string, context: AbortErrorContext = {}) {
+    super(message);
+    this.name = "AbortError";
+    this.cause = context.cause;
   }
 }

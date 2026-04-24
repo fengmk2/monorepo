@@ -4,7 +4,7 @@
  * @module @zap-studio/retry
  */
 
-import { RetryError } from "./error.js";
+import { AbortError, RetryError } from "./error.js";
 import type {
   RetryDecision,
   RetryDecisionInput,
@@ -72,7 +72,7 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
    * @throws {RetryError} When retries are exhausted and `onExhausted` returns the
    *   terminal retry error. The default implementation returns `RetryError` with the last
    *   execution failure available on `RetryError.lastError`.
-   * @throws {Error} When `options.signal` is already aborted or aborts while retrying.
+   * @throws {AbortError} When `options.signal` is already aborted or aborts while retrying.
    * @throws Any error thrown by `next`, by `onExhausted`, or by a custom `sleep`
    *   function.
    */
@@ -347,7 +347,7 @@ export async function defaultSleep(delayMs: number): Promise<void> {
  * Throws an abort error when the provided signal is already aborted.
  *
  * @param signal - Optional cancellation signal.
- * @throws {Error} Abort reason converted to an `Error`.
+ * @throws {AbortError} Abort reason converted to an `AbortError`.
  */
 function throwIfAborted(signal?: AbortSignal): void {
   if (!signal?.aborted) {
@@ -358,28 +358,32 @@ function throwIfAborted(signal?: AbortSignal): void {
 }
 
 /**
- * Normalizes an abort reason value into an `Error` instance.
+ * Normalizes an abort reason value into an `AbortError` instance.
  *
  * @param reason - Abort reason from `AbortSignal.reason`.
- * @returns Normalized error instance.
+ * @returns Normalized abort error instance.
  */
-function toAbortError(reason: unknown): Error {
-  if (reason instanceof Error) {
+function toAbortError(reason: unknown): AbortError {
+  if (reason instanceof AbortError) {
     return reason;
   }
 
+  if (reason instanceof Error) {
+    return new AbortError(reason.message, { cause: reason });
+  }
+
   if (typeof reason === "string" && reason.length > 0) {
-    return new Error(reason);
+    return new AbortError(reason);
   }
 
   if (reason === undefined) {
-    return new Error("Retry aborted.");
+    return new AbortError("Retry aborted.");
   }
 
   try {
-    return new Error(`Retry aborted: ${JSON.stringify(reason)}`);
+    return new AbortError(`Retry aborted: ${JSON.stringify(reason)}`);
   } catch {
-    return new Error("Retry aborted.");
+    return new AbortError("Retry aborted.");
   }
 }
 
@@ -403,7 +407,7 @@ function toRetryError(reason: unknown, attempts: number): RetryError {
  * @param sleep - Delay function.
  * @param delayMs - Delay duration in milliseconds.
  * @param signal - Cancellation signal.
- * @throws {Error} Abort reason converted to an `Error` when canceled.
+ * @throws {AbortError} Abort reason converted to an `AbortError` when canceled.
  */
 async function sleepWithAbortSignal(
   sleep: (delayMs: number) => Promise<void>,
