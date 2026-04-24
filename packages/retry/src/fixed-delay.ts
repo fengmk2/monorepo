@@ -11,7 +11,13 @@ import type { RetryDecision, RetryDecisionInput } from "./types.js";
  * Configuration for `FixedDelay`.
  */
 export interface FixedDelayOptions {
+  /**
+   * Maximum number of attempts (including the first) before giving up.
+   */
   maxAttempts: number;
+  /**
+   * Constant delay in milliseconds before each retry after a failure.
+   */
   delayMs: number;
 }
 
@@ -25,7 +31,13 @@ export interface FixedDelayOptions {
  * });
  */
 export class FixedDelay extends BaseRetryPolicy {
+  /**
+   * Maximum number of attempts before the policy returns `max-attempts-reached`.
+   */
   private readonly maxAttempts: number;
+  /**
+   * Constant delay in milliseconds before each subsequent attempt.
+   */
   private readonly delayMs: number;
 
   /**
