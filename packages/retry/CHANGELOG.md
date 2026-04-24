@@ -1,5 +1,15 @@
 # @zap-studio/retry
 
+## 0.3.0
+
+### Changed
+
+- Add dedicated `AbortError` and normalize cancellation paths so retry internals throw/return `RetryError` or `AbortError` instead of plain `Error`.
+- Expose `defaultSleep` as a public API export.
+- Align non-throw abort metadata so `result.attempts` and `result.error.attempts` stay consistent.
+- Refactor result-mode internals into smaller helpers for lower complexity and cleaner maintainability.
+- Expand docs across README and package docs pages to explain `AbortError` behavior in throw and non-throw modes.
+
 ## 0.2.0
 
 ### Changed
