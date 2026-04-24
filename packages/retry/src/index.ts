@@ -337,3 +337,7 @@ async function sleepWithAbortSignal(
     }
   }
 }
+
+export const __internal = {
+  defaultSleep,
+};

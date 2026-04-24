@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vite-plus/test";
 
 import { RetryError } from "../src/error.js";
-import { BaseRetryPolicy } from "../src/index.js";
+import { __internal, BaseRetryPolicy } from "../src/index.js";
 import type { RetryDecision, RetryDecisionInput, RetryExhaustedInput } from "../src/types.js";
 
 class SequencePolicy extends BaseRetryPolicy<Error, string> {
@@ -31,6 +31,15 @@ class CustomTerminalPolicy extends BaseRetryPolicy<Error> {
       lastError: input.error,
     });
   }
+}
+
+function expectFailureResult(result: unknown): { ok: false; attempts: number; error: RetryError } {
+  expect(result).toMatchObject({ ok: false });
+  if (!result || typeof result !== "object" || !("ok" in result) || result.ok !== false) {
+    throw new Error("Expected failure result");
+  }
+
+  return result as { ok: false; attempts: number; error: RetryError };
 }
 
 describe("BaseRetryPolicy", () => {
@@ -155,13 +164,9 @@ describe("BaseRetryPolicy", () => {
       throwOnExhausted: false,
     });
 
-    expect(result).toMatchObject({
-      ok: false,
-      attempts: 0,
-    });
-    if (!result.ok) {
-      expect(result.error.message).toBe("aborted-before-start");
-    }
+    const failure = expectFailureResult(result);
+    expect(failure.attempts).toBe(0);
+    expect(failure.error.message).toBe("aborted-before-start");
     expect(execute).not.toHaveBeenCalled();
   });
 
@@ -179,13 +184,9 @@ describe("BaseRetryPolicy", () => {
       throwOnExhausted: false,
     });
 
-    expect(result).toMatchObject({
-      ok: false,
-      attempts: 0,
-    });
-    if (!result.ok) {
-      expect(result.error.message).toBe("aborted-during-execute");
-    }
+    const failure = expectFailureResult(result);
+    expect(failure.attempts).toBe(0);
+    expect(failure.error.message).toBe("aborted-during-execute");
   });
 
   it("throws when signal aborts while waiting between retries", async () => {
@@ -228,13 +229,9 @@ describe("BaseRetryPolicy", () => {
       throwOnExhausted: false,
     });
 
-    expect(result).toMatchObject({
-      ok: false,
-      attempts: 0,
-    });
-    if (!result.ok) {
-      expect(result.error.message).toBe("Retry aborted.");
-    }
+    const failure = expectFailureResult(result);
+    expect(failure.attempts).toBe(0);
+    expect(failure.error.message).toBe("Retry aborted.");
   });
 
   it("covers immediate abort check inside sleepWithAbortSignal", async () => {
@@ -250,8 +247,10 @@ describe("BaseRetryPolicy", () => {
         return readCount >= 3;
       },
       reason: "abort-immediate-sleep-check",
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
+      addEventListener:
+        vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
+      removeEventListener:
+        vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
     } as unknown as AbortSignal;
 
     await expect(policy.run(execute, { signal: fakeSignal })).rejects.toThrow(
@@ -284,8 +283,10 @@ describe("BaseRetryPolicy", () => {
     const fakeSignal = {
       aborted: true,
       reason: undefined,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
+      addEventListener:
+        vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
+      removeEventListener:
+        vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
     } as unknown as AbortSignal;
 
     const result = await policy.run(execute, {
@@ -293,12 +294,30 @@ describe("BaseRetryPolicy", () => {
       throwOnExhausted: false,
     });
 
-    expect(result).toMatchObject({
-      ok: false,
-      attempts: 0,
+    const failure = expectFailureResult(result);
+    expect(failure.attempts).toBe(0);
+    expect(failure.error.message).toBe("Retry aborted.");
+  });
+
+  it("retries in non-throw mode with signal and positive delay", async () => {
+    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 10, reason: "retry" }]);
+    const controller = new AbortController();
+    const sleep = vi.fn<(delayMs: number) => Promise<void>>().mockResolvedValue();
+    const execute = vi.fn<(attempt: number) => Promise<string>>();
+    execute.mockRejectedValueOnce(new Error("fail"));
+    execute.mockResolvedValueOnce("ok");
+
+    const result = await policy.run(execute, {
+      signal: controller.signal,
+      sleep,
+      throwOnExhausted: false,
     });
-    if (!result.ok) {
-      expect(result.error.message).toBe("Retry aborted.");
-    }
+
+    expect(result).toEqual({ ok: true, value: "ok" });
+    expect(sleep).toHaveBeenCalledWith(10);
+  });
+
+  it("covers defaultSleep guard through internal test export", async () => {
+    await expect(__internal.defaultSleep(0)).resolves.toBeUndefined();
   });
 });
