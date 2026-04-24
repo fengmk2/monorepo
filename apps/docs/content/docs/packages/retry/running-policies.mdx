@@ -72,7 +72,7 @@ if (!result.ok) {
 ## Handling Terminal Errors
 
 ```ts
-import { RetryError } from "@zap-studio/retry/error";
+import { AbortError, RetryError } from "@zap-studio/retry/error";
 
 try {
   const result = await policy.run(async () => {
@@ -82,6 +82,8 @@ try {
 } catch (error) {
   if (error instanceof RetryError) {
     console.error("Exhausted after attempts:", error.attempts);
+  } else if (error instanceof AbortError) {
+    console.error("Retry aborted:", error.message);
   } else {
     throw error;
   }

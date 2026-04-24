@@ -35,6 +35,8 @@ await promise;
 In throw mode (default), aborting throws immediately.
 
 ```ts
+import { AbortError } from "@zap-studio/retry/error";
+
 const controller = new AbortController();
 
 try {
@@ -45,7 +47,11 @@ try {
     { signal: controller.signal },
   );
 } catch (error) {
-  console.error("Retry aborted:", error);
+  if (error instanceof AbortError) {
+    console.error("Retry aborted:", error.message);
+  } else {
+    throw error;
+  }
 }
 ```
 
@@ -67,7 +73,7 @@ const result = await policy.run(
 );
 
 if (!result.ok) {
-  console.error(result.error);
+  console.error(result.error.lastError);
 } else {
   console.log(result.value);
 }
