@@ -46,8 +46,11 @@
   },
   "devDependencies": {
     "@zap-studio/typescript": "workspace:*",
+    "arktype": "catalog:",
     "typescript": "catalog:",
-    "vite-plus": "catalog:"
+    "valibot": "catalog:",
+    "vite-plus": "catalog:",
+    "zod": "catalog:"
   },
   "engines": {
     "node": ">=18.0.0"
