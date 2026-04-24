@@ -1,3 +1,9 @@
+/**
+ * Public type contracts for permit policies and configuration.
+ *
+ * @module @zap-studio/permit/types
+ */
+
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
 /**

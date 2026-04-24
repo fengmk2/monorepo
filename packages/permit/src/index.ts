@@ -1,3 +1,9 @@
+/**
+ * Policy composition and evaluation utilities.
+ *
+ * @module @zap-studio/permit
+ */
+
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { createStandardValidator } from "@zap-studio/validation";
 

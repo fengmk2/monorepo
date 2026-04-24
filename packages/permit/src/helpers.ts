@@ -1,4 +1,10 @@
 /**
+ * Helper utilities for permit consumers.
+ *
+ * @module @zap-studio/permit/helpers
+ */
+
+/**
  * Ensures that a value of type `never` is actually never encountered at runtime.
  * This is useful for exhaustive checks on discriminated unions.
  *
