@@ -12,7 +12,7 @@
   "devDependencies": {
     "@vitest/coverage-v8": "catalog:",
     "vite-plus": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "npm:@voidzero-dev/vite-plus-test@0.1.19"
   },
   "engines": {
     "node": ">=20.0.0",

@@ -1,5 +1,15 @@
 # @zap-studio/retry
 
+## 0.2.0
+
+### Changed
+
+- Optimize retry runner hot paths by splitting throw/non-throw execution flows and skipping sleep calls when delay is non-positive.
+- Add `AbortSignal` support to `run(...)` so retry orchestration can be canceled before or between attempts.
+- Add retry benchmarking coverage with core and ecosystem scenarios, including real-world and fair-mode comparisons.
+- Add abort-focused ecosystem benchmarks comparing signal overhead and immediate cancellation behavior.
+- Expand TSDoc coverage for new runner internals added in this release.
+
 ## 0.1.2
 
 ### Changed
