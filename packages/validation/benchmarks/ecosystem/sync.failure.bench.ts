@@ -1,57 +1,59 @@
-import * as v from "valibot";
 import { bench, describe } from "vite-plus/test";
 
 import { standardValidateSync } from "../../src/index.js";
 import { invalidInput } from "./fixtures.js";
 import {
-  arktypeSchema,
-  arktypeSyncValidator,
-  valibotSchema,
-  valibotSyncValidator,
-  zodSchema,
-  zodSyncValidator,
+  nativeArktypeSyncSchema,
+  nativeArktypeSyncStandardValidate,
+  nativeValibotSyncSchema,
+  nativeValibotSyncStandardValidate,
+  nativeZodSyncSchema,
+  nativeZodSyncStandardValidate,
+  zapArktypeSyncValidator,
+  zapValibotSyncValidator,
+  zapZodSyncValidator,
 } from "./schemas.js";
 
-describe("@zap-studio/validation ecosystem sync failure", () => {
+describe("@zap-studio/validation | ecosystem | sync | failure", () => {
   describe("zod", () => {
-    bench("native zod.safeParse", () => {
-      zodSchema.safeParse(invalidInput);
+    bench("native | zod | standard-schema-validate", async () => {
+      await nativeZodSyncStandardValidate(invalidInput);
     });
 
-    bench("standardValidateSync(zod)", () => {
-      standardValidateSync(zodSchema, invalidInput);
+    bench("zap | zod | standardValidateSync", () => {
+      standardValidateSync(nativeZodSyncSchema, invalidInput);
     });
 
-    bench("createSyncStandardValidator(zod)", () => {
-      zodSyncValidator(invalidInput);
+    bench("zap | zod | createSyncStandardValidator", () => {
+      zapZodSyncValidator(invalidInput);
     });
   });
 
   describe("arktype", () => {
-    bench("native arktype(schema)", () => {
-      arktypeSchema(invalidInput);
+    bench("native | arktype | standard-schema-validate", async () => {
+      await nativeArktypeSyncStandardValidate(invalidInput);
     });
 
-    bench("standardValidateSync(arktype)", () => {
-      standardValidateSync(arktypeSchema, invalidInput);
+    bench("zap | arktype | standardValidateSync", () => {
+      standardValidateSync(nativeArktypeSyncSchema, invalidInput);
     });
 
-    bench("createSyncStandardValidator(arktype)", () => {
-      arktypeSyncValidator(invalidInput);
+    bench("zap | arktype | createSyncStandardValidator", () => {
+      zapArktypeSyncValidator(invalidInput);
     });
   });
 
   describe("valibot", () => {
-    bench("native valibot.safeParse", () => {
-      v.safeParse(valibotSchema, invalidInput);
+    bench("native | valibot | standard-schema-validate", async () => {
+      await nativeValibotSyncStandardValidate(invalidInput);
     });
 
-    bench("standardValidateSync(valibot)", () => {
-      standardValidateSync(valibotSchema, invalidInput);
+    bench("zap | valibot | standardValidateSync", () => {
+      standardValidateSync(nativeValibotSyncSchema, invalidInput);
     });
 
-    bench("createSyncStandardValidator(valibot)", () => {
-      valibotSyncValidator(invalidInput);
+    bench("zap | valibot | createSyncStandardValidator", () => {
+      zapValibotSyncValidator(invalidInput);
     });
   });
 });

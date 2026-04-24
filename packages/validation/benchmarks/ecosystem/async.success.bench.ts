@@ -1,41 +1,42 @@
-import * as v from "valibot";
 import { bench, describe } from "vite-plus/test";
 
 import { standardValidate } from "../../src/index.js";
 import { validInput } from "./fixtures.js";
 import {
-  valibotAsyncValidator,
-  valibotSchema,
-  zodAsyncSchema,
-  zodAsyncValidator,
+  nativeValibotAsyncStandardValidate,
+  nativeValibotSyncSchema,
+  nativeZodAsyncSchema,
+  nativeZodAsyncStandardValidate,
+  zapValibotAsyncValidator,
+  zapZodAsyncValidator,
 } from "./schemas.js";
 
-describe("@zap-studio/validation ecosystem async success", () => {
+describe("@zap-studio/validation | ecosystem | async | success", () => {
   describe("zod", () => {
-    bench("native zod.safeParseAsync", async () => {
-      await zodAsyncSchema.safeParseAsync(validInput);
+    bench("native | zod | standard-schema-validate", async () => {
+      await nativeZodAsyncStandardValidate(validInput);
     });
 
-    bench("standardValidate(zod)", async () => {
-      await standardValidate(zodAsyncSchema, validInput);
+    bench("zap | zod | standardValidate", async () => {
+      await standardValidate(nativeZodAsyncSchema, validInput);
     });
 
-    bench("createStandardValidator(zod)", async () => {
-      await zodAsyncValidator(validInput);
+    bench("zap | zod | createStandardValidator", async () => {
+      await zapZodAsyncValidator(validInput);
     });
   });
 
   describe("valibot", () => {
-    bench("native valibot.safeParseAsync", async () => {
-      await v.safeParseAsync(valibotSchema, validInput);
+    bench("native | valibot | standard-schema-validate", async () => {
+      await nativeValibotAsyncStandardValidate(validInput);
     });
 
-    bench("standardValidate(valibot)", async () => {
-      await standardValidate(valibotSchema, validInput);
+    bench("zap | valibot | standardValidate", async () => {
+      await standardValidate(nativeValibotSyncSchema, validInput);
     });
 
-    bench("createStandardValidator(valibot)", async () => {
-      await valibotAsyncValidator(validInput);
+    bench("zap | valibot | createStandardValidator", async () => {
+      await zapValibotAsyncValidator(validInput);
     });
   });
 });
