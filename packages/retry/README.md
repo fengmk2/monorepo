@@ -80,6 +80,12 @@ if (!result.ok) {
 }
 ```
 
+## Default sleep
+
+`BaseRetryPolicy.run` automatically applies a delay between retry attempts when no custom `sleep` function is provided in the options.
+
+By default, this delay mechanism relies on the native JavaScript `setTimeout`, meaning retries are scheduled using the standard event loop timing rather than any custom or blocking implementation.
+
 ## Cancellation With AbortSignal
 
 Use `signal` in `run(...)` options to stop retrying early.
