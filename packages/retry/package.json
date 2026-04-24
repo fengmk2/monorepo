@@ -46,6 +46,8 @@
     "test:watch": "vp test watch"
   },
   "devDependencies": {
+    "@types/async-retry": "catalog:",
+    "@types/promise-retry": "catalog:",
     "@zap-studio/typescript": "workspace:*",
     "async-retry": "catalog:",
     "exponential-backoff": "catalog:",

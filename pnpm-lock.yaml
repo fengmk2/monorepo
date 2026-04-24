@@ -30,12 +30,18 @@ catalogs:
     '@tanstack/react-start':
       specifier: ^1.167.44
       version: 1.167.44
+    '@types/async-retry':
+      specifier: ^1.4.9
+      version: 1.4.9
     '@types/mdx':
       specifier: ^2.0.13
       version: 2.0.13
     '@types/node':
       specifier: ^24.12.2
       version: 24.12.2
+    '@types/promise-retry':
+      specifier: ^1.1.6
+      version: 1.1.6
     '@types/react':
       specifier: ^19.2.14
       version: 19.2.14
@@ -245,6 +251,12 @@ importers:
 
   packages/retry:
     devDependencies:
+      '@types/async-retry':
+        specifier: 'catalog:'
+        version: 1.4.9
+      '@types/promise-retry':
+        specifier: 'catalog:'
+        version: 1.1.6
       '@zap-studio/typescript':
         specifier: workspace:*
         version: link:../../configs/typescript
@@ -2031,6 +2043,9 @@ packages:
   '@tybys/wasm-util@0.10.1':
     resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
 
+  '@types/async-retry@1.4.9':
+    resolution: {integrity: sha512-s1ciZQJzRh3708X/m3vPExr5KJlzlZJvXsKpbtE2luqNcbROr64qU+3KpJsYHqWMeaxI839OvXf9PrUSw1Xtyg==}
+
   '@types/chai@5.2.3':
     resolution: {integrity: sha512-Mw558oeA9fFbv65/y4mHtXDs9bPnFMZAL/jxdPFUpOHHIXX91mcgEHbS5Lahr+pwZFR8A7GQleRWeI6cGFC2UA==}
 
@@ -2064,6 +2079,9 @@ packages:
   '@types/node@25.6.0':
     resolution: {integrity: sha512-+qIYRKdNYJwY3vRCZMdJbPLJAtGjQBudzZzdzwQYkEPQd+PJGixUL5QfvCLDaULoLv+RhT3LDkwEfKaAkgSmNQ==}
 
+  '@types/promise-retry@1.1.6':
+    resolution: {integrity: sha512-EC1+OMXV0PZb0pf+cmyxc43MEP2CDumZe4AfuxWboxxEixztIebknpJPZAX5XlodGF1OY+C1E/RAeNGzxf+bJA==}
+
   '@types/react-dom@19.2.3':
     resolution: {integrity: sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==}
     peerDependencies:
@@ -2071,6 +2089,9 @@ packages:
 
   '@types/react@19.2.14':
     resolution: {integrity: sha512-ilcTH/UniCkMdtexkoCN0bI7pMcJDvmQFPvuPvmEaYA/NSfFTAgdUSLAoVjaRJm7+6PvcM+q1zYOwS4wTYMF9w==}
+
+  '@types/retry@0.12.5':
+    resolution: {integrity: sha512-3xSjTp3v03X/lSQLkczaN9UIEwJMoMCA1+Nb5HfbJEQWogdeQIyVtTvxPXDQjZ5zws8rFQfVfRdz03ARihPJgw==}
 
   '@types/unist@2.0.11':
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
@@ -5258,6 +5279,10 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
+  '@types/async-retry@1.4.9':
+    dependencies:
+      '@types/retry': 0.12.5
+
   '@types/chai@5.2.3':
     dependencies:
       '@types/deep-eql': 4.0.2
@@ -5296,6 +5321,10 @@ snapshots:
       undici-types: 7.19.2
     optional: true
 
+  '@types/promise-retry@1.1.6':
+    dependencies:
+      '@types/retry': 0.12.5
+
   '@types/react-dom@19.2.3(@types/react@19.2.14)':
     dependencies:
       '@types/react': 19.2.14
@@ -5303,6 +5332,8 @@ snapshots:
   '@types/react@19.2.14':
     dependencies:
       csstype: 3.2.3
+
+  '@types/retry@0.12.5': {}
 
   '@types/unist@2.0.11': {}
 
