@@ -11,7 +11,7 @@ Use this skill when consuming `@zap-studio/retry`.
 
 - The `RetryPolicy` interface requires both `next(input)` and `onExhausted(input)` (object literals must supply both). Extend `BaseRetryPolicy` to implement `next` only; the base class provides a default `onExhausted` you can override.
 - `BaseRetryPolicy.run(execute, options)` owns orchestration.
-- When `options.sleep` is omitted, the runner uses `defaultSleep` from `@zap-studio/retry` (same function as `@zap-studio/retry/sleep`).
+- When `options.sleep` is omitted, the runner uses `defaultSleep` internally; import that helper from `@zap-studio/retry/sleep` when you need it explicitly (not from the root `@zap-studio/retry` entry).
 - Attempts are one-based; the first call to `execute` receives `1`.
 - `FixedDelay` returns a constant delay until `maxAttempts`.
 - `ExponentialBackoff` computes `min(maxDelayMs, baseDelayMs * 2 ** (attempt - 1))`.
