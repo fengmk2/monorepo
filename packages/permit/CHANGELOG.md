@@ -1,5 +1,11 @@
 # @zap-studio/permit
 
+## 0.3.2
+
+### Dependencies
+
+- Updated dependency `@zap-studio/validation` to `0.3.4`.
+
 ## 0.3.1
 
 ### Fixed

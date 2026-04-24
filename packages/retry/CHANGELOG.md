@@ -1,5 +1,11 @@
 # @zap-studio/retry
 
+## 0.1.2
+
+### Changed
+
+- Expand TSDoc coverage across retry modules and exported contracts for stronger JSR documentation completeness.
+
 ## 0.1.1
 
 ### Fixed
