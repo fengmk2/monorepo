@@ -8,6 +8,7 @@
     "fixed-delay",
     "exponential-backoff",
     "running-policies",
+    "abort-signal",
     "custom-policies",
     "retry-error",
     "types"

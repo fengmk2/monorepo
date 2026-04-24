@@ -77,6 +77,51 @@ if (!result.ok) {
 }
 ```
 
+## Cancellation With AbortSignal
+
+Use `signal` in `run(...)` options to stop retrying early.
+
+```ts
+const controller = new AbortController();
+
+const promise = exponential.run(
+  async () => {
+    const response = await $fetch("https://api.example.com/users", {
+      throwOnFetchError: true,
+    });
+    return await response.json();
+  },
+  { signal: controller.signal },
+);
+
+controller.abort(new Error("Request canceled"));
+
+await promise;
+```
+
+In non-throw mode, abort is returned as `{ ok: false }`:
+
+```ts
+const controller = new AbortController();
+
+const result = await exponential.run(
+  async () => {
+    const response = await $fetch("https://api.example.com/users", {
+      throwOnFetchError: true,
+    });
+    return await response.json();
+  },
+  {
+    signal: controller.signal,
+    throwOnExhausted: false,
+  },
+);
+
+if (!result.ok) {
+  console.error("Retry stopped:", result.error);
+}
+```
+
 ## Choosing The Right Policy
 
 Use `ExponentialBackoff` for transient network instability and shared upstream services.
