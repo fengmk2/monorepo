@@ -4,6 +4,8 @@
   "author": "Alexandre Trotel",
   "scripts": {
     "dev": "vp run docs#dev",
+    "bench": "vp test bench --run",
+    "bench:watch": "vp test bench --watch",
     "publish:check": "vp check && vp test && vp run --filter './packages/*' prepublishOnly",
     "react-doctor": "vp run docs#react-doctor"
   },
