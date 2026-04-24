@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vite-plus/test";
 
 import { RetryError } from "../src/error.js";
-import { __internal, BaseRetryPolicy } from "../src/index.js";
+import { BaseRetryPolicy, defaultSleep } from "../src/index.js";
 import type { RetryDecision, RetryDecisionInput, RetryExhaustedInput } from "../src/types.js";
 
 class SequencePolicy extends BaseRetryPolicy<Error, string> {
@@ -319,8 +319,8 @@ describe("BaseRetryPolicy", () => {
     expect(sleep).toHaveBeenCalledWith(10);
   });
 
-  it("covers defaultSleep guard through internal test export", async () => {
-    await expect(__internal.defaultSleep(0)).resolves.toBeUndefined();
+  it("covers defaultSleep guard through public export", async () => {
+    await expect(defaultSleep(0)).resolves.toBeUndefined();
   });
 
   it("retries in non-throw mode with signal and zero delay", async () => {

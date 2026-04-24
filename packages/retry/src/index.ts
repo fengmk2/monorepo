@@ -252,7 +252,7 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
  *
  * Returns immediately when `delayMs` is non-positive.
  */
-async function defaultSleep(delayMs: number): Promise<void> {
+export async function defaultSleep(delayMs: number): Promise<void> {
   if (delayMs <= 0) {
     return;
   }
@@ -350,7 +350,3 @@ async function sleepWithAbortSignal(
     }
   }
 }
-
-export const __internal = {
-  defaultSleep,
-};
