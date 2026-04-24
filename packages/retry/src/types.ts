@@ -68,6 +68,19 @@ export interface RetryRunOptions {
    * @throws Any error thrown or rejected by the custom delay implementation.
    */
   readonly sleep?: (delayMs: number) => Promise<void>;
+  /**
+   * Abort signal used to cancel retry orchestration.
+   *
+   * When aborted, the runner stops retrying and terminates immediately.
+   */
+  readonly signal?: AbortSignal;
+  /**
+   * When `true`, the runner throws a `RetryError` when retries are exhausted.
+   *
+   * When `false`, the runner returns a `RetryRunResult` discriminated union.
+   *
+   * @default false
+   */
   readonly throwOnExhausted?: boolean;
 }
 

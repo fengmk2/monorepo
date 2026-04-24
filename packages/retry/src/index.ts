@@ -72,6 +72,7 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
    * @throws {RetryError} When retries are exhausted and `onExhausted` returns the
    *   terminal retry error. The default implementation returns `RetryError` with the last
    *   execution failure available on `RetryError.lastError`.
+   * @throws {Error} When `options.signal` is already aborted or aborts while retrying.
    * @throws Any error thrown by `next`, by `onExhausted`, or by a custom `sleep`
    *   function.
    */
@@ -91,6 +92,7 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
    * @throws Any error thrown by `next`, by `onExhausted`, or by a custom `sleep`
    *   function. When `throwOnExhausted` is `false`, exhaustion itself is returned
    *   as `{ ok: false }` instead of thrown.
+   *   Abort errors are also returned as `{ ok: false }` in non-throw mode.
    *
    * @example
    * const result = await policy.run(doWork, { throwOnExhausted: false });
@@ -101,11 +103,12 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
     options: RetryRunOptions = {},
   ): Promise<T | RetryRunResult<T>> {
     const sleep = options.sleep ?? defaultSleep;
+    const signal = options.signal;
     if (options.throwOnExhausted === false) {
-      return this.runResultMode(execute, sleep);
+      return this.runResultMode(execute, sleep, signal);
     }
 
-    return this.runThrowMode(execute, sleep);
+    return this.runThrowMode(execute, sleep, signal);
   }
 
   /**
@@ -122,13 +125,18 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
   private async runThrowMode<T>(
     execute: (attempt: number) => Promise<T>,
     sleep: (delayMs: number) => Promise<void>,
+    signal?: AbortSignal,
   ): Promise<T> {
     let attempt = 1;
 
     while (true) {
+      throwIfAborted(signal);
+
       try {
         return await execute(attempt);
       } catch (error) {
+        throwIfAborted(signal);
+
         const typedError = error as TError;
         const decision = this.next({
           attempt,
@@ -143,7 +151,11 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
         }
 
         if (decision.delayMs > 0) {
-          await sleep(decision.delayMs);
+          if (signal) {
+            await sleepWithAbortSignal(sleep, decision.delayMs, signal);
+          } else {
+            await sleep(decision.delayMs);
+          }
         }
 
         attempt += 1;
@@ -164,14 +176,31 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
   private async runResultMode<T>(
     execute: (attempt: number) => Promise<T>,
     sleep: (delayMs: number) => Promise<void>,
+    signal?: AbortSignal,
   ): Promise<RetryRunResult<T>> {
     let attempt = 1;
 
     while (true) {
+      if (signal?.aborted) {
+        return {
+          ok: false,
+          error: toRetryError(signal.reason),
+          attempts: Math.max(0, attempt - 1),
+        };
+      }
+
       try {
         const value = await execute(attempt);
         return { ok: true, value };
       } catch (error) {
+        if (signal?.aborted) {
+          return {
+            ok: false,
+            error: toRetryError(signal.reason),
+            attempts: Math.max(0, attempt - 1),
+          };
+        }
+
         const typedError = error as TError;
         const decision = this.next({
           attempt,
@@ -192,7 +221,11 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
         }
 
         if (decision.delayMs > 0) {
-          await sleep(decision.delayMs);
+          if (signal) {
+            await sleepWithAbortSignal(sleep, decision.delayMs, signal);
+          } else {
+            await sleep(decision.delayMs);
+          }
         }
 
         attempt += 1;
@@ -212,4 +245,95 @@ async function defaultSleep(delayMs: number): Promise<void> {
   }
 
   await new Promise((resolve) => setTimeout(resolve, delayMs));
+}
+
+/**
+ * Throws an abort error when the provided signal is already aborted.
+ *
+ * @param signal - Optional cancellation signal.
+ * @throws {Error} Abort reason converted to an `Error`.
+ */
+function throwIfAborted(signal?: AbortSignal): void {
+  if (!signal?.aborted) {
+    return;
+  }
+
+  throw toAbortError(signal.reason);
+}
+
+/**
+ * Normalizes an abort reason value into an `Error` instance.
+ *
+ * @param reason - Abort reason from `AbortSignal.reason`.
+ * @returns Normalized error instance.
+ */
+function toAbortError(reason: unknown): Error {
+  if (reason instanceof Error) {
+    return reason;
+  }
+
+  if (typeof reason === "string" && reason.length > 0) {
+    return new Error(reason);
+  }
+
+  if (reason === undefined) {
+    return new Error("Retry aborted.");
+  }
+
+  try {
+    return new Error(`Retry aborted: ${JSON.stringify(reason)}`);
+  } catch {
+    return new Error("Retry aborted.");
+  }
+}
+
+/**
+ * Converts an abort reason into a `RetryError` for non-throw runner mode.
+ *
+ * @param reason - Abort reason from `AbortSignal.reason`.
+ * @returns Retry terminal error value.
+ */
+function toRetryError(reason: unknown): RetryError {
+  const abortError = toAbortError(reason);
+  return new RetryError(abortError.message, {
+    attempts: 0,
+    lastError: abortError,
+  });
+}
+
+/**
+ * Awaits delay sleep while also observing cancellation via `AbortSignal`.
+ *
+ * @param sleep - Delay function.
+ * @param delayMs - Delay duration in milliseconds.
+ * @param signal - Cancellation signal.
+ * @throws {Error} Abort reason converted to an `Error` when canceled.
+ */
+async function sleepWithAbortSignal(
+  sleep: (delayMs: number) => Promise<void>,
+  delayMs: number,
+  signal: AbortSignal,
+): Promise<void> {
+  if (signal.aborted) {
+    throw toAbortError(signal.reason);
+  }
+
+  let onAbort: (() => void) | undefined;
+
+  try {
+    await Promise.race([
+      sleep(delayMs),
+      new Promise<never>((_, reject) => {
+        onAbort = (): void => {
+          reject(toAbortError(signal.reason));
+        };
+
+        signal.addEventListener("abort", onAbort, { once: true });
+      }),
+    ]);
+  } finally {
+    if (onAbort) {
+      signal.removeEventListener("abort", onAbort);
+    }
+  }
 }
