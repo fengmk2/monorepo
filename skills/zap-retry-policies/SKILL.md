@@ -38,7 +38,7 @@ const data = await policy.run(async () => {
 Throw mode returns `T` or throws the terminal `RetryError`.
 
 ```ts
-import { RetryError } from "@zap-studio/retry/error";
+import { RetryError } from "@zap-studio/retry/errors";
 
 try {
   return await policy.run(doWork);

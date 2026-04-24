@@ -37,7 +37,7 @@ By default, policies extending `BaseRetryPolicy` throw `RetryError` on exhaustio
 and `AbortError` on cancellation.
 
 ```ts
-import { AbortError, RetryError } from "@zap-studio/retry/error";
+import { AbortError, RetryError } from "@zap-studio/retry/errors";
 
 try {
   const data = await exponential.run(async () => {
@@ -193,7 +193,7 @@ const value = await policy.run(doWork);
 Use `RetryError` when an orchestrator exhausts retries and needs to surface final context.
 
 ```ts
-import { RetryError } from "@zap-studio/retry/error";
+import { RetryError } from "@zap-studio/retry/errors";
 
 throw new RetryError("Retry policy exhausted all attempts.", {
   attempts: attempt,

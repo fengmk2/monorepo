@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
 
-import { AbortError, RetryError } from "../src/error.js";
+import { AbortError, RetryError } from "../src/errors.js";
 
 describe("RetryError", () => {
   it("stores message and context fields", () => {

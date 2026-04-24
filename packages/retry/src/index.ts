@@ -4,7 +4,7 @@
  * @module @zap-studio/retry
  */
 
-import { AbortError, RetryError } from "./error.js";
+import { AbortError, RetryError } from "./errors.js";
 import type {
   RetryDecision,
   RetryDecisionInput,

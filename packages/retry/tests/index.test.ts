@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vite-plus/test";
 
-import { AbortError, RetryError } from "../src/error.js";
+import { AbortError, RetryError } from "../src/errors.js";
 import { BaseRetryPolicy, defaultSleep } from "../src/index.js";
 import type { RetryDecision, RetryDecisionInput, RetryExhaustedInput } from "../src/types.js";
 
@@ -33,7 +33,11 @@ class CustomTerminalPolicy extends BaseRetryPolicy<Error> {
   }
 }
 
-function expectFailureResult(result: unknown): { ok: false; attempts: number; error: RetryError } {
+function expectFailureResult(result: unknown): {
+  ok: false;
+  attempts: number;
+  error: RetryError;
+} {
   expect(result).toMatchObject({ ok: false });
   if (!result || typeof result !== "object" || !("ok" in result) || result.ok !== false) {
     throw new Error("Expected failure result");

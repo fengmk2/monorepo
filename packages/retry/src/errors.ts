@@ -1,7 +1,7 @@
 /**
  * Terminal error types used by retry policies and runners.
  *
- * @module @zap-studio/retry/error
+ * @module @zap-studio/retry/errors
  */
 
 /**
