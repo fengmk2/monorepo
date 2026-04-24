@@ -1,3 +1,9 @@
+/**
+ * Signature verification helpers for webhook requests.
+ *
+ * @module @zap-studio/webhooks/verify
+ */
+
 import { VerificationError } from "./errors.js";
 import type { VerifyFn } from "./types/index.js";
 import { constantTimeEquals } from "./utils/index.js";

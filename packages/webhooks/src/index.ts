@@ -1,3 +1,9 @@
+/**
+ * Schema-first webhook router primitives.
+ *
+ * @module @zap-studio/webhooks
+ */
+
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { standardValidate } from "@zap-studio/validation";
 
@@ -61,6 +67,11 @@ export class WebhookRouter<TMap = unknown> {
   private readonly globalErrorHook: ErrorHook | undefined;
   private readonly prefix: string;
 
+  /**
+   * Creates a webhook router with optional global hooks and verification behavior.
+   *
+   * @param opts - Router-level options.
+   */
   constructor(opts: WebhookRouterOptions = {}) {
     this.prefix = opts.prefix ?? "/webhooks/";
     this.verify = opts.verify;

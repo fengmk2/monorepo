@@ -1,4 +1,10 @@
 /**
+ * Utility helpers for webhook internals.
+ *
+ * @module @zap-studio/webhooks/utils
+ */
+
+/**
  * Compares two strings in constant time to prevent timing attacks.
  *
  * @example

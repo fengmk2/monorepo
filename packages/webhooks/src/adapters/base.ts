@@ -1,3 +1,9 @@
+/**
+ * Framework adapter contracts for webhook router integration.
+ *
+ * @module @zap-studio/webhooks/adapters/base
+ */
+
 import type { NormalizedRequest, NormalizedResponse } from "../types/index.js";
 
 /**

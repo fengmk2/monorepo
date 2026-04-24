@@ -1,3 +1,9 @@
+/**
+ * Public webhook request, response, and handler type contracts.
+ *
+ * @module @zap-studio/webhooks/types
+ */
+
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 
 /** Framework-agnostic request shape consumed by the webhook router. */
