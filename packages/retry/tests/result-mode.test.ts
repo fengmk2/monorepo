@@ -1,3 +1,5 @@
+import { strict as assert } from "node:assert";
+
 import { describe, expect, it, vi } from "vite-plus/test";
 
 import { AbortError, RetryError } from "../src/errors.js";
@@ -18,6 +20,8 @@ describe("result mode (throwOnExhausted: false)", () => {
       ok: false,
       attempts: 1,
     });
+    assert(!result.ok);
+    expect(result.error).toBeInstanceOf(RetryError);
   });
 
   it("returns success result object on first success", async () => {
@@ -61,11 +65,7 @@ describe("result mode (throwOnExhausted: false)", () => {
     const failure = expectFailureResult(result);
     expect(failure.attempts).toBe(0);
     expect(failure.error.message).toBe("aborted-before-start");
-    expect(failure.error).toBeInstanceOf(RetryError);
-    if (!(failure.error instanceof RetryError)) {
-      throw new Error("Expected RetryError wrapper in non-throw mode");
-    }
-    expect(failure.error.lastError).toBeInstanceOf(AbortError);
+    expect(failure.error).toBeInstanceOf(AbortError);
     expect(execute).not.toHaveBeenCalled();
   });
 
@@ -89,10 +89,7 @@ describe("result mode (throwOnExhausted: false)", () => {
     });
 
     const failure = expectFailureResult(result);
-    if (!(failure.error instanceof RetryError)) {
-      throw new Error("Expected RetryError wrapper in non-throw mode");
-    }
-    expect(failure.error.lastError).toBe(abortError);
+    expect(failure.error).toBe(abortError);
   });
 
   it("returns terminal result when signal is aborted during execute", async () => {
@@ -112,11 +109,7 @@ describe("result mode (throwOnExhausted: false)", () => {
     const failure = expectFailureResult(result);
     expect(failure.attempts).toBe(1);
     expect(failure.error.message).toBe("aborted-during-execute");
-    expect(failure.error).toBeInstanceOf(RetryError);
-    if (!(failure.error instanceof RetryError)) {
-      throw new Error("Expected RetryError wrapper in non-throw mode");
-    }
-    expect(failure.error.lastError).toBeInstanceOf(AbortError);
+    expect(failure.error).toBeInstanceOf(AbortError);
   });
 
   it("normalizes non-serializable abort reasons to fallback message", async () => {
@@ -135,6 +128,7 @@ describe("result mode (throwOnExhausted: false)", () => {
     const failure = expectFailureResult(result);
     expect(failure.attempts).toBe(0);
     expect(failure.error.message).toBe("Retry aborted.");
+    expect(failure.error).toBeInstanceOf(AbortError);
   });
 
   it("handles undefined abort reason fallback message", async () => {
@@ -158,6 +152,7 @@ describe("result mode (throwOnExhausted: false)", () => {
     const failure = expectFailureResult(result);
     expect(failure.attempts).toBe(0);
     expect(failure.error.message).toBe("Retry aborted.");
+    expect(failure.error).toBeInstanceOf(AbortError);
   });
 
   it("retries with signal and positive delay until success", async () => {
@@ -214,11 +209,7 @@ describe("result mode (throwOnExhausted: false)", () => {
     const failure = expectFailureResult(result);
     expect(failure.attempts).toBe(1);
     expect(failure.error.message).toBe("aborted-in-backoff");
-    expect(failure.error).toBeInstanceOf(RetryError);
-    if (!(failure.error instanceof RetryError)) {
-      throw new Error("Expected RetryError wrapper in non-throw mode");
-    }
-    expect(failure.error.lastError).toBeInstanceOf(AbortError);
+    expect(failure.error).toBeInstanceOf(AbortError);
   });
 
   it("rethrows non-abort sleep errors", async () => {
@@ -269,5 +260,6 @@ describe("result mode (throwOnExhausted: false)", () => {
     const failure = expectFailureResult(result);
     expect(failure.attempts).toBe(1);
     expect(failure.error.message).toBe("aborted-from-wait-catch");
+    expect(failure.error).toBeInstanceOf(AbortError);
   });
 });
