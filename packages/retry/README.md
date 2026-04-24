@@ -33,10 +33,11 @@ const data = await exponential.run(async () => {
 
 `run(...)` throws when retries are exhausted.
 
-By default, policies extending `BaseRetryPolicy` throw `RetryError`.
+By default, policies extending `BaseRetryPolicy` throw `RetryError` on exhaustion
+and `AbortError` on cancellation.
 
 ```ts
-import { RetryError } from "@zap-studio/retry/error";
+import { AbortError, RetryError } from "@zap-studio/retry/error";
 
 try {
   const data = await exponential.run(async () => {
@@ -50,6 +51,8 @@ try {
   if (error instanceof RetryError) {
     console.error("Retries exhausted:", error.attempts);
     console.error("Last error:", error.lastError);
+  } else if (error instanceof AbortError) {
+    console.error("Retry aborted:", error.message);
   } else {
     throw error;
   }
@@ -99,7 +102,8 @@ controller.abort(new Error("Request canceled"));
 await promise;
 ```
 
-In non-throw mode, abort is returned as `{ ok: false }`:
+In non-throw mode, abort is returned as `{ ok: false }` with `AbortError` in
+`result.error.lastError`:
 
 ```ts
 const controller = new AbortController();
@@ -118,7 +122,7 @@ const result = await exponential.run(
 );
 
 if (!result.ok) {
-  console.error("Retry stopped:", result.error);
+  console.error("Retry stopped:", result.error.lastError);
 }
 ```
 
