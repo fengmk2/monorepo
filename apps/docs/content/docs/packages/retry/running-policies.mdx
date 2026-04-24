@@ -21,6 +21,8 @@ const result = await policy.run(async () => {
 
 ## Custom Sleep
 
+By default, `run(...)` uses the package `defaultSleep` (available from `@zap-studio/retry/sleep`).
+
 Use `RetryRunOptions.sleep` to inject a custom delay implementation.
 This is useful for testing and deterministic timing.
 
