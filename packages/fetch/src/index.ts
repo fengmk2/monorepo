@@ -6,7 +6,7 @@
  * - `api` method shortcuts
  * - `createFetch` instance factory
  *
- * @module
+ * @module @zap-studio/fetch
  */
 
 import { isStandardSchema, type StandardSchemaV1 } from "@zap-studio/validation";

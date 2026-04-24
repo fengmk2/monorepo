@@ -1,7 +1,7 @@
 /**
  * Custom error types used by the fetch package.
  *
- * @module
+ * @module @zap-studio/fetch/errors
  */
 
 /**

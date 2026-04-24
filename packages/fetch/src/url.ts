@@ -1,7 +1,7 @@
 /**
  * URL resolution and query merging utilities.
  *
- * @module
+ * @module @zap-studio/fetch/url
  */
 
 import type { ExtendedRequestInit, FetchDefaults } from "./types.js";

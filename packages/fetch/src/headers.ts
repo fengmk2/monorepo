@@ -1,7 +1,7 @@
 /**
  * Header utility helpers for request normalization and merging.
  *
- * @module
+ * @module @zap-studio/fetch/headers
  */
 
 /**

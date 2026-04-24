@@ -1,7 +1,7 @@
 /**
  * Shared defaults and constants for fetch behavior.
  *
- * @module
+ * @module @zap-studio/fetch/constants
  */
 
 import type { FetchDefaults } from "./types.js";
