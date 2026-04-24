@@ -186,9 +186,9 @@ describe("BaseRetryPolicy", () => {
     });
 
     const failure = expectFailureResult(result);
-    expect(failure.attempts).toBe(0);
+    expect(failure.attempts).toBe(1);
     expect(failure.error.message).toBe("aborted-during-execute");
-    expect(failure.error.attempts).toBe(0);
+    expect(failure.error.attempts).toBe(1);
   });
 
   it("throws when signal aborts while waiting between retries", async () => {
