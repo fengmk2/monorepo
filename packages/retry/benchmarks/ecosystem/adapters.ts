@@ -34,6 +34,37 @@ export async function runPRetry(task: BenchmarkTask): Promise<void> {
   });
 }
 
+export async function runZapFixedWithSignal(
+  task: BenchmarkTask,
+  signal: AbortSignal,
+): Promise<void> {
+  const policy = new FixedDelay({ maxAttempts, delayMs: 0 });
+  await policy.run(async () => task(), { sleep: noSleep, signal });
+}
+
+export async function runZapExponentialWithSignal(
+  task: BenchmarkTask,
+  signal: AbortSignal,
+): Promise<void> {
+  const policy = new ExponentialBackoff({
+    maxAttempts,
+    baseDelayMs: 0,
+    maxDelayMs: 0,
+  });
+  await policy.run(async () => task(), { sleep: noSleep, signal });
+}
+
+export async function runPRetryWithSignal(task: BenchmarkTask, signal: AbortSignal): Promise<void> {
+  await pRetry(async () => task(), {
+    retries: maxAttempts - 1,
+    factor: 1,
+    minTimeout: 0,
+    maxTimeout: 0,
+    randomize: false,
+    signal,
+  });
+}
+
 export async function runAsyncRetry(task: BenchmarkTask): Promise<void> {
   await asyncRetry(async () => task(), {
     retries: maxAttempts - 1,
