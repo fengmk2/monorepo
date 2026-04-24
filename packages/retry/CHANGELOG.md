@@ -6,7 +6,8 @@
 
 - Add dedicated `AbortError` and normalize cancellation paths so retry internals throw/return `RetryError` or `AbortError` instead of plain `Error`.
 - Expose `defaultSleep` as a public API export.
-- Align non-throw abort metadata so `result.attempts` and `result.error.attempts` stay consistent.
+- Align non-throw exhaustion metadata so `result.attempts` and `result.error.attempts` stay consistent for `RetryError` outcomes.
+- In non-throw mode, return a normalized `AbortError` on `result.error` for cancellation; `result.attempts` still reports completed attempts.
 - Refactor result-mode internals into smaller helpers for lower complexity and cleaner maintainability.
 - Expand docs across README and package docs pages to explain `AbortError` behavior in throw and non-throw modes.
 - Split the retry runner into dedicated modules: `throw-mode` (throwing execution path), `result-mode` (non-throw `RetryRunResult` path), and `sleep` (the default `defaultSleep` implementation). `BaseRetryPolicy` in `index` now delegates to these modules without changing public behavior.

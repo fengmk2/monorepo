@@ -142,8 +142,8 @@ export type RetryRunResult<T> =
        */
       ok: false;
       /**
-       * Terminal error from exhaustion (`RetryError`) or cancellation
-       * (`RetryError` wrapping `AbortError` in the non-throw path).
+       * Terminal error: `RetryError` when retries are exhausted, or
+       * `AbortError` when the run is canceled.
        */
       error: RetryError | AbortError;
       /**

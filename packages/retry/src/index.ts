@@ -95,7 +95,8 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
    * @throws Any error thrown by `next`, by `onExhausted`, or by a custom `sleep`
    *   function. When `throwOnExhausted` is `false`, exhaustion itself is returned
    *   as `{ ok: false }` instead of thrown.
-   *   Abort errors are also returned as `{ ok: false }` in non-throw mode.
+   *   Cancellation is returned as `{ ok: false, error: AbortError }` in non-throw
+   *   mode.
    *
    * @example
    * const result = await policy.run(doWork, { throwOnExhausted: false });

@@ -73,7 +73,7 @@ const result = await policy.run(
 );
 
 if (!result.ok) {
-  console.error(result.error.lastError);
+  console.error(result.error);
 } else {
   console.log(result.value);
 }

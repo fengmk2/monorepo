@@ -54,14 +54,22 @@ try {
 Non-throw mode returns a discriminated result.
 
 ```ts
+import { RetryError } from "@zap-studio/retry/errors";
+
 const result = await policy.run(doWork, { throwOnExhausted: false });
 
 if (!result.ok) {
-  return { attempts: result.attempts, cause: result.error.lastError };
+  return {
+    attempts: result.attempts,
+    cause: result.error instanceof RetryError ? result.error.lastError : result.error,
+  };
 }
 
 return result.value;
 ```
+
+For exhaustion, `result.error` is a `RetryError` and the underlying failure is
+`result.error.lastError`. For cancellation, `result.error` is an `AbortError`.
 
 ## Gotchas
 

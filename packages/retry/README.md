@@ -108,8 +108,8 @@ controller.abort(new Error("Request canceled"));
 await promise;
 ```
 
-In non-throw mode, abort is returned as `{ ok: false }` with `AbortError` in
-`result.error.lastError`:
+In non-throw mode, abort is returned as `{ ok: false }` with `AbortError` on
+`result.error`:
 
 ```ts
 const controller = new AbortController();
@@ -128,7 +128,7 @@ const result = await exponential.run(
 );
 
 if (!result.ok) {
-  console.error("Retry stopped:", result.error.lastError);
+  console.error("Retry stopped:", result.error);
 }
 ```
 
