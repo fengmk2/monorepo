@@ -4,7 +4,7 @@
  * @module @zap-studio/retry/types
  */
 
-import type { RetryError } from "./error.js";
+import type { AbortError, RetryError } from "./errors.js";
 
 /**
  * Retry policy contract used by `BaseRetryPolicy`.
@@ -34,8 +34,18 @@ export interface RetryPolicy<TError = unknown, TData = unknown> {
  * Decision returned by a retry policy for a specific attempt.
  */
 export interface RetryDecision {
+  /**
+   * When `true`, the runner may schedule another attempt (subject to
+   * `delayMs` and the runner's abort rules).
+   */
   readonly shouldRetry: boolean;
+  /**
+   * Milliseconds to wait before the next attempt when `shouldRetry` is `true`.
+   */
   readonly delayMs: number;
+  /**
+   * Optional machine-readable reason for the decision.
+   */
   readonly reason?: "retry" | "max-attempts-reached" | "policy-declined";
 }
 
@@ -43,9 +53,24 @@ export interface RetryDecision {
  * Input passed to `RetryPolicy.next(...)` for each failed attempt.
  */
 export interface RetryDecisionInput<TError = unknown, TData = unknown> {
+  /**
+   * One-based attempt number for the current failure.
+   */
   readonly attempt: number;
+  /**
+   * Optional policy-level maximum attempts, when a policy wants to pass it
+   * through to `next`.
+   */
   readonly maxAttempts?: number;
+  /**
+   * Error raised by the most recent `execute(attempt)` call, when a failure
+   * occurred.
+   */
   readonly error?: TError;
+  /**
+   * Optional data captured alongside the failure, when a policy populates
+   * it.
+   */
   readonly data?: TData;
 }
 
@@ -53,8 +78,17 @@ export interface RetryDecisionInput<TError = unknown, TData = unknown> {
  * Input passed to `RetryPolicy.onExhausted(...)` when retries stop.
  */
 export interface RetryExhaustedInput<TError = unknown, TData = unknown> {
+  /**
+   * Count of completed attempts that led to stopping retries.
+   */
   readonly attempts: number;
+  /**
+   * Last execution error, when available.
+   */
   readonly error?: TError;
+  /**
+   * Last captured data, when a policy or runner supplies it.
+   */
   readonly data?: TData;
 }
 
@@ -86,14 +120,34 @@ export interface RetryRunOptions {
 
 /**
  * Result union returned by non-throw runner mode.
+ *
+ * - Success: `ok: true` with the resolved `value`.
+ * - Failure: `ok: false` with terminal `error` and completed `attempts` count
+ *   (exhaustion or abort).
  */
 export type RetryRunResult<T> =
   | {
+      /**
+       * Discriminator for a successful run.
+       */
       ok: true;
+      /**
+       * Successful return value from the final attempt.
+       */
       value: T;
     }
   | {
+      /**
+       * Discriminator for a failed or aborted run.
+       */
       ok: false;
-      error: RetryError;
+      /**
+       * Terminal error: `RetryError` when retries are exhausted, or
+       * `AbortError` when the run is canceled.
+       */
+      error: RetryError | AbortError;
+      /**
+       * Number of attempts that completed before the terminal outcome.
+       */
       attempts: number;
     };

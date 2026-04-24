@@ -55,7 +55,7 @@ Override `onExhausted(...)` when callers need a custom terminal error.
 
 ```ts
 import { BaseRetryPolicy } from "@zap-studio/retry";
-import { RetryError } from "@zap-studio/retry/error";
+import { RetryError } from "@zap-studio/retry/errors";
 import type { RetryExhaustedInput } from "@zap-studio/retry/types";
 
 class UpstreamRetryError extends RetryError {
@@ -93,7 +93,7 @@ Use the lower-level `RetryPolicy` type when you need to build your own orchestra
 
 ```ts
 import type { RetryPolicy } from "@zap-studio/retry/types";
-import { RetryError } from "@zap-studio/retry/error";
+import { RetryError } from "@zap-studio/retry/errors";
 
 const policy: RetryPolicy = {
   next: ({ attempt }) => ({

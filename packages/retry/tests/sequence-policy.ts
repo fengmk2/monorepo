@@ -1,0 +1,52 @@
+import { expect } from "vite-plus/test";
+
+import { AbortError, RetryError } from "../src/errors.js";
+import { BaseRetryPolicy } from "../src/index.js";
+import type {
+  RetryDecision,
+  RetryDecisionInput,
+  RetryExhaustedInput,
+  RetryRunResult,
+} from "../src/types.js";
+
+export class SequencePolicy extends BaseRetryPolicy<Error, string> {
+  public readonly seen: RetryDecisionInput<Error, string>[] = [];
+  private index = 0;
+
+  constructor(private readonly decisions: RetryDecision[]) {
+    super();
+  }
+
+  public next(input: RetryDecisionInput<Error, string>): RetryDecision {
+    this.seen.push(input);
+    const decision = this.decisions[Math.min(this.index, this.decisions.length - 1)];
+    this.index += 1;
+    return decision ?? { shouldRetry: false, delayMs: 0, reason: "policy-declined" };
+  }
+}
+
+export class CustomTerminalPolicy extends BaseRetryPolicy<Error> {
+  public next(): RetryDecision {
+    return { shouldRetry: false, delayMs: 0, reason: "policy-declined" };
+  }
+
+  public override onExhausted(input: RetryExhaustedInput<Error>): RetryError {
+    return new RetryError(`custom:${input.attempts}`, {
+      attempts: input.attempts,
+      lastError: input.error,
+    });
+  }
+}
+
+export function expectFailureResult(result: RetryRunResult<string>): {
+  ok: false;
+  attempts: number;
+  error: AbortError | RetryError;
+} {
+  expect(result).toMatchObject({ ok: false });
+  if (result.ok) {
+    throw new Error("Expected failure result");
+  }
+
+  return result;
+}

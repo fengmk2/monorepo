@@ -74,3 +74,8 @@ const options: RetryRunOptions = {
 ```
 
 When `throwOnExhausted` is `false`, `run(...)` returns `RetryRunResult<T>`.
+
+In non-throw mode, `result.error` is:
+
+- `RetryError` for exhausted retries
+- `AbortError` for cancellation via `AbortSignal`

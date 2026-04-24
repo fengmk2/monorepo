@@ -1,6 +1,6 @@
 {
   "name": "@zap-studio/retry",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": false,
   "description": "Composable retry policies for resilient async operations.",
   "keywords": [
@@ -30,9 +30,13 @@
   "types": "./dist/index.d.mts",
   "exports": {
     ".": "./dist/index.mjs",
-    "./error": "./dist/error.mjs",
+    "./abort": "./dist/abort.mjs",
+    "./errors": "./dist/errors.mjs",
     "./exponential-backoff": "./dist/exponential-backoff.mjs",
     "./fixed-delay": "./dist/fixed-delay.mjs",
+    "./result-mode": "./dist/result-mode.mjs",
+    "./sleep": "./dist/sleep.mjs",
+    "./throw-mode": "./dist/throw-mode.mjs",
     "./types": "./dist/types.mjs",
     "./package.json": "./package.json"
   },

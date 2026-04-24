@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
 
-import { RetryError } from "../src/error.js";
+import { RetryError } from "../src/errors.js";
 import type {
   RetryDecisionInput,
   RetryExhaustedInput,

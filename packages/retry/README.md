@@ -33,10 +33,11 @@ const data = await exponential.run(async () => {
 
 `run(...)` throws when retries are exhausted.
 
-By default, policies extending `BaseRetryPolicy` throw `RetryError`.
+By default, policies extending `BaseRetryPolicy` throw `RetryError` on exhaustion
+and `AbortError` on cancellation.
 
 ```ts
-import { RetryError } from "@zap-studio/retry/error";
+import { AbortError, RetryError } from "@zap-studio/retry/errors";
 
 try {
   const data = await exponential.run(async () => {
@@ -50,6 +51,8 @@ try {
   if (error instanceof RetryError) {
     console.error("Retries exhausted:", error.attempts);
     console.error("Last error:", error.lastError);
+  } else if (error instanceof AbortError) {
+    console.error("Retry aborted:", error.message);
   } else {
     throw error;
   }
@@ -77,6 +80,14 @@ if (!result.ok) {
 }
 ```
 
+## Default sleep
+
+`BaseRetryPolicy.run` automatically applies a delay between retry attempts when no custom `sleep` function is provided in the options.
+
+That default is the `defaultSleep` helper, exported from `@zap-studio/retry/sleep`.
+
+By default, this delay mechanism relies on the native JavaScript `setTimeout`, meaning retries are scheduled using the standard event loop timing rather than any custom or blocking implementation.
+
 ## Cancellation With AbortSignal
 
 Use `signal` in `run(...)` options to stop retrying early.
@@ -99,7 +110,8 @@ controller.abort(new Error("Request canceled"));
 await promise;
 ```
 
-In non-throw mode, abort is returned as `{ ok: false }`:
+In non-throw mode, abort is returned as `{ ok: false }` with `AbortError` on
+`result.error`:
 
 ```ts
 const controller = new AbortController();
@@ -189,7 +201,7 @@ const value = await policy.run(doWork);
 Use `RetryError` when an orchestrator exhausts retries and needs to surface final context.
 
 ```ts
-import { RetryError } from "@zap-studio/retry/error";
+import { RetryError } from "@zap-studio/retry/errors";
 
 throw new RetryError("Retry policy exhausted all attempts.", {
   attempts: attempt,

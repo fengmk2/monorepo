@@ -11,8 +11,17 @@ import type { RetryDecision, RetryDecisionInput } from "./types.js";
  * Configuration for `ExponentialBackoff`.
  */
 export interface ExponentialBackoffOptions {
+  /**
+   * Maximum number of attempts (including the first) before giving up.
+   */
   maxAttempts: number;
+  /**
+   * Initial delay in milliseconds, doubled each retry until capped.
+   */
   baseDelayMs: number;
+  /**
+   * Hard upper bound in milliseconds for computed exponential delay.
+   */
   maxDelayMs: number;
 }
 
@@ -27,8 +36,17 @@ export interface ExponentialBackoffOptions {
  * });
  */
 export class ExponentialBackoff extends BaseRetryPolicy {
+  /**
+   * Maximum number of attempts before the policy returns `max-attempts-reached`.
+   */
   private readonly maxAttempts: number;
+  /**
+   * Base delay in milliseconds used in `baseDelayMs * 2 ** (attempt - 1)`.
+   */
   private readonly baseDelayMs: number;
+  /**
+   * Upper cap for computed delay, applied with `Math.min`.
+   */
   private readonly maxDelayMs: number;
 
   /**

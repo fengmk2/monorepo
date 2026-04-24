@@ -1,5 +1,23 @@
 # @zap-studio/retry
 
+## 0.3.0
+
+### Breaking
+
+- **Subpath for error types:** use `@zap-studio/retry/errors` (plural) for `RetryError`, `AbortError`, and related types. A prior JSR `error` subpath that pointed at a non-existent `error.ts` entry is removed; update deep imports from `@zap-studio/retry/error` to `@zap-studio/retry/errors`.
+
+### Changed
+
+- Add dedicated `AbortError` and normalize cancellation paths so retry internals throw/return `RetryError` or `AbortError` instead of plain `Error`.
+- Expose `defaultSleep` from the `@zap-studio/retry/sleep` subpath only (the main entry does not re-export it; `run` still uses it internally when `sleep` is omitted).
+- Align non-throw exhaustion metadata so `result.attempts` and `result.error.attempts` stay consistent for `RetryError` outcomes.
+- In non-throw mode, return a normalized `AbortError` on `result.error` for cancellation; `result.attempts` still reports completed attempts.
+- Refactor result-mode internals into smaller helpers for lower complexity and cleaner maintainability.
+- Expand docs across README and package docs pages to explain `AbortError` behavior in throw and non-throw modes.
+- Split the retry runner into dedicated modules: `throw-mode` (throwing execution path), `result-mode` (non-throw `RetryRunResult` path), and `sleep` (the default `defaultSleep` implementation). `BaseRetryPolicy` in `index` now delegates to these modules without changing public behavior.
+- Add exhaustive TSDoc for `result-mode` and other `src` modules, including private helpers, policy option and state fields, and `RetryRunResult` union members.
+- Rework test layout into `sleep`, `throw-mode`, `result-mode`, and `index` test files with a shared `sequence-policy` fixture, replacing the prior combined `index` and `abort` test files.
+
 ## 0.2.0
 
 ### Changed

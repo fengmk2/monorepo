@@ -1,14 +1,15 @@
 ---
 title: RetryError
-description: Terminal error class thrown when retries are exhausted.
+description: Terminal error classes thrown for retry exhaustion and cancellation.
 ---
 
 `RetryError` represents exhausted retry attempts with structured context.
+`AbortError` represents cancellation through `AbortSignal`.
 
 ## Import
 
 ```ts
-import { RetryError } from "@zap-studio/retry/error";
+import { AbortError, RetryError } from "@zap-studio/retry/errors";
 ```
 
 ## Properties
@@ -20,6 +21,14 @@ import { RetryError } from "@zap-studio/retry/error";
 | `attempts`  | `number`  | Total attempts performed        |
 | `lastError` | `unknown` | Last captured error             |
 | `lastData`  | `unknown` | Last captured data value        |
+
+`AbortError` properties:
+
+| Property  | Type      | Description                          |
+| --------- | --------- | ------------------------------------ |
+| `name`    | `string`  | Always `"AbortError"`                |
+| `message` | `string`  | Human-readable abort message         |
+| `cause`   | `unknown` | Original abort reason when available |
 
 ## Default Behavior
 
@@ -46,6 +55,8 @@ try {
   if (error instanceof RetryError) {
     console.error("Attempts:", error.attempts);
     console.error("Last error:", error.lastError);
+  } else if (error instanceof AbortError) {
+    console.error("Aborted:", error.message);
   } else {
     throw error;
   }

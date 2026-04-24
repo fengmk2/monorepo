@@ -1,16 +1,35 @@
 /**
  * Terminal error types used by retry policies and runners.
  *
- * @module @zap-studio/retry/error
+ * @module @zap-studio/retry/errors
  */
 
 /**
  * Context payload attached to `RetryError`.
  */
 export interface RetryErrorContext {
+  /**
+   * Count of completed attempts at exhaustion.
+   */
   readonly attempts: number;
+  /**
+   * The last error object raised by a failed `execute` attempt.
+   */
   readonly lastError?: unknown;
+  /**
+   * Optional data captured from the last attempt when provided by a policy.
+   */
   readonly lastData?: unknown;
+}
+
+/**
+ * Context payload attached to `AbortError`.
+ */
+export interface AbortErrorContext {
+  /**
+   * When the abort `reason` was an `Error`, the optional wrapped cause.
+   */
+  readonly cause?: unknown;
 }
 
 /**
@@ -45,5 +64,25 @@ export class RetryError extends Error {
     this.attempts = context.attempts;
     this.lastError = context.lastError;
     this.lastData = context.lastData;
+  }
+}
+
+/**
+ * Error thrown when retry orchestration is canceled through `AbortSignal`.
+ */
+export class AbortError extends Error {
+  /**
+   * Optional wrapped cause when the native abort `reason` was an `Error`.
+   */
+  public override readonly cause?: unknown;
+
+  /**
+   * @param message - Human-readable abort description.
+   * @param context - Optional `cause` link for diagnostic chaining.
+   */
+  constructor(message: string, context: AbortErrorContext = {}) {
+    super(message);
+    this.name = "AbortError";
+    this.cause = context.cause;
   }
 }
