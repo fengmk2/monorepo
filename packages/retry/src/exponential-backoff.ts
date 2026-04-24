@@ -1,7 +1,7 @@
 /**
  * Exponential backoff retry strategy.
  *
- * @module
+ * @module @zap-studio/retry/exponential-backoff
  */
 
 import { BaseRetryPolicy } from "./index.js";

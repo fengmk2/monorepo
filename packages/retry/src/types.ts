@@ -1,7 +1,7 @@
 /**
  * Public type contracts for retry policies and runner behavior.
  *
- * @module
+ * @module @zap-studio/retry/types
  */
 
 import type { RetryError } from "./error.js";
