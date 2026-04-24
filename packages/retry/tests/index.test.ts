@@ -167,6 +167,7 @@ describe("BaseRetryPolicy", () => {
     const failure = expectFailureResult(result);
     expect(failure.attempts).toBe(0);
     expect(failure.error.message).toBe("aborted-before-start");
+    expect(failure.error.attempts).toBe(0);
     expect(execute).not.toHaveBeenCalled();
   });
 
@@ -187,6 +188,7 @@ describe("BaseRetryPolicy", () => {
     const failure = expectFailureResult(result);
     expect(failure.attempts).toBe(0);
     expect(failure.error.message).toBe("aborted-during-execute");
+    expect(failure.error.attempts).toBe(0);
   });
 
   it("throws when signal aborts while waiting between retries", async () => {
@@ -372,6 +374,7 @@ describe("BaseRetryPolicy", () => {
     const failure = expectFailureResult(result);
     expect(failure.attempts).toBe(1);
     expect(failure.error.message).toBe("aborted-in-backoff");
+    expect(failure.error.attempts).toBe(1);
   });
 
   it("rethrows non-abort sleep errors in non-throw mode", async () => {

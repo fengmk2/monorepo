@@ -182,10 +182,11 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
 
     while (true) {
       if (signal?.aborted) {
+        const attempts = Math.max(0, attempt - 1);
         return {
           ok: false,
-          error: toRetryError(signal.reason),
-          attempts: Math.max(0, attempt - 1),
+          error: toRetryError(signal.reason, attempts),
+          attempts,
         };
       }
 
@@ -194,10 +195,11 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
         return { ok: true, value };
       } catch (error) {
         if (signal?.aborted) {
+          const attempts = Math.max(0, attempt - 1);
           return {
             ok: false,
-            error: toRetryError(signal.reason),
-            attempts: Math.max(0, attempt - 1),
+            error: toRetryError(signal.reason, attempts),
+            attempts,
           };
         }
 
@@ -228,7 +230,7 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
               if (signal.aborted) {
                 return {
                   ok: false,
-                  error: toRetryError(signal.reason),
+                  error: toRetryError(signal.reason, attempt),
                   attempts: attempt,
                 };
               }
@@ -304,10 +306,10 @@ function toAbortError(reason: unknown): Error {
  * @param reason - Abort reason from `AbortSignal.reason`.
  * @returns Retry terminal error value.
  */
-function toRetryError(reason: unknown): RetryError {
+function toRetryError(reason: unknown, attempts: number): RetryError {
   const abortError = toAbortError(reason);
   return new RetryError(abortError.message, {
-    attempts: 0,
+    attempts,
     lastError: abortError,
   });
 }
