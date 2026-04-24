@@ -131,4 +131,174 @@ describe("BaseRetryPolicy", () => {
     expect(error.lastData).toBe("payload");
     expect(error.attempts).toBe(3);
   });
+
+  it("throws immediately when signal is already aborted in throw mode", async () => {
+    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 0, reason: "retry" }]);
+    const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
+    const controller = new AbortController();
+    controller.abort(new Error("aborted-before-start"));
+
+    await expect(policy.run(execute, { signal: controller.signal })).rejects.toThrow(
+      "aborted-before-start",
+    );
+    expect(execute).not.toHaveBeenCalled();
+  });
+
+  it("returns terminal result when signal is already aborted in non-throw mode", async () => {
+    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 0, reason: "retry" }]);
+    const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
+    const controller = new AbortController();
+    controller.abort("aborted-before-start");
+
+    const result = await policy.run(execute, {
+      signal: controller.signal,
+      throwOnExhausted: false,
+    });
+
+    expect(result).toMatchObject({
+      ok: false,
+      attempts: 0,
+    });
+    if (!result.ok) {
+      expect(result.error.message).toBe("aborted-before-start");
+    }
+    expect(execute).not.toHaveBeenCalled();
+  });
+
+  it("returns terminal result when signal is aborted during execute in non-throw mode", async () => {
+    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 10, reason: "retry" }]);
+    const controller = new AbortController();
+
+    const execute = vi.fn<(attempt: number) => Promise<string>>().mockImplementation(async () => {
+      controller.abort("aborted-during-execute");
+      throw new Error("failed");
+    });
+
+    const result = await policy.run(execute, {
+      signal: controller.signal,
+      throwOnExhausted: false,
+    });
+
+    expect(result).toMatchObject({
+      ok: false,
+      attempts: 0,
+    });
+    if (!result.ok) {
+      expect(result.error.message).toBe("aborted-during-execute");
+    }
+  });
+
+  it("throws when signal aborts while waiting between retries", async () => {
+    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 50, reason: "retry" }]);
+    const controller = new AbortController();
+    const execute = vi
+      .fn<(attempt: number) => Promise<string>>()
+      .mockRejectedValueOnce(new Error("fail-once"));
+
+    const runPromise = policy.run(execute, { signal: controller.signal });
+    await Promise.resolve();
+    controller.abort(new Error("aborted-during-sleep"));
+
+    await expect(runPromise).rejects.toThrow("aborted-during-sleep");
+  });
+
+  it("uses default sleep when delay is positive and no custom sleep is provided", async () => {
+    vi.useFakeTimers();
+    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 25, reason: "retry" }]);
+    const execute = vi.fn<(attempt: number) => Promise<string>>();
+    execute.mockRejectedValueOnce(new Error("fail"));
+    execute.mockResolvedValueOnce("ok");
+
+    const runPromise = policy.run(execute);
+    await vi.advanceTimersByTimeAsync(25);
+    await expect(runPromise).resolves.toBe("ok");
+    vi.useRealTimers();
+  });
+
+  it("normalizes non-serializable abort reasons to a fallback message", async () => {
+    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 0, reason: "retry" }]);
+    const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
+    const circular: { self?: unknown } = {};
+    circular.self = circular;
+    const controller = new AbortController();
+    controller.abort(circular);
+
+    const result = await policy.run(execute, {
+      signal: controller.signal,
+      throwOnExhausted: false,
+    });
+
+    expect(result).toMatchObject({
+      ok: false,
+      attempts: 0,
+    });
+    if (!result.ok) {
+      expect(result.error.message).toBe("Retry aborted.");
+    }
+  });
+
+  it("covers immediate abort check inside sleepWithAbortSignal", async () => {
+    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 10, reason: "retry" }]);
+    const execute = vi
+      .fn<(attempt: number) => Promise<string>>()
+      .mockRejectedValue(new Error("fail"));
+
+    let readCount = 0;
+    const fakeSignal = {
+      get aborted() {
+        readCount += 1;
+        return readCount >= 3;
+      },
+      reason: "abort-immediate-sleep-check",
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    } as unknown as AbortSignal;
+
+    await expect(policy.run(execute, { signal: fakeSignal })).rejects.toThrow(
+      "abort-immediate-sleep-check",
+    );
+  });
+
+  it("retries in non-throw mode with positive delay and custom sleep", async () => {
+    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 15, reason: "retry" }]);
+    const sleep = vi.fn<(delayMs: number) => Promise<void>>().mockResolvedValue();
+    const execute = vi.fn<(attempt: number) => Promise<string>>();
+    execute.mockRejectedValueOnce(new Error("fail"));
+    execute.mockResolvedValueOnce("ok");
+
+    const result = await policy.run(execute, {
+      throwOnExhausted: false,
+      sleep,
+    });
+
+    expect(result).toEqual({ ok: true, value: "ok" });
+    expect(sleep).toHaveBeenCalledWith(15);
+    expect(execute).toHaveBeenNthCalledWith(1, 1);
+    expect(execute).toHaveBeenNthCalledWith(2, 2);
+  });
+
+  it("handles undefined abort reason fallback message", async () => {
+    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 0, reason: "retry" }]);
+    const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
+
+    const fakeSignal = {
+      aborted: true,
+      reason: undefined,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    } as unknown as AbortSignal;
+
+    const result = await policy.run(execute, {
+      signal: fakeSignal,
+      throwOnExhausted: false,
+    });
+
+    expect(result).toMatchObject({
+      ok: false,
+      attempts: 0,
+    });
+    if (!result.ok) {
+      expect(result.error.message).toBe("Retry aborted.");
+    }
+  });
 });
