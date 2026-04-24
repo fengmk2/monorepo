@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
 
-import { RetryError } from "../src/error.js";
+import { AbortError, RetryError } from "../src/error.js";
 
 describe("RetryError", () => {
   it("stores message and context fields", () => {
@@ -24,5 +24,23 @@ describe("RetryError", () => {
 
     expect(error.lastError).toBeUndefined();
     expect(error.lastData).toBeUndefined();
+  });
+});
+
+describe("AbortError", () => {
+  it("stores message and optional cause", () => {
+    const cause = new Error("root-cause");
+    const error = new AbortError("Retry aborted", { cause });
+
+    expect(error).toBeInstanceOf(Error);
+    expect(error.name).toBe("AbortError");
+    expect(error.message).toBe("Retry aborted");
+    expect(error.cause).toBe(cause);
+  });
+
+  it("supports missing optional context values", () => {
+    const error = new AbortError("Retry aborted");
+
+    expect(error.cause).toBeUndefined();
   });
 });

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vite-plus/test";
 
-import { RetryError } from "../src/error.js";
+import { AbortError, RetryError } from "../src/error.js";
 import { BaseRetryPolicy, defaultSleep } from "../src/index.js";
 import type { RetryDecision, RetryDecisionInput, RetryExhaustedInput } from "../src/types.js";
 
@@ -168,7 +168,31 @@ describe("BaseRetryPolicy", () => {
     expect(failure.attempts).toBe(0);
     expect(failure.error.message).toBe("aborted-before-start");
     expect(failure.error.attempts).toBe(0);
+    expect(failure.error.lastError).toBeInstanceOf(AbortError);
     expect(execute).not.toHaveBeenCalled();
+  });
+
+  it("preserves AbortError reason instance in non-throw abort result", async () => {
+    const policy = new SequencePolicy([{ shouldRetry: true, delayMs: 0, reason: "retry" }]);
+    const execute = vi.fn<(attempt: number) => Promise<string>>().mockResolvedValue("ok");
+    const abortError = new AbortError("already-aborted");
+
+    const fakeSignal = {
+      aborted: true,
+      reason: abortError,
+      addEventListener:
+        vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
+      removeEventListener:
+        vi.fn<(type: string, listener: EventListenerOrEventListenerObject) => void>(),
+    } as unknown as AbortSignal;
+
+    const result = await policy.run(execute, {
+      signal: fakeSignal,
+      throwOnExhausted: false,
+    });
+
+    const failure = expectFailureResult(result);
+    expect(failure.error.lastError).toBe(abortError);
   });
 
   it("returns terminal result when signal is aborted during execute in non-throw mode", async () => {
@@ -189,6 +213,7 @@ describe("BaseRetryPolicy", () => {
     expect(failure.attempts).toBe(1);
     expect(failure.error.message).toBe("aborted-during-execute");
     expect(failure.error.attempts).toBe(1);
+    expect(failure.error.lastError).toBeInstanceOf(AbortError);
   });
 
   it("throws when signal aborts while waiting between retries", async () => {
@@ -375,6 +400,7 @@ describe("BaseRetryPolicy", () => {
     expect(failure.attempts).toBe(1);
     expect(failure.error.message).toBe("aborted-in-backoff");
     expect(failure.error.attempts).toBe(1);
+    expect(failure.error.lastError).toBeInstanceOf(AbortError);
   });
 
   it("rethrows non-abort sleep errors in non-throw mode", async () => {
