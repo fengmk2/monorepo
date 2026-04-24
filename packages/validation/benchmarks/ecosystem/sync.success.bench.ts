@@ -1,7 +1,7 @@
 import { bench, describe } from "vite-plus/test";
 
 import { standardValidateSync } from "../../src/index.js";
-import { validInput } from "./fixtures.js";
+import { inputTiers } from "./fixtures.js";
 import {
   nativeArktypeSyncSchema,
   nativeArktypeSyncStandardValidate,
@@ -15,45 +15,43 @@ import {
 } from "./schemas.js";
 
 describe("@zap-studio/validation | ecosystem | sync | success", () => {
-  describe("zod", () => {
-    bench("native | zod | standard-schema-validate", async () => {
-      await nativeZodSyncStandardValidate(validInput);
-    });
+  for (const tier of inputTiers) {
+    describe(`tier:${tier.name}`, () => {
+      bench("native | zod | standard-schema-validate", async () => {
+        await nativeZodSyncStandardValidate(tier.valid);
+      });
 
-    bench("zap | zod | standardValidateSync", () => {
-      standardValidateSync(nativeZodSyncSchema, validInput);
-    });
+      bench("zap | zod | standardValidateSync", () => {
+        standardValidateSync(nativeZodSyncSchema, tier.valid);
+      });
 
-    bench("zap | zod | createSyncStandardValidator", () => {
-      zapZodSyncValidator(validInput);
-    });
-  });
+      bench("zap | zod | createSyncStandardValidator", () => {
+        zapZodSyncValidator(tier.valid);
+      });
 
-  describe("arktype", () => {
-    bench("native | arktype | standard-schema-validate", async () => {
-      await nativeArktypeSyncStandardValidate(validInput);
-    });
+      bench("native | arktype | standard-schema-validate", async () => {
+        await nativeArktypeSyncStandardValidate(tier.valid);
+      });
 
-    bench("zap | arktype | standardValidateSync", () => {
-      standardValidateSync(nativeArktypeSyncSchema, validInput);
-    });
+      bench("zap | arktype | standardValidateSync", () => {
+        standardValidateSync(nativeArktypeSyncSchema, tier.valid);
+      });
 
-    bench("zap | arktype | createSyncStandardValidator", () => {
-      zapArktypeSyncValidator(validInput);
-    });
-  });
+      bench("zap | arktype | createSyncStandardValidator", () => {
+        zapArktypeSyncValidator(tier.valid);
+      });
 
-  describe("valibot", () => {
-    bench("native | valibot | standard-schema-validate", async () => {
-      await nativeValibotSyncStandardValidate(validInput);
-    });
+      bench("native | valibot | standard-schema-validate", async () => {
+        await nativeValibotSyncStandardValidate(tier.valid);
+      });
 
-    bench("zap | valibot | standardValidateSync", () => {
-      standardValidateSync(nativeValibotSyncSchema, validInput);
-    });
+      bench("zap | valibot | standardValidateSync", () => {
+        standardValidateSync(nativeValibotSyncSchema, tier.valid);
+      });
 
-    bench("zap | valibot | createSyncStandardValidator", () => {
-      zapValibotSyncValidator(validInput);
+      bench("zap | valibot | createSyncStandardValidator", () => {
+        zapValibotSyncValidator(tier.valid);
+      });
     });
-  });
+  }
 });
