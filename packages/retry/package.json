@@ -47,6 +47,10 @@
   },
   "devDependencies": {
     "@zap-studio/typescript": "workspace:*",
+    "async-retry": "catalog:",
+    "exponential-backoff": "catalog:",
+    "p-retry": "catalog:",
+    "promise-retry": "catalog:",
     "typescript": "catalog:",
     "vite-plus": "catalog:"
   },
