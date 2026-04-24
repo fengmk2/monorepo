@@ -4,7 +4,8 @@
  * @module @zap-studio/retry
  */
 
-import { AbortError, RetryError } from "./errors.js";
+import { sleepWithAbortSignal, throwIfAborted, toAbortError } from "./abort.js";
+import { RetryError } from "./errors.js";
 import type {
   RetryDecision,
   RetryDecisionInput,
@@ -344,50 +345,6 @@ export async function defaultSleep(delayMs: number): Promise<void> {
 }
 
 /**
- * Throws an abort error when the provided signal is already aborted.
- *
- * @param signal - Optional cancellation signal.
- * @throws {AbortError} Abort reason converted to an `AbortError`.
- */
-function throwIfAborted(signal?: AbortSignal): void {
-  if (!signal?.aborted) {
-    return;
-  }
-
-  throw toAbortError(signal.reason);
-}
-
-/**
- * Normalizes an abort reason value into an `AbortError` instance.
- *
- * @param reason - Abort reason from `AbortSignal.reason`.
- * @returns Normalized abort error instance.
- */
-function toAbortError(reason: unknown): AbortError {
-  if (reason instanceof AbortError) {
-    return reason;
-  }
-
-  if (reason instanceof Error) {
-    return new AbortError(reason.message, { cause: reason });
-  }
-
-  if (typeof reason === "string" && reason.length > 0) {
-    return new AbortError(reason);
-  }
-
-  if (reason === undefined) {
-    return new AbortError("Retry aborted.");
-  }
-
-  try {
-    return new AbortError(`Retry aborted: ${JSON.stringify(reason)}`);
-  } catch {
-    return new AbortError("Retry aborted.");
-  }
-}
-
-/**
  * Converts an abort reason into a `RetryError` for non-throw runner mode.
  *
  * @param reason - Abort reason from `AbortSignal.reason`.
@@ -399,41 +356,4 @@ function toRetryError(reason: unknown, attempts: number): RetryError {
     attempts,
     lastError: abortError,
   });
-}
-
-/**
- * Awaits delay sleep while also observing cancellation via `AbortSignal`.
- *
- * @param sleep - Delay function.
- * @param delayMs - Delay duration in milliseconds.
- * @param signal - Cancellation signal.
- * @throws {AbortError} Abort reason converted to an `AbortError` when canceled.
- */
-async function sleepWithAbortSignal(
-  sleep: (delayMs: number) => Promise<void>,
-  delayMs: number,
-  signal: AbortSignal,
-): Promise<void> {
-  if (signal.aborted) {
-    throw toAbortError(signal.reason);
-  }
-
-  let onAbort: (() => void) | undefined;
-
-  try {
-    await Promise.race([
-      sleep(delayMs),
-      new Promise<never>((_, reject) => {
-        onAbort = (): void => {
-          reject(toAbortError(signal.reason));
-        };
-
-        signal.addEventListener("abort", onAbort, { once: true });
-      }),
-    ]);
-  } finally {
-    if (onAbort) {
-      signal.removeEventListener("abort", onAbort);
-    }
-  }
 }
