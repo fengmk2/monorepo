@@ -108,6 +108,17 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
     return this.runThrowMode(execute, sleep);
   }
 
+  /**
+   * Runs retry orchestration in throwing mode.
+   *
+   * This path is selected when `throwOnExhausted` is not `false`.
+   *
+   * @param execute - Async function to execute per attempt.
+   * @param sleep - Delay function used between retry attempts.
+   * @returns The successful execution value.
+   * @throws {RetryError} Terminal error returned by `onExhausted(...)`.
+   * @throws Any error thrown by `next`, by `onExhausted`, or by `sleep`.
+   */
   private async runThrowMode<T>(
     execute: (attempt: number) => Promise<T>,
     sleep: (delayMs: number) => Promise<void>,
@@ -140,6 +151,16 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
     }
   }
 
+  /**
+   * Runs retry orchestration in non-throw mode.
+   *
+   * This path is selected when `throwOnExhausted` is `false`.
+   *
+   * @param execute - Async function to execute per attempt.
+   * @param sleep - Delay function used between retry attempts.
+   * @returns A discriminated result union containing success value or terminal error.
+   * @throws Any error thrown by `next`, by `onExhausted`, or by `sleep`.
+   */
   private async runResultMode<T>(
     execute: (attempt: number) => Promise<T>,
     sleep: (delayMs: number) => Promise<void>,
@@ -182,6 +203,8 @@ export abstract class BaseRetryPolicy<TError = unknown, TData = unknown> impleme
 
 /**
  * Default delay implementation used by `run(...)` when no custom sleep function is provided.
+ *
+ * Returns immediately when `delayMs` is non-positive.
  */
 async function defaultSleep(delayMs: number): Promise<void> {
   if (delayMs <= 0) {
