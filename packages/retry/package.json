@@ -30,9 +30,13 @@
   "types": "./dist/index.d.mts",
   "exports": {
     ".": "./dist/index.mjs",
+    "./abort": "./dist/abort.mjs",
     "./errors": "./dist/errors.mjs",
     "./exponential-backoff": "./dist/exponential-backoff.mjs",
     "./fixed-delay": "./dist/fixed-delay.mjs",
+    "./result-mode": "./dist/result-mode.mjs",
+    "./sleep": "./dist/sleep.mjs",
+    "./throw-mode": "./dist/throw-mode.mjs",
     "./types": "./dist/types.mjs",
     "./package.json": "./package.json"
   },

@@ -9,6 +9,10 @@
 - Align non-throw abort metadata so `result.attempts` and `result.error.attempts` stay consistent.
 - Refactor result-mode internals into smaller helpers for lower complexity and cleaner maintainability.
 - Expand docs across README and package docs pages to explain `AbortError` behavior in throw and non-throw modes.
+- Split the retry runner into dedicated modules: `throw-mode` (throwing execution path), `result-mode` (non-throw `RetryRunResult` path), and `sleep` (the default `defaultSleep` implementation). `BaseRetryPolicy` in `index` now delegates to these modules without changing public behavior.
+- Expose a JSR and npm subpath for the default sleep helper: `@zap-studio/retry/sleep` (in addition to the existing root re-export of `defaultSleep`).
+- Add exhaustive TSDoc for `result-mode` and other `src` modules, including private helpers, policy option and state fields, and `RetryRunResult` union members.
+- Rework test layout into `sleep`, `throw-mode`, `result-mode`, and `index` test files with a shared `sequence-policy` fixture, replacing the prior combined `index` and `abort` test files.
 
 ## 0.2.0
 

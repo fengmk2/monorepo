@@ -5,7 +5,8 @@
   "license": "MIT",
   "exports": {
     ".": "./src/index.ts",
-    "./error": "./src/error.ts",
+    "./errors": "./src/errors.ts",
+    "./sleep": "./src/sleep.ts",
     "./exponential-backoff": "./src/exponential-backoff.ts",
     "./fixed-delay": "./src/fixed-delay.ts",
     "./types": "./src/types.ts"
