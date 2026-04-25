@@ -143,6 +143,22 @@ describe("fetchInternal", () => {
     expect(new Headers(init.headers).get("Content-Type")).toBe("application/vnd.api+json");
   });
 
+  it("adds JSON content type when default headers exist without one", async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+
+    await fetchInternal(
+      "users",
+      undefined,
+      { json: { name: "Zap" }, method: "POST" },
+      { ...DEFAULTS, headers: { Authorization: "Bearer token" } },
+    );
+    const init = fetchMock.mock.calls[0]?.[1] as RequestInit;
+    const headers = new Headers(init.headers);
+
+    expect(headers.get("Authorization")).toBe("Bearer token");
+    expect(headers.get("Content-Type")).toBe("application/json");
+  });
+
   it("leaves native body values untouched", async () => {
     const body = new FormData();
     fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true })));
