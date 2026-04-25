@@ -1,5 +1,11 @@
 # @zap-studio/fetch
 
+## 0.5.3
+
+### Changed
+
+- Refactor `createFetch(...)` to derive fallback defaults from `GLOBAL_DEFAULTS` instead of re-defining primitive defaults inline.
+
 ## 0.5.2
 
 ### Changed
