@@ -157,18 +157,13 @@ export function createFetch(factoryOptions: Partial<FetchDefaults> = {}): {
   api: ApiMethods;
 } {
   const defaults: FetchDefaults = {
-    baseURL: factoryOptions.baseURL ?? "",
-    throwOnFetchError: factoryOptions.throwOnFetchError ?? true,
-    throwOnValidationError: factoryOptions.throwOnValidationError ?? true,
+    ...GLOBAL_DEFAULTS,
+    ...factoryOptions,
+    baseURL: factoryOptions.baseURL ?? GLOBAL_DEFAULTS.baseURL,
+    throwOnFetchError: factoryOptions.throwOnFetchError ?? GLOBAL_DEFAULTS.throwOnFetchError,
+    throwOnValidationError:
+      factoryOptions.throwOnValidationError ?? GLOBAL_DEFAULTS.throwOnValidationError,
   };
-
-  if (factoryOptions.headers !== undefined) {
-    defaults.headers = factoryOptions.headers;
-  }
-
-  if (factoryOptions.searchParams !== undefined) {
-    defaults.searchParams = factoryOptions.searchParams;
-  }
 
   async function customFetch<TSchema extends StandardSchemaV1>(
     input: FetchInput,
