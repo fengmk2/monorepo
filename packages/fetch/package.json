@@ -63,6 +63,10 @@
   "devDependencies": {
     "@zap-studio/typescript": "workspace:*",
     "arktype": "catalog:",
+    "axios": "catalog:",
+    "better-fetch": "catalog:",
+    "ky": "catalog:",
+    "ofetch": "catalog:",
     "typescript": "catalog:",
     "valibot": "catalog:",
     "vite-plus": "catalog:",
