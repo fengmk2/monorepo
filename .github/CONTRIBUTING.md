@@ -57,16 +57,6 @@ Useful issues are specific and reproducible.
 - Add or update tests when behavior changes.
 - Do not include unrelated refactors in the same PR unless they are necessary.
 
-## Releases
-
-If your change affects a published package, add a changeset:
-
-```bash
-vpx -p @changesets/cli changeset
-```
-
-Write the changeset from the user or package-consumer perspective.
-
 ## Pull requests
 
 PRs should clearly state:
@@ -78,8 +68,7 @@ PRs should clearly state:
 
 Link related issues or discussions when relevant.
 
-If your change affects a published package API or behavior, include docs and
-changeset updates in the same PR.
+If your change affects a published package API or behavior, include docs updates in the same PR.
 
 ## Security
 
