@@ -1,5 +1,12 @@
 # @zap-studio/fetch
 
+## 0.5.4
+
+### Changed
+
+- Added fetch ecosystem benchmarks and grouped benchmark output for easier cross-library comparisons.
+- Applied small internal performance optimizations in request preparation, URL resolution, and header merging without changing public API behavior.
+
 ## 0.5.3
 
 ### Changed
