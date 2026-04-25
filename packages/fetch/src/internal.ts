@@ -105,11 +105,15 @@ function prepareRequestInit(
     }
 
     init.body = JSON.stringify(json);
-    const headers = new Headers(init.headers);
-    if (!headers.has("Content-Type")) {
-      headers.set("Content-Type", "application/json");
+    if (!init.headers) {
+      init.headers = new Headers({ "Content-Type": "application/json" });
+    } else {
+      const headers = new Headers(init.headers);
+      if (!headers.has("Content-Type")) {
+        headers.set("Content-Type", "application/json");
+      }
+      init.headers = headers;
     }
-    init.headers = headers;
   }
 
   return {
