@@ -61,10 +61,10 @@
     "@zap-studio/validation": "workspace:*"
   },
   "devDependencies": {
+    "@better-fetch/fetch": "catalog:",
     "@zap-studio/typescript": "workspace:*",
     "arktype": "catalog:",
     "axios": "catalog:",
-    "better-fetch": "catalog:",
     "ky": "catalog:",
     "ofetch": "catalog:",
     "typescript": "catalog:",
