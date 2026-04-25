@@ -1,6 +1,6 @@
+import { betterFetch, createFetch as createBetterFetch } from "@better-fetch/fetch";
 import axios from "axios";
 import type { AxiosAdapter, AxiosResponse, InternalAxiosRequestConfig } from "axios";
-import betterFetch from "better-fetch";
 import ky from "ky";
 import { ofetch } from "ofetch";
 
@@ -12,6 +12,11 @@ import type { ClientSet } from "./types.js";
 
 export function createClientSet(payload: unknown): ClientSet {
   const mockFetch = installMockFetch(payload);
+  const betterFetchDefaulted = createBetterFetch({
+    baseURL: BASE_URL,
+    customFetchImpl: mockFetch,
+    headers: { Authorization: "Bearer token" },
+  });
 
   const ofetchBase = ofetch.create({
     baseURL: BASE_URL,
@@ -118,25 +123,22 @@ export function createClientSet(payload: unknown): ClientSet {
       withDefaultsGetJson: async () => (await axiosDefaulted.get("/users/1")).data,
     },
     betterFetch: {
-      getJson: async () => await (await betterFetch(USER_URL)).json(),
+      getJson: async () => await betterFetch(USER_URL, { customFetchImpl: mockFetch, throw: true }),
       postBodyObject: async (body) =>
-        await (
-          await betterFetch(USERS_URL, {
-            method: "POST",
-            body,
-          })
-        ).json(),
+        await betterFetch(USERS_URL, {
+          customFetchImpl: mockFetch,
+          method: "POST",
+          body,
+          throw: true,
+        }),
       postRawBody: async (body) =>
-        await (
-          await betterFetch(USERS_URL, {
-            method: "POST",
-            body,
-          })
-        ).json(),
-      withDefaultsGetJson: async () => {
-        betterFetch.setDefaultHeaders({ Authorization: "Bearer token" });
-        return await (await betterFetch(USER_URL)).json();
-      },
+        await betterFetch(USERS_URL, {
+          customFetchImpl: mockFetch,
+          method: "POST",
+          body,
+          throw: true,
+        }),
+      withDefaultsGetJson: async () => await betterFetchDefaulted("/users/1", { throw: true }),
     },
     zap: {
       primitiveGetJson: async () => await (await zapFetch(USER_URL)).json(),
