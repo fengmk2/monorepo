@@ -46,9 +46,17 @@ function resolveSearchParams(
   defaultSearchParams: FetchDefaults["searchParams"] | undefined,
   searchParams: ExtendedRequestInit["searchParams"] | undefined,
 ): string {
-  const hasFragment = url.includes("#");
-  const [urlWithoutHash = "", hash = ""] = url.split("#", 2);
-  const [pathname = "", urlSearchParams] = urlWithoutHash.split("?", 2);
+  if (!defaultSearchParams && searchParams === undefined) {
+    return url;
+  }
+
+  const hashIndex = url.indexOf("#");
+  const hasFragment = hashIndex >= 0;
+  const urlWithoutHash = hasFragment ? url.slice(0, hashIndex) : url;
+  const hash = hasFragment ? url.slice(hashIndex + 1) : "";
+  const queryIndex = urlWithoutHash.indexOf("?");
+  const pathname = queryIndex >= 0 ? urlWithoutHash.slice(0, queryIndex) : urlWithoutHash;
+  const urlSearchParams = queryIndex >= 0 ? urlWithoutHash.slice(queryIndex + 1) : undefined;
   const resolvedSearchParams = new URLSearchParams();
 
   mergeSearchParams(resolvedSearchParams, defaultSearchParams);

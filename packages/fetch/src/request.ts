@@ -7,6 +7,8 @@
 import { mergeHeaders } from "./headers.js";
 import type { ExtendedRequestInit, FetchInput } from "./types.js";
 
+const EMPTY_OPTIONS = {} as ExtendedRequestInit;
+
 /**
  * Normalized representation used by internal request execution.
  *
@@ -40,7 +42,7 @@ export function normalizeRequest(
     const url = input instanceof URL ? input.href : input;
     return {
       url,
-      options: options ?? {},
+      options: options ?? EMPTY_OPTIONS,
     };
   }
 

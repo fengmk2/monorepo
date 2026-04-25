@@ -25,12 +25,17 @@ export function mergeHeaders(base?: HeadersInit, override?: HeadersInit): Header
     return;
   }
 
+  if (!base) {
+    return new Headers(override);
+  }
+
+  if (!override) {
+    return new Headers(base);
+  }
+
   const merged = new Headers(base);
-  if (override) {
-    const overrideHeaders = new Headers(override);
-    for (const [key, value] of overrideHeaders.entries()) {
-      merged.set(key, value);
-    }
+  for (const [key, value] of new Headers(override).entries()) {
+    merged.set(key, value);
   }
   return merged;
 }
