@@ -5,9 +5,9 @@
   "type": "module",
   "sideEffects": false,
   "scripts": {
-    "build": "vp build",
-    "dev": "vp dev",
-    "preview": "vp preview",
+    "build": "vite build",
+    "dev": "vite dev",
+    "preview": "vite preview",
     "react-doctor": "node ./scripts/react-doctor.mjs",
     "types:check": "fumadocs-mdx && tsc --noEmit",
     "postinstall": "fumadocs-mdx"
@@ -38,7 +38,7 @@
     "nitro": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.1.20"
+    "vite": "catalog:"
   },
   "engines": {
     "node": ">=20.0.0"
