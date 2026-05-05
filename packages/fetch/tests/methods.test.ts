@@ -1,5 +1,5 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
-import { describe, expect, it, vi } from "vite-plus/test";
+import { describe, expect, it, vi } from "vitest";
 
 import { createMethod } from "../src/methods.js";
 import type { $Fetch } from "../src/types.js";

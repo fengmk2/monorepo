@@ -1,5 +1,5 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
-import { describe, expect, it } from "vite-plus/test";
+import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
 import { VerificationError } from "../src/errors.js";

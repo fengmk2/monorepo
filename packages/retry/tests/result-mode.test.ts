@@ -1,6 +1,6 @@
 import { strict as assert } from "node:assert";
 
-import { describe, expect, it, vi } from "vite-plus/test";
+import { describe, expect, it, vi } from "vitest";
 
 import { AbortError, RetryError } from "../src/errors.js";
 import { expectFailureResult, SequencePolicy } from "./sequence-policy.js";

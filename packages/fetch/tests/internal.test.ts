@@ -1,5 +1,5 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { FetchError } from "../src/errors.js";
 import { fetchInternal } from "../src/internal.js";

@@ -1,5 +1,5 @@
 import * as v from "valibot";
-import { bench, describe } from "vite-plus/test";
+import { bench, describe } from "vitest";
 
 import { standardValidate } from "../../src/index.js";
 import { inputTiers } from "./fixtures.js";

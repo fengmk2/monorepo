@@ -1,5 +1,5 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
-import { describe, expect, it, vi } from "vite-plus/test";
+import { describe, expect, it, vi } from "vitest";
 
 import { PolicyError } from "../src/errors.js";
 import {

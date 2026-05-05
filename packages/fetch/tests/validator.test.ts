@@ -1,7 +1,7 @@
 import type { StandardSchemaV1 } from "@zap-studio/validation";
 import { isStandardSchema, standardValidate } from "@zap-studio/validation";
 import { ValidationError } from "@zap-studio/validation/errors";
-import { describe, expect, it } from "vite-plus/test";
+import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
 function createMockSchema<T>(

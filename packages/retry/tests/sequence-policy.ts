@@ -1,4 +1,4 @@
-import { expect } from "vite-plus/test";
+import { expect } from "vitest";
 
 import { AbortError, RetryError } from "../src/errors.js";
 import { BaseRetryPolicy } from "../src/index.js";

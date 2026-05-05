@@ -1,6 +1,6 @@
 import { ValidationError } from "@zap-studio/validation/errors";
 import { number, object, string } from "valibot";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { FetchError } from "../src/errors.js";
 import { $fetch, api, createFetch } from "../src/index.js";

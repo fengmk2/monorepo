@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vite-plus/test";
+import { describe, expect, it } from "vitest";
 
 import { VerificationError } from "../src/errors.js";
 import type { NormalizedRequest } from "../src/types/index.js";
