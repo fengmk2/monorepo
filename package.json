@@ -3,16 +3,27 @@
   "private": true,
   "author": "Alexandre Trotel",
   "scripts": {
-    "dev": "vp run docs#dev",
-    "bench": "vp test bench --run",
-    "bench:watch": "vp test bench --watch",
-    "publish:check": "vp check && vp test && vp run --filter './packages/*' prepublishOnly",
-    "react-doctor": "vp run docs#react-doctor"
+    "dev": "pnpm --filter docs run dev",
+    "bench": "vitest bench --run",
+    "bench:watch": "vitest bench --watch",
+    "build": "pnpm --filter './packages/*' run build",
+    "publish:check": "pnpm run lint && pnpm run test && pnpm --filter './packages/*' run prepublishOnly",
+    "react-doctor": "pnpm --filter docs run react-doctor",
+    "format": "oxfmt --write .",
+    "format:check": "oxfmt --check .",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "prepare": "lefthook install"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "catalog:",
-    "vite-plus": "catalog:",
-    "vitest": "npm:@voidzero-dev/vite-plus-test@0.1.20"
+    "lefthook": "catalog:",
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:",
+    "tsdown": "catalog:",
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">=20.0.0",
