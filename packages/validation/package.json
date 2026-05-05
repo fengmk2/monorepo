@@ -36,10 +36,10 @@
     "access": "public"
   },
   "scripts": {
-    "build": "vp pack",
-    "prepublishOnly": "vpx publint --strict && vpx -p @arethetypeswrong/cli attw --profile esm-only --pack .",
-    "test": "vp test run",
-    "test:watch": "vp test watch"
+    "build": "tsdown",
+    "prepublishOnly": "pnpm dlx publint --strict && pnpm dlx @arethetypeswrong/cli attw --profile esm-only --pack .",
+    "test": "vitest run",
+    "test:watch": "vitest watch"
   },
   "dependencies": {
     "@standard-schema/spec": "catalog:"
@@ -47,9 +47,10 @@
   "devDependencies": {
     "@zap-studio/typescript": "workspace:*",
     "arktype": "catalog:",
+    "tsdown": "catalog:",
     "typescript": "catalog:",
     "valibot": "catalog:",
-    "vite-plus": "catalog:",
+    "vitest": "catalog:",
     "zod": "catalog:"
   },
   "engines": {
