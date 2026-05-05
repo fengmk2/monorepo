@@ -9,8 +9,7 @@ const scanPath = process.cwd();
 const repoRoot = path.resolve(scanPath, "../..");
 const reportDir = path.join(repoRoot, ".react-doctor", "docs");
 const latestReportPath = path.join(reportDir, "latest.txt");
-const vitePlusBin = path.join(process.env.HOME ?? "", ".vite-plus", "bin", "vp");
-const environmentPrefixesToRemove = ["npm_", "PNPM_", "VITE_PLUS_"];
+const environmentPrefixesToRemove = ["npm_", "PNPM_"];
 const catalogDependencyNames = ["react", "react-dom"];
 const dependencyFields = [
   "dependencies",
@@ -96,7 +95,7 @@ function getDependencySections(packageJson) {
 
 const restorePackageJson = await prepareScanPackageJson();
 
-const child = spawn(vitePlusBin, ["dlx", "react-doctor@latest", ".", "--verbose", "--yes"], {
+const child = spawn("pnpm", ["dlx", "react-doctor@latest", ".", "--verbose", "--yes"], {
   cwd: scanPath,
   env: createChildEnv(),
   stdio: ["ignore", "pipe", "pipe"],
