@@ -7,6 +7,6 @@ pre-commit:
       stage_fixed: true
 
     - name: lint
-      run: pnpm dlx oxlint --fix {staged_files}
+      run: pnpm dlx oxlint --no-error-on-unmatched-pattern --fix {staged_files}
       glob: "*"
       stage_fixed: true
