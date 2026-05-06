@@ -7,7 +7,7 @@
     "bench": "vitest bench --run",
     "bench:watch": "vitest bench --watch",
     "build": "pnpm --filter './packages/*' run build",
-    "publish:check": "pnpm run lint && pnpm run test && pnpm --filter './packages/*' run prepublishOnly",
+    "publish:check": "pnpm run format:check && pnpm run lint && pnpm run test && pnpm --filter './packages/*' run prepublishOnly",
     "react-doctor": "pnpm --filter docs run react-doctor",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check .",
