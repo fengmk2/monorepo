@@ -18,11 +18,13 @@
     "prepare": "lefthook install"
   },
   "devDependencies": {
+    "@vitest/browser-playwright": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "lefthook": "catalog:",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
+    "playwright": "catalog:",
     "tsdown": "catalog:",
     "vitest": "catalog:"
   },
