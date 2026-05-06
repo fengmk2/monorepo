@@ -1,0 +1,9 @@
+{
+  "ignorePatterns": ["**/routeTree.gen.ts"],
+  "sortImports": {},
+  "sortPackageJson": true,
+  "sortTailwindcss": {
+    "stylesheet": "apps/docs/src/styles/app.css",
+    "functions": ["cn"]
+  }
+}
