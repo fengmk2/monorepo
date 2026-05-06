@@ -58,7 +58,7 @@ function DocsRoute() {
           transform: (option, node) => ({
             ...option,
             icon: node.icon ? (
-              <span className="text-fd-primary flex size-full items-center justify-center [&_svg]:size-5 md:[&_svg]:size-4">
+              <span className="flex size-full items-center justify-center text-fd-primary [&_svg]:size-5 md:[&_svg]:size-4">
                 {node.icon}
               </span>
             ) : undefined,
@@ -116,7 +116,7 @@ const docsClientLoader = browserCollections.docs.createClientLoader<{
           <MDX components={getMDXComponents()} />
           <div className="mt-8 flex flex-row flex-wrap items-center justify-between gap-4 border-t pt-4">
             <a
-              className="text-fd-muted-foreground hover:text-fd-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
+              className="inline-flex items-center gap-1.5 text-sm text-fd-muted-foreground transition-colors hover:text-fd-foreground"
               href={props.githubUrl}
               {...getExternalLinkProps(props.githubUrl)}
             >

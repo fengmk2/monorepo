@@ -226,19 +226,19 @@ export function ViewOptions({
         )}
       >
         Open
-        <ChevronDown className="text-fd-muted-foreground size-3.5" />
+        <ChevronDown className="size-3.5 text-fd-muted-foreground" />
       </PopoverTrigger>
       <PopoverContent className="flex flex-col">
         {items.map((item) => (
           <a
-            className="hover:bg-fd-accent hover:text-fd-accent-foreground inline-flex items-center gap-2 rounded-lg p-2 text-sm [&_svg]:size-4"
+            className="inline-flex items-center gap-2 rounded-lg p-2 text-sm hover:bg-fd-accent hover:text-fd-accent-foreground [&_svg]:size-4"
             href={item.href}
             key={item.href}
             {...getExternalLinkProps(item.href)}
           >
             {item.icon}
             {item.title}
-            <ExternalLinkIcon className="text-fd-muted-foreground ms-auto size-3.5" />
+            <ExternalLinkIcon className="ms-auto size-3.5 text-fd-muted-foreground" />
           </a>
         ))}
       </PopoverContent>
