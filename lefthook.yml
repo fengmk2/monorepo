@@ -2,11 +2,11 @@ pre-commit:
   parallel: true
   jobs:
     - name: format
-      run: oxfmt --write {staged_files}
+      run: pnpm dlx oxfmt --write {staged_files}
       glob: "*"
       stage_fixed: true
 
     - name: lint
-      run: oxlint --fix {staged_files}
+      run: pnpm dlx oxlint --fix {staged_files}
       glob: "*"
       stage_fixed: true
