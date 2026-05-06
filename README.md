@@ -38,7 +38,7 @@ Latest benchmark runs show strong relative performance for `fetch`, `validation`
 
 Skills are focused by workflow and package so AI agents can load only the relevant guidance.
 
-Install them with the Vercel Skills CLI:
+Install them with the following command:
 
 ```bash
 npx skills add zap-studio/monorepo
