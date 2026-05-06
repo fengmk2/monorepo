@@ -36,10 +36,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsdown",
-    "prepublishOnly": "pnpm dlx publint --strict && pnpm dlx @arethetypeswrong/cli --profile esm-only --pack .",
-    "test": "vitest run",
-    "test:watch": "vitest watch"
+    "build": "tsdown --config ./tsdown.config.ts",
+    "prepublishOnly": "pnpm dlx publint --strict && pnpm dlx @arethetypeswrong/cli --profile esm-only --pack ."
   },
   "dependencies": {
     "@standard-schema/spec": "catalog:"
