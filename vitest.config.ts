@@ -5,11 +5,7 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["html", "json", "lcov", "text"],
-      exclude: [
-        ...configDefaults.exclude,
-        "**/dist/**",
-        "**/sequence-policy.ts",
-      ],
+      exclude: [...configDefaults.exclude, "**/dist/**", "**/sequence-policy.ts"],
     },
     environment: "node",
     exclude: ["dist", "node_modules"],
