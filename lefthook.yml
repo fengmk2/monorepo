@@ -2,7 +2,7 @@ pre-commit:
   parallel: true
   jobs:
     - name: format
-      run: pnpm dlx oxfmt --write {staged_files}
+      run: pnpm dlx oxfmt --no-error-on-unmatched-pattern --write {staged_files}
       glob: "*"
       stage_fixed: true
 
