@@ -11,8 +11,8 @@
     "react-doctor": "pnpm --filter docs run react-doctor",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
-    "lint": "oxlint .",
-    "lint:fix": "oxlint --fix .",
+    "lint": "oxlint --type-aware --type-check .",
+    "lint:fix": "oxlint --type-aware --type-check --fix .",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "prepare": "lefthook install"
