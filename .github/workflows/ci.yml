@@ -143,5 +143,8 @@ jobs:
       - name: Build packages
         run: pnpm --filter "$PACKAGE_FILTER" run build
 
+      - name: Install browser
+        run: pnpm exec playwright install --with-deps chromium
+
       - name: Run publish checks
         run: pnpm run format:check && pnpm run lint && pnpm run test && pnpm --filter "$PACKAGE_FILTER" run prepublishOnly
