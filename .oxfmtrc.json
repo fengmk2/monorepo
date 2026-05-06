@@ -1,9 +1,10 @@
 {
-  "ignorePatterns": ["**/routeTree.gen.ts"],
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
   "sortImports": {},
   "sortPackageJson": true,
   "sortTailwindcss": {
     "stylesheet": "apps/docs/src/styles/app.css",
     "functions": ["cn"]
-  }
+  },
+  "ignorePatterns": ["**/dist/**", "**/node_modules/**", "**/routeTree.gen.ts"]
 }
