@@ -18,6 +18,7 @@
     "prepare": "lefthook install"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "catalog:",
     "@vitest/browser-playwright": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "lefthook": "catalog:",
@@ -25,6 +26,7 @@
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
     "playwright": "catalog:",
+    "publint": "catalog:",
     "tsdown": "catalog:",
     "vitest": "catalog:"
   },
