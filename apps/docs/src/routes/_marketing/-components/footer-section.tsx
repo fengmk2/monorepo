@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { getExternalLinkProps } from "@/lib/utils/links";
 
 import { FadeIn } from "./animated";
-import { DiscordIcon, GitHubIcon } from "./icons";
+import { GitHubIcon } from "./icons";
 
 interface FooterLink {
   external?: boolean;
@@ -42,11 +42,6 @@ const footerColumns: FooterColumn[] = [
       {
         label: "GitHub",
         href: "https://github.com/zap-studio/monorepo",
-        external: true,
-      },
-      {
-        label: "Discord",
-        href: "https://discord.gg/8Ke3VCjjMf",
         external: true,
       },
     ],
@@ -109,14 +104,6 @@ export function FooterSection(): ReactNode {
                 {...getExternalLinkProps("https://github.com/zap-studio/monorepo")}
               >
                 <GitHubIcon className="size-4" />
-              </a>
-              <a
-                aria-label="Join Zap Studio on Discord"
-                className="text-fd-muted-foreground transition-colors duration-200 hover:text-fd-foreground"
-                href="https://discord.gg/8Ke3VCjjMf"
-                {...getExternalLinkProps("https://discord.gg/8Ke3VCjjMf")}
-              >
-                <DiscordIcon className="size-4" />
               </a>
             </div>
           </div>

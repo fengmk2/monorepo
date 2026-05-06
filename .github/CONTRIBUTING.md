@@ -5,7 +5,7 @@ Thanks for contributing to Zap Studio.
 ## Before you start
 
 - Use the issue forms for reproducible bugs and concrete feature requests.
-- Use GitHub Discussions or Discord for questions and general support.
+- Use GitHub Discussions for questions and general support.
 - For larger API or architecture changes, open an issue or discussion first so
   the direction is clear before implementation.
 
