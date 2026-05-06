@@ -48,7 +48,7 @@
   },
   "scripts": {
     "build": "tsdown",
-    "prepublishOnly": "pnpm dlx publint --strict && pnpm dlx @arethetypeswrong/cli attw --profile esm-only --pack .",
+    "prepublishOnly": "pnpm dlx publint --strict && pnpm dlx @arethetypeswrong/cli --profile esm-only --pack .",
     "test": "vitest run",
     "test:watch": "vitest watch"
   },
