@@ -1,5 +1,5 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec";
-import { bench, describe } from "vite-plus/test";
+import { bench, describe } from "vitest";
 
 import {
   createStandardValidator,

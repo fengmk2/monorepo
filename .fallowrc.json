@@ -5,6 +5,7 @@
   },
   "dynamicallyLoaded": ["apps/docs/content/docs/**/*.mdx"],
   "ignoreDependencies": [
+    "@arethetypeswrong/cli",
     "@zap-studio/fetch",
     "@zap-studio/permit",
     "@zap-studio/retry",

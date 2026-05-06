@@ -1,4 +1,4 @@
-import { bench, describe } from "vite-plus/test";
+import { bench, describe } from "vitest";
 
 import {
   runPRetryWithSignal,

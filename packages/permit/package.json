@@ -43,18 +43,17 @@
     "access": "public"
   },
   "scripts": {
-    "build": "vp pack",
-    "prepublishOnly": "vpx publint --strict && vpx -p @arethetypeswrong/cli attw --profile esm-only --pack .",
-    "test": "vp test run",
-    "test:watch": "vp test watch"
+    "build": "tsdown --config ./tsdown.config.ts",
+    "prepublishOnly": "pnpm exec publint --strict && pnpm exec attw --profile esm-only --pack ."
   },
   "dependencies": {
     "@zap-studio/validation": "workspace:*"
   },
   "devDependencies": {
     "@zap-studio/typescript": "workspace:*",
+    "tsdown": "catalog:",
     "typescript": "catalog:",
-    "vite-plus": "catalog:"
+    "vitest": "catalog:"
   },
   "engines": {
     "node": ">=18.0.0"

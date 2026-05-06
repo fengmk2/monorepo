@@ -28,11 +28,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Vite+
-        uses: ./.github/actions/setup-vp
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
 
       - name: Build packages
-        run: vp run --filter "$PACKAGE_FILTER" build
+        run: pnpm --filter "$PACKAGE_FILTER" run build
 
   build-docs:
     name: Build Docs
@@ -43,11 +43,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Vite+
-        uses: ./.github/actions/setup-vp
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
 
       - name: Build docs
-        run: vp run docs#build
+        run: pnpm --filter docs run build
 
   check:
     name: Check
@@ -55,14 +55,14 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Setup Vite+
-        uses: ./.github/actions/setup-vp
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
 
       - name: Build packages
-        run: vp run --filter "$PACKAGE_FILTER" build
+        run: pnpm --filter "$PACKAGE_FILTER" run build
 
-      - name: Run check on the monorepo
-        run: vp check
+      - name: Run lint
+        run: pnpm run lint
 
   test:
     name: Test
@@ -72,14 +72,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Vite+
-        uses: ./.github/actions/setup-vp
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
 
       - name: Build packages
-        run: vp run --filter "$PACKAGE_FILTER" build
+        run: pnpm --filter "$PACKAGE_FILTER" run build
+
+      - name: Install browser
+        run: pnpm exec playwright install --with-deps chromium
 
       - name: Run tests
-        run: vp test
+        run: pnpm run test
 
   coverage:
     name: Coverage
@@ -92,14 +95,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Vite+
-        uses: ./.github/actions/setup-vp
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
 
       - name: Build packages
-        run: vp run --filter "$PACKAGE_FILTER" build
+        run: pnpm --filter "$PACKAGE_FILTER" run build
+
+      - name: Install browser
+        run: pnpm exec playwright install --with-deps chromium
 
       - name: Run coverage
-        run: CI=1 vp test run --coverage
+        run: CI=1 pnpm run test:coverage
 
       - name: Upload test results to Codecov
         if: ${{ always() }}
@@ -131,11 +137,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Vite+
-        uses: ./.github/actions/setup-vp
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
 
       - name: Build packages
-        run: vp run --filter "$PACKAGE_FILTER" build
+        run: pnpm --filter "$PACKAGE_FILTER" run build
+
+      - name: Install browser
+        run: pnpm exec playwright install --with-deps chromium
 
       - name: Run publish checks
-        run: vp check && vp test && vp run --filter "$PACKAGE_FILTER" prepublishOnly
+        run: pnpm run format:check && pnpm run lint && pnpm run test && pnpm --filter "$PACKAGE_FILTER" run prepublishOnly

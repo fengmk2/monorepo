@@ -16,7 +16,7 @@ Thanks for contributing to Zap Studio.
 3. Install dependencies from the repository root:
 
 ```bash
-vp install
+pnpm install
 ```
 
 ## Repository layout
@@ -33,13 +33,14 @@ vp install
 Run these from the repo root:
 
 ```bash
-vp check
-vp test
-vp run build
+pnpm run format:check
+pnpm run lint
+pnpm run test
+pnpm --filter './packages/*' run build
 ```
 
 If you are changing one package, prefer the relevant package or app target via
-`vp run`.
+`pnpm --filter`.
 
 ## Issues
 
