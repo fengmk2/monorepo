@@ -62,17 +62,3 @@ catalog:
   zod: ^4.4.3
 
 catalogMode: prefer
-
-onlyBuiltDependencies:
-  - "@swc/core"
-  - core-js-pure
-  - esbuild
-  - lefthook
-  - sharp
-
-overrides:
-  vite: "catalog:"
-
-peerDependencyRules:
-  allowAny:
-    - vite
