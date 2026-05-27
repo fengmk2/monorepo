@@ -79,7 +79,7 @@ jobs:
         run: pnpm --filter "$PACKAGE_FILTER" run build
 
       - name: Install browser
-        run: pnpm dlx playwright install --with-deps chromium
+        run: pnpm exec playwright install --with-deps chromium
 
       - name: Run tests
         run: pnpm run test
@@ -102,7 +102,7 @@ jobs:
         run: pnpm --filter "$PACKAGE_FILTER" run build
 
       - name: Install browser
-        run: pnpm dlx playwright install --with-deps chromium
+        run: pnpm exec playwright install --with-deps chromium
 
       - name: Run coverage
         run: CI=1 pnpm run test:coverage
@@ -144,7 +144,7 @@ jobs:
         run: pnpm --filter "$PACKAGE_FILTER" run build
 
       - name: Install browser
-        run: pnpm dlx playwright install --with-deps chromium
+        run: pnpm exec playwright install --with-deps chromium
 
       - name: Run publish checks
         run: pnpm run format:check && pnpm run lint && pnpm run test && pnpm --filter "$PACKAGE_FILTER" run prepublishOnly
