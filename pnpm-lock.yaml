@@ -154,6 +154,8 @@ importers:
         specifier: ^8.0.14
         version: 8.0.14(@types/node@24.12.4)(esbuild@0.28.0)(jiti@2.7.0)
 
+  configs/tsdown: {}
+
   configs/typescript: {}
 
   packages/fetch:
