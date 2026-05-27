@@ -9,6 +9,7 @@ allowBuilds:
 
 catalog:
   "@arethetypeswrong/cli": ^0.18.2
+  "@better-fetch/fetch": ^1.1.21
   "@fontsource-variable/inter": ^5.2.8
   "@fontsource-variable/jetbrains-mono": ^5.2.8
   "@fontsource/instrument-serif": ^5.2.8
