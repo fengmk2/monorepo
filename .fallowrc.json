@@ -1,17 +1,15 @@
 {
-  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/fallow.schema.json",
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
   "duplicates": {
     "ignore": ["**/tests/**", "**/*.bench.ts"]
   },
   "dynamicallyLoaded": ["apps/docs/content/docs/**/*.mdx"],
   "ignoreDependencies": [
-    "@arethetypeswrong/cli",
     "@zap-studio/fetch",
     "@zap-studio/permit",
     "@zap-studio/retry",
     "@zap-studio/validation",
-    "@zap-studio/webhooks",
-    "stripe"
+    "@zap-studio/webhooks"
   ],
   "ignoreExports": [
     {
@@ -21,20 +19,6 @@
     {
       "file": "apps/docs/src/components/mdx.tsx",
       "exports": ["useMDXComponents"]
-    }
-  ],
-  "overrides": [
-    {
-      "files": ["apps/docs/src/lib/content/source.ts", "apps/docs/src/routes/docs/$.tsx"],
-      "rules": {
-        "unresolved-imports": "off"
-      }
-    },
-    {
-      "files": ["apps/docs/src/styles/**/*.css"],
-      "rules": {
-        "unresolved-imports": "off"
-      }
     }
   ]
 }
