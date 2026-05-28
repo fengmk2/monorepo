@@ -7,6 +7,9 @@ allowBuilds:
   esbuild: true
   lefthook: true
 
+overrides:
+  fflate: 0.8.2
+
 catalog:
   "@arethetypeswrong/cli": ^0.18.2
   "@better-fetch/fetch": ^1.1.21
