@@ -27,6 +27,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+
       - name: Run Fallow
         uses: fallow-rs/fallow@v2
         with:
